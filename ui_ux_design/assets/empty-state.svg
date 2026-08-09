@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 220" fill="none" role="img" aria-label="Leerer Bereich">
+
+  <!-- Ground shadow -->
+  <ellipse cx="140" cy="210" rx="82" ry="9" fill="#C8C1BA" opacity="0.3"/>
+
+  <!-- Box body -->
+  <rect x="48" y="90" width="184" height="116" rx="12" fill="#FFFFFF" stroke="#DED9D3" stroke-width="1.5"/>
+
+  <!-- Subtle vertical fold line on box body -->
+  <line x1="140" y1="90" x2="140" y2="206" stroke="#EAE7E3" stroke-width="1"/>
+
+  <!-- Left flap (folded open to the left) -->
+  <path d="M48 90 L22 54 L122 54 L122 90 Z" fill="#F7F6F3" stroke="#DED9D3" stroke-width="1.5" stroke-linejoin="round"/>
+
+  <!-- Right flap (folded open to the right) -->
+  <path d="M232 90 L258 54 L158 54 L158 90 Z" fill="#F7F6F3" stroke="#DED9D3" stroke-width="1.5" stroke-linejoin="round"/>
+
+  <!-- Fold crease lines where flaps meet box -->
+  <line x1="122" y1="54" x2="122" y2="90" stroke="#DED9D3" stroke-width="1"/>
+  <line x1="158" y1="54" x2="158" y2="90" stroke="#DED9D3" stroke-width="1"/>
+
+  <!-- Orange rim accent at box opening -->
+  <path d="M48 90 L232 90" stroke="#DF6420" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- Paw print inside box — muted, brand-typical motif -->
+  <!-- Main central pad -->
+  <ellipse cx="140" cy="162" rx="14" ry="11" fill="#E8E4DF"/>
+
+  <!-- Three toe pads -->
+  <ellipse cx="122" cy="148" rx="7" ry="6.5" fill="#E8E4DF"/>
+  <ellipse cx="140" cy="143" rx="7" ry="6.5" fill="#E8E4DF"/>
+  <ellipse cx="158" cy="148" rx="7" ry="6.5" fill="#E8E4DF"/>
+
+  <!-- Subtle petrol accent: small dot on right flap corner -->
+  <circle cx="248" cy="54" r="4" fill="#2F5D62" opacity="0.25"/>
+  <circle cx="32" cy="54" r="4" fill="#2F5D62" opacity="0.25"/>
+
+</svg>
