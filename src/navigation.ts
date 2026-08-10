@@ -1,7 +1,7 @@
 import type { Component } from 'vue'
-import { CalendarDays, CalendarRange, ClipboardCheck, LayoutDashboard, Settings, Users } from '@lucide/vue'
+import { CalendarDays, CalendarRange, ClipboardCheck, Inbox, LayoutDashboard, Settings, Users } from '@lucide/vue'
 
-export type AppRouteName = 'dashboard' | 'customers' | 'check-in-out' | 'bookings' | 'occupancy' | 'settings'
+export type AppRouteName = 'dashboard' | 'customers' | 'check-in-out' | 'bookings' | 'occupancy' | 'requests' | 'settings'
 
 export interface NavigationItem {
   name: AppRouteName
@@ -46,6 +46,13 @@ export const navigationItems: readonly NavigationItem[] = [
     title: 'Belegung',
     description: 'Tages-Spaltenansicht mit Auslastung je Zimmer und Zeitraum.',
     icon: CalendarRange
+  },
+  {
+    name: 'requests',
+    path: '/anfragen',
+    title: 'Anfragen',
+    description: 'Externe Buchungsanfragen prüfen und als Reservierung übernehmen.',
+    icon: Inbox
   },
   {
     name: 'settings',

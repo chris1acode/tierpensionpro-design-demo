@@ -13,6 +13,7 @@ const routes: RouteRecordRaw[] = [
     component: {},
     meta: { title, description }
   })),
+  { path: '/konto', name: 'account', component: {}, meta: { title: 'Konto', description: 'Persönliche Kontodaten und Vertragsverwaltung.' } },
   { path: '/:pathMatch(.*)*', name: 'not-found', component: {}, meta: { title: 'Seite nicht gefunden', description: 'Die aufgerufene Adresse gibt es in Tierpension Pro nicht.' } }
 ]
 

@@ -17,9 +17,9 @@ defineEmits<{
   <BaseModal labelled-by="checkin-title" @close="$emit('close')">
     <span class="modal-icon"><ClipboardCheck /></span>
     <p class="eyebrow">Check-in bestätigen</p>
-    <h2 id="checkin-title">Ist {{ booking.pet.name }} angekommen?</h2>
+    <h2 id="checkin-title">Check-in für {{ booking.customer.firstName }} {{ booking.customer.lastName }}</h2>
     <p>
-      Mit der Bestätigung wird {{ booking.pet.name }} dem Zimmer
+      Ist {{ booking.pet.name }} angekommen? Mit der Bestätigung wird {{ booking.pet.name }} dem Zimmer
       <strong>{{ booking.room.name }}</strong> zugewiesen.
     </p>
     <div v-if="booking.pet.note" class="pet-note">
@@ -27,7 +27,7 @@ defineEmits<{
       <span>{{ booking.pet.note }}</span>
     </div>
     <dl>
-      <div><dt>Halter:in</dt><dd>{{ booking.customer.firstName }} {{ booking.customer.lastName }}</dd></div>
+      <div><dt>Tier</dt><dd>{{ booking.pet.name }} · {{ booking.pet.breed }}</dd></div>
       <div><dt>Abreise</dt><dd>{{ booking.departure }}</dd></div>
     </dl>
     <div class="modal-actions">

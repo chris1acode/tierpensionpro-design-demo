@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { ArrowLeft, CalendarDays, Cat, Dog, Phone, Plus, Search, Users, X } from '@lucide/vue'
+import { ArrowLeft, CalendarDays, Cat, Dog, Download, Phone, Plus, Search, Users, X } from '@lucide/vue'
 import type { CustomerView, PetSpecies } from '../domain'
 import { bookingStatusLabels } from '../presentation/bookingStatus'
 import { matchesSearchTerm, resolveSearchTerm } from '../shared/search'
+import { downloadCsv } from '../shared/csvExport'
 import { usePensionStore } from '../usePensionStore'
 
 const props = defineProps<{ query: string }>()
@@ -24,6 +25,13 @@ const searchTerm = computed(() => resolveSearchTerm(localQuery.value, props.quer
 const filteredCustomers = computed(() => store.customerViews.value.filter((customer) =>
   matchesSearchTerm(searchTerm.value, [customer.firstName, customer.lastName, customer.phone, ...customer.pets.flatMap((pet) => [pet.name, pet.breed])])))
 const pageCount = computed(() => Math.ceil(filteredCustomers.value.length / pageSize))
+const visiblePageNumbers = computed(() => {
+  const windowSize = 5
+  if (pageCount.value <= windowSize) return Array.from({ length: pageCount.value }, (_, index) => index + 1)
+
+  const firstPage = Math.min(Math.max(currentPage.value - Math.floor(windowSize / 2), 1), pageCount.value - windowSize + 1)
+  return Array.from({ length: windowSize }, (_, index) => firstPage + index)
+})
 const pagedCustomers = computed(() => filteredCustomers.value.slice(
   (currentPage.value - 1) * pageSize,
   currentPage.value * pageSize
@@ -81,6 +89,19 @@ function submitCustomer() {
   closeCustomerForm()
 }
 
+function exportCustomers() {
+  downloadCsv({
+    fileName: 'kunden-und-tiere.csv',
+    columns: ['Kund:in', 'Telefon', 'Tier', 'Tierart', 'Rasse', 'Hinweis'],
+    rows: filteredCustomers.value.flatMap((customer) => customer.pets.length
+      ? customer.pets.map((pet) => [
+        `${customer.firstName} ${customer.lastName}`, customer.phone, pet.name,
+        pet.species === 'dog' ? 'Hund' : 'Katze', pet.breed, pet.note
+      ])
+      : [[`${customer.firstName} ${customer.lastName}`, customer.phone, '', '', '', '']])
+  })
+}
+
 </script>
 
 <template>
@@ -94,7 +115,7 @@ function submitCustomer() {
       <section class="panel customer-directory">
         <header>
           <div><h2>Kundenverzeichnis</h2><p>{{ filteredCustomers.length }} Treffer</p></div>
-          <button class="text-button" @click="customerFormOpen ? closeCustomerForm() : customerFormOpen = true"><X v-if="customerFormOpen" :size="15" /><Plus v-else :size="15" /> {{ customerFormOpen ? 'Abbrechen' : 'Kund:in anlegen' }}</button>
+          <div class="list-header-actions"><button class="text-button" type="button" aria-label="Kunden und Tiere als CSV exportieren" @click="exportCustomers"><Download :size="15" /> Exportieren</button><button class="text-button" @click="customerFormOpen ? closeCustomerForm() : customerFormOpen = true"><X v-if="customerFormOpen" :size="15" /><Plus v-else :size="15" /> {{ customerFormOpen ? 'Abbrechen' : 'Kund:in anlegen' }}</button></div>
         </header>
         <form v-if="customerFormOpen" class="customer-create-form" @submit.prevent="submitCustomer">
           <label>Vorname *<input v-model="newCustomer.firstName" autocomplete="given-name" /></label>
@@ -114,7 +135,7 @@ function submitCustomer() {
         <div v-else class="empty-state compact"><span><Search /></span><strong>Keine passenden Stammdaten.</strong><p>Versuche einen anderen Suchbegriff.</p></div>
         <nav v-if="pageCount > 1" class="pagination" aria-label="Seiten im Kundenverzeichnis">
           <button :disabled="currentPage === 1" aria-label="Vorherige Seite" @click="selectPage(currentPage - 1)">‹</button>
-          <button v-for="page in pageCount" :key="page" :class="{ active: page === currentPage }" :aria-current="page === currentPage ? 'page' : undefined" @click="selectPage(page)">{{ page }}</button>
+          <button v-for="page in visiblePageNumbers" :key="page" :class="{ active: page === currentPage }" :aria-current="page === currentPage ? 'page' : undefined" @click="selectPage(page)">{{ page }}</button>
           <button :disabled="currentPage === pageCount" aria-label="Nächste Seite" @click="selectPage(currentPage + 1)">›</button>
         </nav>
       </section>

@@ -8,7 +8,7 @@ describe('navigation configuration', () => {
   })
 
   it('provides all metadata needed by router and sidebar', () => {
-    expect(navigationItems).toHaveLength(6)
+    expect(navigationItems).toHaveLength(7)
     expect(navigationItems.every((item) => item.title && item.description && item.icon)).toBe(true)
   })
 })

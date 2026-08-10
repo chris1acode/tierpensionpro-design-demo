@@ -1,45 +1,45 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
 import { LogOut } from '@lucide/vue'
-import type { CheckoutChecklist, DepartureView } from '../domain'
+import type { DepartureView, StayPrice } from '../domain'
 import BaseModal from './BaseModal.vue'
 
 const props = defineProps<{
   departure: DepartureView
+  price: StayPrice | null
 }>()
 
-const emit = defineEmits<{
+const euroFormatter = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' })
+const formatEuro = (amountCents: number) => euroFormatter.format(amountCents / 100)
+
+defineEmits<{
   close: []
-  confirm: [checklist: CheckoutChecklist]
+  confirm: []
 }>()
-
-const checklist = reactive<CheckoutChecklist>({
-  belongingsReturned: props.departure.handover.belongingsReturned,
-  medicationReturned: props.departure.handover.medicationReturned,
-  roomChecked: props.departure.handover.roomChecked
-})
-
-const isComplete = computed(() => Object.values(checklist).every(Boolean))
-
-function confirmCheckout() {
-  if (isComplete.value) emit('confirm', { ...checklist })
-}
 </script>
 
 <template>
-  <BaseModal labelled-by="checkout-title" @close="emit('close')">
+  <BaseModal labelled-by="checkout-title" @close="$emit('close')">
     <span class="modal-icon checkout-icon"><LogOut /></span>
-    <p class="eyebrow">Check-out vorbereiten</p>
-    <h2 id="checkout-title">{{ departure.pet.name }} übergeben</h2>
-    <p>Bestätige die Übergabepunkte. Danach wird <strong>{{ departure.room.name }}</strong> wieder als frei geführt.</p>
-    <div class="checkout-list">
-      <label><input v-model="checklist.belongingsReturned" type="checkbox" /><span><strong>Persönliche Sachen übergeben</strong><small>Decke, Spielzeug und mitgebrachtes Futter</small></span></label>
-      <label><input v-model="checklist.medicationReturned" type="checkbox" /><span><strong>Medikamente übergeben</strong><small>Restbestände und Einnahmehinweise</small></span></label>
-      <label><input v-model="checklist.roomChecked" type="checkbox" /><span><strong>Zimmer kontrolliert</strong><small>Zimmer ist leer und kann gereinigt werden</small></span></label>
-    </div>
+    <p class="eyebrow">Check-out bestätigen</p>
+    <h2 id="checkout-title">Check-out für {{ departure.customer.firstName }} {{ departure.customer.lastName }}</h2>
+    <p>
+      Wird {{ departure.pet.name }} von {{ departure.customer.firstName }} {{ departure.customer.lastName }} abgeholt?
+      Mit der Bestätigung wird <strong>{{ departure.room.name }}</strong> wieder als frei geführt.
+    </p>
+    <dl>
+      <div><dt>Tier</dt><dd>{{ departure.pet.name }} · {{ departure.pet.breed }}</dd></div>
+      <div><dt>Zimmer</dt><dd>{{ departure.room.name }}</dd></div>
+    </dl>
+    <section v-if="props.price" class="checkout-price" aria-label="Preisberechnung">
+      <p>Preisberechnung</p>
+      <span>{{ props.price.billableDays }} {{ props.price.billableDays === 1 ? 'Betreuungstag' : 'Betreuungstage' }} × {{ formatEuro(props.price.dailyRateCents) }}</span>
+      <strong>{{ formatEuro(props.price.totalCents) }}</strong>
+      <small>Der Abreisetag wird nicht berechnet.</small>
+    </section>
+    <p v-else class="checkout-price-unavailable">Für diesen Aufenthalt ist kein gültiger Tagespreis hinterlegt.</p>
     <div class="modal-actions">
-      <button class="secondary-button" @click="emit('close')">Abbrechen</button>
-      <button class="primary-button" :disabled="!isComplete" @click="confirmCheckout"><LogOut :size="17" /> Check-out abschließen</button>
+      <button class="secondary-button" @click="$emit('close')">Abbrechen</button>
+      <button class="primary-button" @click="$emit('confirm')"><LogOut :size="17" /> Jetzt auschecken</button>
     </div>
   </BaseModal>
 </template>

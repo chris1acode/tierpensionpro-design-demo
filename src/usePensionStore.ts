@@ -1,58 +1,68 @@
 import { computed, reactive, ref } from 'vue'
-import type { Booking, CheckoutChecklist, CheckoutHandover, NewBooking, NewCustomer, NewPet, OccupancyRangeDays, PensionSettingsUpdate, RoomOperationalStatus } from './domain'
-import { buildDateRange, isValidBookingPeriod, toLocalIsoDate } from './domain/bookingPeriod'
+import type { AccountUpdate, Booking, BookingRequest, BookingReservation, CheckInOutEvent, Customer, NewBooking, NewBookingReservation, NewCustomer, NewPet, NewPensionClosure, OccupancyRangeDays, PensionSettingsUpdate, RoomInput, RoomOperationalStatus, ToastNotification } from './domain'
+import { isValidAccountUpdate } from './domain/account'
+import { addDaysToIsoDate, buildDateRange, enumerateStayDates, fromLocalIsoDate, isValidBookingPeriod, isValidIsoDate, toLocalIsoDate } from './domain/bookingPeriod'
 import { createCustomerProfile } from './domain/customerProfile'
 import { createPetProfile } from './domain/petProfile'
 import { isValidPensionSettingsUpdate } from './domain/pensionSettings'
+import { isValidRoomInput } from './domain/roomConfiguration'
+import { doesStayOverlapClosure, isValidPensionClosure } from './domain/pensionClosure'
+import { hasRoomCapacityForStay } from './domain/roomAvailability'
 import { isRoomCompatibleWithSpecies } from './domain/roomCompatibility'
 import {
-  customers as initialCustomers,
-  initialBookings,
-  initialCheckoutHandovers,
-  initialPensionSettings,
-  initialRoomOperationalStates,
-  pets as initialPets,
-  rooms as initialRooms
-} from './mockData'
-import {
   selectBookingViews,
+  selectArrivals,
+  selectCheckInOutHistory,
   selectCustomerViews,
   selectDailyOccupancy,
   selectDepartures,
   selectOccupancyByCategory,
+  selectPendingRequests,
+  selectRequestHistory,
   selectRoomTimelines,
   selectRoomViews
 } from './store/pensionSelectors'
 import { nextEntityId } from './store/nextEntityId'
+import { createDemoState } from './store/demoState'
 
 export interface PensionStoreDependencies {
   now: () => Date
 }
 
+// Mock data is anchored to this fixed demo date (2026-08-09) so the clickdummy shows
+// consistent arrivals/departures regardless of the real calendar date it is opened on.
 const defaultDependencies: PensionStoreDependencies = {
-  now: () => new Date()
+  now: () => new Date(2026, 7, 9, 12, 0)
 }
 
 export function createPensionStore(dependencies: PensionStoreDependencies = defaultDependencies) {
-  const customers = reactive(initialCustomers.map((customer) => ({ ...customer })))
-  const pets = reactive(initialPets.map((pet) => ({ ...pet })))
-  const rooms = reactive(initialRooms.map((room) => ({ ...room })))
-  const roomOperationalStates = reactive(initialRoomOperationalStates.map((state) => ({ ...state })))
-  const bookings = reactive<Booking[]>(initialBookings.map((booking) => ({ ...booking })))
-  const checkoutHandovers = reactive<CheckoutHandover[]>(initialCheckoutHandovers.map((handover) => ({ ...handover })))
-  const settings = reactive({ ...initialPensionSettings })
-  const announcement = ref('')
+  const initialState = createDemoState()
+  const customers = reactive(initialState.customers)
+  const pets = reactive(initialState.pets)
+  const rooms = reactive(initialState.rooms)
+  const roomOperationalStates = reactive(initialState.roomOperationalStates)
+  const pensionClosures = reactive(initialState.pensionClosures)
+  const bookings = reactive<Booking[]>(initialState.bookings)
+  const bookingReservations = reactive<BookingReservation[]>(initialState.bookingReservations)
+  const bookingRequests = reactive<BookingRequest[]>(initialState.bookingRequests)
+  const checkInOutEvents = reactive<CheckInOutEvent[]>(initialState.checkInOutEvents)
+  const settings = reactive(initialState.settings)
+  const account = reactive(initialState.account)
+  const demoEnvironment = reactive(initialState.demoEnvironment)
+  const toastNotifications = reactive<ToastNotification[]>([])
+  // Kept as a read-only compatibility projection for existing consumers; presentation uses
+  // the structured notification queue above instead of page-bound status text.
+  const announcement = computed(() => toastNotifications.at(-1)?.message ?? '')
   const occupancyRangeDays = ref<OccupancyRangeDays>(14)
+  const occupancyStartDate = ref(toLocalIsoDate(dependencies.now()))
 
   const bookingViews = computed(() => selectBookingViews(bookings, pets, customers, rooms))
+  const businessDate = computed(() => toLocalIsoDate(dependencies.now()))
 
-  const arrivals = computed(() => {
-    const today = toLocalIsoDate(dependencies.now())
-    return bookingViews.value.filter((item) => item.status === 'confirmed' && item.arrivalDate === today)
-  })
+  const arrivals = computed(() => selectArrivals(bookingViews.value, businessDate.value))
   const customerViews = computed(() => selectCustomerViews(customers, pets, bookingViews.value))
   const checkedIn = computed(() => bookingViews.value.filter((item) => item.status === 'checked-in'))
-  const departures = computed(() => selectDepartures(checkoutHandovers, bookingViews.value))
+  const departures = computed(() => selectDepartures(bookingViews.value, businessDate.value))
   const roomViews = computed(() => selectRoomViews(rooms, checkedIn.value, roomOperationalStates))
   const totalCapacity = computed(() => roomViews.value.reduce((sum, room) =>
     sum + (room.operationalState.status === 'ready' ? room.capacity : 0), 0))
@@ -63,9 +73,34 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     roomViews.value.filter((room) => room.operationalState.status === 'ready'),
     checkedIn.value
   ))
-  const occupancyDates = computed(() => buildDateRange(dependencies.now(), occupancyRangeDays.value))
-  const roomTimelines = computed(() => selectRoomTimelines(rooms, roomOperationalStates, bookingViews.value, occupancyDates.value))
-  const dailyOccupancy = computed(() => selectDailyOccupancy(rooms, roomOperationalStates, bookingViews.value, occupancyDates.value))
+  const occupancyDates = computed(() => buildDateRange(fromLocalIsoDate(occupancyStartDate.value), occupancyRangeDays.value))
+  const roomTimelines = computed(() => selectRoomTimelines(rooms, roomOperationalStates, bookingViews.value, occupancyDates.value, pensionClosures))
+  const dailyOccupancy = computed(() => selectDailyOccupancy(rooms, roomOperationalStates, bookingViews.value, occupancyDates.value, pensionClosures))
+  const pendingRequests = computed(() => selectPendingRequests(bookingRequests))
+  const requestHistory = computed(() => selectRequestHistory(bookingRequests))
+  const checkInOutHistory = computed(() => selectCheckInOutHistory(checkInOutEvents, bookingViews.value))
+
+  function showToast(message: string): void {
+    toastNotifications.push({
+      id: nextEntityId(toastNotifications, 'toast'),
+      message,
+      createdAt: dependencies.now().toISOString()
+    })
+  }
+
+  function dismissToast(toastId: string): void {
+    const index = toastNotifications.findIndex((toast) => toast.id === toastId)
+    if (index >= 0) toastNotifications.splice(index, 1)
+  }
+
+  function recordCheckInOutEvent(bookingId: string, type: CheckInOutEvent['type']): void {
+    checkInOutEvents.push({
+      id: nextEntityId(checkInOutEvents, 'cio'),
+      bookingId,
+      type,
+      occurredAt: dependencies.now().toISOString()
+    })
+  }
 
   function checkIn(bookingId: string): boolean {
     const booking = bookings.find((item) => item.id === bookingId)
@@ -78,7 +113,30 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     if (occupiedPlaces >= room.capacity) return false
 
     booking.status = 'checked-in'
-    announcement.value = `${pet.name} ist jetzt eingecheckt.`
+    recordCheckInOutEvent(booking.id, 'check-in')
+    showToast(`${pet.name} ist jetzt eingecheckt.`)
+    return true
+  }
+
+  function canUndoCheckIn(bookingId: string): boolean {
+    const booking = bookings.find((item) => item.id === bookingId)
+    const latestEvent = checkInOutEvents
+      .filter((event) => event.bookingId === bookingId)
+      .sort((first, second) => second.occurredAt.localeCompare(first.occurredAt)
+        || second.id.localeCompare(first.id, undefined, { numeric: true }))[0]
+    return booking?.status === 'checked-in'
+      && latestEvent?.type === 'check-in'
+      && toLocalIsoDate(new Date(latestEvent.occurredAt)) === businessDate.value
+  }
+
+  function undoCheckIn(bookingId: string): boolean {
+    const booking = bookings.find((item) => item.id === bookingId)
+    const pet = booking && pets.find((item) => item.id === booking.petId)
+    if (!booking || !pet || !canUndoCheckIn(bookingId)) return false
+
+    booking.status = 'confirmed'
+    recordCheckInOutEvent(booking.id, 'check-in-reverted')
+    showToast(`Der Check-in von ${pet.name} wurde rückgängig gemacht.`)
     return true
   }
 
@@ -90,8 +148,11 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     const roomIsReady = roomOperationalStates.some((state) => state.roomId === room?.id && state.status === 'ready')
     const petBelongsToCustomer = customer && pet && pet.customerId === customer.id
     const hasActiveBooking = bookings.some((item) => item.petId === input.petId && item.status !== 'checked-out')
+    const exceedsCapacity = room && !hasRoomCapacityForStay(bookings, room.id, room.capacity, input.arrivalDate, input.departure)
     if (!petBelongsToCustomer || !room || !speciesMatchesRoom || !roomIsReady || hasActiveBooking
-      || !isValidBookingPeriod(input.arrivalDate, input.arrival, input.departure)) return false
+      || !isValidBookingPeriod(input.arrivalDate, input.arrival, input.departure)
+      || doesStayOverlapClosure(input.arrivalDate, input.departure, pensionClosures)
+      || (exceedsCapacity && !input.allowOverbooking)) return false
 
     bookings.push({
       id: nextEntityId(bookings, 'b'),
@@ -100,9 +161,136 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       arrivalDate: input.arrivalDate,
       arrival: input.arrival,
       departure: input.departure,
+      status: 'confirmed',
+      overbooked: Boolean(exceedsCapacity)
+    })
+    showToast(exceedsCapacity
+      ? `Die Buchung für ${pet.name} wurde als Überbuchung angelegt.`
+      : `Die Buchung für ${pet.name} wurde angelegt.`)
+    return true
+  }
+
+  /** Creates all animal stays together, after validating capacity for the whole group. */
+  function createBookingReservation(input: NewBookingReservation): boolean {
+    const { allowOverbooking = false, ...reservationInput } = input
+    const petIds = [...new Set(input.petIds)]
+    const customer = customers.find((item) => item.id === input.customerId)
+    const room = rooms.find((item) => item.id === input.roomId)
+    const selectedPets = petIds.map((id) => pets.find((item) => item.id === id))
+    const roomIsReady = roomOperationalStates.some((state) => state.roomId === room?.id && state.status === 'ready')
+    const petsBelongToCustomer = selectedPets.length === petIds.length
+      && selectedPets.every((pet) => pet?.customerId === customer?.id)
+    const allPetsAreCompatible = room && selectedPets.every((pet) => pet && isRoomCompatibleWithSpecies(room, pet.species))
+    const hasActiveBooking = petIds.some((petId) => bookings.some((booking) => booking.petId === petId && booking.status !== 'checked-out'))
+    const exceedsCapacity = room && !hasRoomCapacityForStay(bookings, room.id, room.capacity, input.arrivalDate, input.departure, petIds.length)
+    if (!customer || !room || !petIds.length || !petsBelongToCustomer || !allPetsAreCompatible || !roomIsReady || hasActiveBooking
+      || !isValidBookingPeriod(input.arrivalDate, input.arrival, input.departure)
+      || doesStayOverlapClosure(input.arrivalDate, input.departure, pensionClosures)
+      || (exceedsCapacity && !allowOverbooking)) return false
+
+    const reservationId = nextEntityId(bookingReservations, 'reservation')
+    bookingReservations.push({ ...reservationInput, id: reservationId, petIds, createdAt: dependencies.now().toISOString() })
+    for (const petId of petIds) {
+      bookings.push({
+        id: nextEntityId(bookings, 'b'), reservationId, petId, roomId: room.id,
+        arrivalDate: input.arrivalDate, arrival: input.arrival, departure: input.departure, status: 'confirmed', overbooked: Boolean(exceedsCapacity)
+      })
+    }
+    const names = selectedPets.map((pet) => pet!.name).join(', ')
+    showToast(exceedsCapacity
+      ? `Die Reservierung für ${names} wurde als Überbuchung angelegt.`
+      : petIds.length === 1
+        ? `Die Reservierung für ${names} wurde angelegt.`
+        : `Die gemeinsame Reservierung für ${names} wurde angelegt.`)
+    return true
+  }
+
+  function canDeleteBooking(bookingId: string): boolean {
+    return bookings.some((booking) => booking.id === bookingId)
+  }
+
+  function deleteBooking(bookingId: string): boolean {
+    const bookingIndex = bookings.findIndex((item) => item.id === bookingId)
+    const booking = bookings[bookingIndex]
+    const pet = booking && pets.find((item) => item.id === booking.petId)
+    if (bookingIndex < 0 || !booking || !pet || !canDeleteBooking(bookingId)) return false
+
+    // A deletion is deliberately final in the demo. Remove the process events together
+    // with their booking so that history never contains references to removed data.
+    const relatedEventIndexes = checkInOutEvents
+      .map((event, index) => event.bookingId === bookingId ? index : -1)
+      .filter((index) => index >= 0)
+      .reverse()
+    for (const eventIndex of relatedEventIndexes) checkInOutEvents.splice(eventIndex, 1)
+    bookings.splice(bookingIndex, 1)
+    showToast(`Die Buchung für ${pet.name} wurde gelöscht.`)
+    return true
+  }
+
+  function acceptRequest(requestId: string, roomId: string, customerAssignment: Customer['id'] | 'new'): boolean {
+    const request = bookingRequests.find((item) => item.id === requestId)
+    const room = rooms.find((item) => item.id === roomId)
+    const roomIsReady = roomOperationalStates.some((state) => state.roomId === roomId && state.status === 'ready')
+    if (!request || request.status !== 'pending' || !room || !roomIsReady
+      || !isRoomCompatibleWithSpecies(room, request.species)
+      || !isValidBookingPeriod(request.arrivalDate, request.arrival, request.departure)
+      || doesStayOverlapClosure(request.arrivalDate, request.departure, pensionClosures)
+      || !hasRoomCapacityForStay(bookings, room.id, room.capacity, request.arrivalDate, request.departure)) return false
+
+    let customer: Customer | undefined
+    if (customerAssignment === 'new') {
+      customer = createCustomerProfile(nextEntityId(customers, 'c'), {
+        firstName: request.customerFirstName,
+        lastName: request.customerLastName,
+        phone: request.phone
+      }, customers.map((item) => item.phone))
+      if (!customer) return false
+      customers.push(customer)
+    } else {
+      customer = customers.find((item) => item.id === customerAssignment)
+      if (!customer) return false
+    }
+
+    let pet = pets.find((item) => item.customerId === customer.id
+      && item.species === request.species
+      && item.name.localeCompare(request.petName, 'de', { sensitivity: 'base' }) === 0)
+    if (!pet) {
+      pet = createPetProfile(nextEntityId(pets, 'p'), {
+        customerId: customer.id,
+        name: request.petName,
+        species: request.species,
+        breed: request.breed,
+        note: request.note
+      })
+      if (!pet) return false
+      pets.push(pet)
+    }
+
+    const hasActiveBooking = bookings.some((item) => item.petId === pet!.id && item.status !== 'checked-out')
+    if (hasActiveBooking) return false
+
+    bookings.push({
+      id: nextEntityId(bookings, 'b'),
+      petId: pet.id,
+      roomId: room.id,
+      arrivalDate: request.arrivalDate,
+      arrival: request.arrival,
+      departure: request.departure,
       status: 'confirmed'
     })
-    announcement.value = `Die Buchung für ${pet.name} wurde angelegt.`
+    request.status = 'accepted'
+    showToast(`Die Anfrage von ${request.customerFirstName} ${request.customerLastName} wurde als Reservierung angelegt.`)
+    return true
+  }
+
+  function declineRequest(requestId: string, reason: string): boolean {
+    const request = bookingRequests.find((item) => item.id === requestId)
+    const trimmedReason = reason.trim()
+    if (!request || request.status !== 'pending' || !trimmedReason) return false
+
+    request.status = 'declined'
+    request.declineReason = trimmedReason
+    showToast(`Die Anfrage von ${request.customerFirstName} ${request.customerLastName} wurde abgelehnt.`)
     return true
   }
 
@@ -113,7 +301,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     if (!customer || !pet) return false
 
     pets.push(pet)
-    announcement.value = `${pet.name} wurde im Kundenprofil angelegt.`
+    showToast(`${pet.name} wurde im Kundenprofil angelegt.`)
     return true
   }
 
@@ -126,28 +314,118 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     if (!customer) return false
 
     customers.push(customer)
-    announcement.value = `${customer.firstName} ${customer.lastName} wurde im Kundenverzeichnis angelegt.`
+    showToast(`${customer.firstName} ${customer.lastName} wurde im Kundenverzeichnis angelegt.`)
     return true
   }
 
-  function completeCheckout(bookingId: string, checklist: CheckoutChecklist): boolean {
+  function checkOut(bookingId: string): boolean {
     const booking = bookings.find((item) => item.id === bookingId)
-    const handover = checkoutHandovers.find((item) => item.bookingId === bookingId)
     const pet = booking && pets.find((item) => item.id === booking.petId)
-    if (!booking || !handover || !pet || booking.status !== 'checked-in') return false
-    if (!checklist.belongingsReturned || !checklist.medicationReturned || !checklist.roomChecked) return false
-    Object.assign(handover, checklist)
+    if (!booking || !pet || booking.status !== 'checked-in') return false
+
     booking.status = 'checked-out'
-    handover.completedAt = dependencies.now().toISOString()
-    announcement.value = `${pet.name} wurde ausgecheckt. Das Zimmer ist wieder frei.`
+    recordCheckInOutEvent(booking.id, 'check-out')
+    showToast(`${pet.name} wurde ausgecheckt. Das Zimmer ist wieder frei.`)
     return true
   }
 
   function updateSettings(input: PensionSettingsUpdate): boolean {
     if (!isValidPensionSettingsUpdate(input)) return false
 
-    Object.assign(settings, input)
-    announcement.value = 'Die Einstellungen wurden gespeichert.'
+    Object.assign(settings, {
+      ...input,
+      dailyPetRates: input.dailyPetRates.map((rate) => ({ ...rate }))
+    })
+    showToast('Die Einstellungen wurden gespeichert.')
+    return true
+  }
+
+  function roomNameIsUnique(name: string, exceptRoomId?: string): boolean {
+    const normalizedName = name.trim().toLocaleLowerCase('de')
+    return !rooms.some((room) => room.id !== exceptRoomId
+      && room.name.trim().toLocaleLowerCase('de') === normalizedName)
+  }
+
+  function capacitySupportsExistingStays(roomId: string, capacity: number): boolean {
+    const activeBookings = bookings.filter((booking) => booking.roomId === roomId && booking.status !== 'checked-out')
+    const occupiedByDate = new Map<string, number>()
+    for (const booking of activeBookings) {
+      for (const date of enumerateStayDates(booking.arrivalDate, booking.departure)) {
+        occupiedByDate.set(date, (occupiedByDate.get(date) ?? 0) + 1)
+      }
+    }
+    return [...occupiedByDate.values()].every((occupied) => occupied <= capacity)
+  }
+
+  function createRoom(input: RoomInput): boolean {
+    if (!isValidRoomInput(input) || !roomNameIsUnique(input.name)) return false
+
+    const room = {
+      id: nextEntityId(rooms, 'r'),
+      name: input.name.trim(),
+      category: input.category,
+      capacity: input.capacity
+    }
+    rooms.push(room)
+    roomOperationalStates.push({
+      id: nextEntityId(roomOperationalStates, 'room-state'),
+      roomId: room.id,
+      status: 'ready',
+      updatedAt: dependencies.now().toISOString()
+    })
+    showToast(`${room.name} wurde angelegt.`)
+    return true
+  }
+
+  function updateRoom(roomId: string, input: RoomInput): boolean {
+    const room = rooms.find((item) => item.id === roomId)
+    if (!room || !isValidRoomInput(input) || !roomNameIsUnique(input.name, roomId)
+      || !capacitySupportsExistingStays(roomId, input.capacity)) return false
+
+    // Changing the species category would invalidate the historical booking relation.
+    if (room.category !== input.category && bookings.some((booking) => booking.roomId === roomId)) return false
+
+    room.name = input.name.trim()
+    room.category = input.category
+    room.capacity = input.capacity
+    showToast(`${room.name} wurde aktualisiert.`)
+    return true
+  }
+
+  function deleteRoom(roomId: string): boolean {
+    const roomIndex = rooms.findIndex((room) => room.id === roomId)
+    if (roomIndex < 0 || bookings.some((booking) => booking.roomId === roomId)) return false
+
+    const [room] = rooms.splice(roomIndex, 1)
+    const stateIndex = roomOperationalStates.findIndex((state) => state.roomId === roomId)
+    if (stateIndex >= 0) roomOperationalStates.splice(stateIndex, 1)
+    showToast(`${room.name} wurde entfernt.`)
+    return true
+  }
+
+  function updateAccount(input: AccountUpdate): boolean {
+    if (!isValidAccountUpdate(input)) return false
+
+    account.firstName = input.firstName.trim()
+    account.lastName = input.lastName.trim()
+    account.email = input.email.trim()
+    showToast('Deine Kontodaten wurden gespeichert.')
+    return true
+  }
+
+  function cancelAccount(): boolean {
+    if (account.role !== 'root' || account.cancelledAt) return false
+
+    account.cancelledAt = dependencies.now().toISOString()
+    showToast('Die Pension wurde zum Ende der Vertragslaufzeit gekündigt.')
+    return true
+  }
+
+  function reactivateAccount(): boolean {
+    if (!account.cancelledAt) return false
+
+    account.cancelledAt = undefined
+    showToast('Die Kündigung wurde zurückgenommen.')
     return true
   }
 
@@ -160,9 +438,33 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     state.status = status
     state.updatedAt = dependencies.now().toISOString()
     state.note = status === 'maintenance' && note?.trim() ? note.trim() : undefined
-    announcement.value = status === 'ready'
+    showToast(status === 'ready'
       ? `${room.name} ist wieder verfügbar.`
-      : `${room.name} wurde vorübergehend gesperrt.`
+      : `${room.name} wurde vorübergehend gesperrt.`)
+    return true
+  }
+
+  function createPensionClosure(input: NewPensionClosure): boolean {
+    if (!isValidPensionClosure(input)) return false
+
+    const reason = input.reason?.trim()
+    pensionClosures.push({
+      id: nextEntityId(pensionClosures, 'closure'),
+      startDate: input.startDate,
+      endDate: input.endDate,
+      reason: reason || undefined,
+      createdAt: dependencies.now().toISOString()
+    })
+    showToast('Die Schließzeit wurde hinterlegt.')
+    return true
+  }
+
+  function deletePensionClosure(closureId: string): boolean {
+    const index = pensionClosures.findIndex((closure) => closure.id === closureId)
+    if (index < 0) return false
+
+    pensionClosures.splice(index, 1)
+    showToast('Die Schließzeit wurde entfernt.')
     return true
   }
 
@@ -170,22 +472,49 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     occupancyRangeDays.value = days
   }
 
+  function setOccupancyStartDate(date: string): boolean {
+    if (!isValidIsoDate(date)) return false
+
+    occupancyStartDate.value = date
+    return true
+  }
+
+  function shiftOccupancyStartDate(days: number): void {
+    occupancyStartDate.value = addDaysToIsoDate(occupancyStartDate.value, days)
+  }
+
+  function jumpOccupancyToToday(): void {
+    occupancyStartDate.value = businessDate.value
+  }
+
   function resetDemo() {
-    customers.splice(0, customers.length, ...initialCustomers.map((customer) => ({ ...customer })))
-    pets.splice(0, pets.length, ...initialPets.map((pet) => ({ ...pet })))
-    rooms.splice(0, rooms.length, ...initialRooms.map((room) => ({ ...room })))
-    roomOperationalStates.splice(0, roomOperationalStates.length, ...initialRoomOperationalStates.map((state) => ({ ...state })))
-    bookings.splice(0, bookings.length, ...initialBookings.map((booking) => ({ ...booking })))
-    checkoutHandovers.splice(0, checkoutHandovers.length, ...initialCheckoutHandovers.map((handover) => ({ ...handover })))
-    Object.assign(settings, initialPensionSettings)
+    const initialState = createDemoState()
+    customers.splice(0, customers.length, ...initialState.customers)
+    pets.splice(0, pets.length, ...initialState.pets)
+    rooms.splice(0, rooms.length, ...initialState.rooms)
+    roomOperationalStates.splice(0, roomOperationalStates.length, ...initialState.roomOperationalStates)
+    pensionClosures.splice(0, pensionClosures.length, ...initialState.pensionClosures)
+    bookings.splice(0, bookings.length, ...initialState.bookings)
+    bookingReservations.splice(0, bookingReservations.length, ...initialState.bookingReservations)
+    bookingRequests.splice(0, bookingRequests.length, ...initialState.bookingRequests)
+    checkInOutEvents.splice(0, checkInOutEvents.length, ...initialState.checkInOutEvents)
+    Object.assign(settings, initialState.settings)
+    Object.assign(account, initialState.account)
+    delete account.cancelledAt
     occupancyRangeDays.value = 14
-    announcement.value = 'Die Demo-Daten wurden zurückgesetzt.'
+    occupancyStartDate.value = businessDate.value
+    demoEnvironment.resetCount += 1
+    demoEnvironment.lastResetAt = dependencies.now().toISOString()
+    toastNotifications.splice(0, toastNotifications.length)
+    showToast('Die Demo-Daten wurden zurückgesetzt.')
   }
 
   return {
     bookingViews,
     customerViews,
     announcement,
+    toastNotifications,
+    businessDate,
     arrivals,
     checkedIn,
     departures,
@@ -193,23 +522,50 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     occupancyRate,
     occupancyByCategory,
     occupancyRangeDays,
+    occupancyStartDate,
     occupancyDates,
     roomTimelines,
     dailyOccupancy,
+    pendingRequests,
+    requestHistory,
+    checkInOutHistory,
     roomViews,
     customers,
     pets,
     rooms,
     roomOperationalStates,
+    pensionClosures,
+    bookingReservations,
     settings,
+    account,
+    demoEnvironment,
     createBooking,
+    createBookingReservation,
+    canDeleteBooking,
+    deleteBooking,
     createCustomer,
     createPet,
     checkIn,
-    completeCheckout,
+    canUndoCheckIn,
+    undoCheckIn,
+    checkOut,
+    acceptRequest,
+    declineRequest,
     updateSettings,
+    createRoom,
+    updateRoom,
+    deleteRoom,
+    updateAccount,
+    cancelAccount,
+    reactivateAccount,
     setRoomOperationalStatus,
+    createPensionClosure,
+    deletePensionClosure,
     setOccupancyRangeDays,
+    setOccupancyStartDate,
+    shiftOccupancyStartDate,
+    jumpOccupancyToToday,
+    dismissToast,
     resetDemo
   }
 }

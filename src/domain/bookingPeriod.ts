@@ -33,3 +33,25 @@ export function buildDateRange(start: Date, days: number): string[] {
     return toLocalIsoDate(date)
   })
 }
+
+export function fromLocalIsoDate(value: string): Date {
+  const [year, month, day] = value.split('-').map(Number)
+  return new Date(year, month - 1, day)
+}
+
+export function addDaysToIsoDate(date: string, days: number): string {
+  const shifted = fromLocalIsoDate(date)
+  shifted.setDate(shifted.getDate() + days)
+  return toLocalIsoDate(shifted)
+}
+
+export function enumerateStayDates(arrivalDate: string, departureDate: string): string[] {
+  const dates: string[] = []
+  let cursor = arrivalDate
+  while (cursor < departureDate) {
+    dates.push(cursor)
+    const [year, month, day] = cursor.split('-').map(Number)
+    cursor = toLocalIsoDate(new Date(year, month - 1, day + 1))
+  }
+  return dates
+}
