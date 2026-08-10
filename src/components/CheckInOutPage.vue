@@ -16,7 +16,7 @@ const emit = defineEmits<{ checkIn: [booking: BookingView]; checkOut: [departure
 const store = usePensionStore()
 const route = useRoute()
 type OperationsView = 'arrivals' | 'departures' | 'checked-in'
-const activeView = ref<OperationsView>('arrivals')
+const activeView = ref<OperationsView>('checked-in')
 const localQuery = ref('')
 const selectedDate = ref(store.businessDate.value)
 const historyPageSize = 5
@@ -51,7 +51,7 @@ const activeViewDescription = computed(() => activeView.value === 'checked-in'
   : `${visibleBookings.value.length} passende Vorgänge`)
 
 watch(() => route.query.view, (view) => {
-  activeView.value = view === 'departures' || view === 'checked-in' ? view : 'arrivals'
+  activeView.value = view === 'departures' || view === 'arrivals' ? view : 'checked-in'
 }, { immediate: true })
 
 function shiftSelectedDate(days: number): void {
@@ -93,17 +93,17 @@ function exportHistory() {
       <div><p class="eyebrow">Tagesgeschäft</p><h1>Check-in/out</h1><p>Alle anstehenden Anreisen und Abreisen zentral bearbeiten.</p></div>
       <span class="page-count"><ClipboardCheck :size="17" /> {{ openTaskCount }} offen</span>
     </div>
-    <div v-if="activeView !== 'checked-in'" class="operations-date-nav" role="group" aria-label="Vorgangsdatum">
-      <button type="button" aria-label="Einen Tag zurück" @click="shiftSelectedDate(-1)"><ChevronLeft :size="16" /></button>
-      <label class="operations-date-input"><span>Datum</span><input type="date" aria-label="Datum für Check-in und Check-out" :value="selectedDate" @change="setSelectedDate" /></label>
-      <button type="button" aria-label="Einen Tag vor" @click="shiftSelectedDate(1)"><ChevronRight :size="16" /></button>
-      <button type="button" class="operations-today" :disabled="selectedDate === store.businessDate.value" @click="selectedDate = store.businessDate.value">Heute</button>
+    <div class="operations-date-nav" :class="{ disabled: activeView === 'checked-in' }" role="group" aria-label="Vorgangsdatum">
+      <button type="button" aria-label="Einen Tag zurück" :disabled="activeView === 'checked-in'" @click="shiftSelectedDate(-1)"><ChevronLeft :size="16" /></button>
+      <label class="operations-date-input"><span>Datum</span><input type="date" aria-label="Datum für Check-in und Check-out" :value="selectedDate" :disabled="activeView === 'checked-in'" @change="setSelectedDate" /></label>
+      <button type="button" aria-label="Einen Tag vor" :disabled="activeView === 'checked-in'" @click="shiftSelectedDate(1)"><ChevronRight :size="16" /></button>
+      <button type="button" class="operations-today" :disabled="selectedDate === store.businessDate.value || activeView === 'checked-in'" @click="selectedDate = store.businessDate.value">Heute</button>
       <span class="operations-date-label">{{ selectedDateLabel }}</span>
     </div>
     <section class="operations-summary" aria-label="Offene Vorgänge">
+      <button :class="{ active: activeView === 'checked-in' }" :aria-pressed="activeView === 'checked-in'" @click="activeView = 'checked-in'"><span class="metric-icon rose"><Check /></span><span><small>Jetzt eingecheckt</small><strong>{{ checkedIn.length }}</strong><em>jederzeit auscheckbar</em></span></button>
       <button :class="{ active: activeView === 'arrivals' }" :aria-pressed="activeView === 'arrivals'" @click="activeView = 'arrivals'"><span class="metric-icon orange"><ArrowDownToLine /></span><span><small>Geplante Anreisen</small><strong>{{ arrivals.length }}</strong><em>noch einzuchecken</em></span></button>
       <button :class="{ active: activeView === 'departures' }" :aria-pressed="activeView === 'departures'" @click="activeView = 'departures'"><span class="metric-icon teal"><ArrowUpFromLine /></span><span><small>Geplante Abreisen</small><strong>{{ departures.length }}</strong><em>heute auszuchecken</em></span></button>
-      <button :class="{ active: activeView === 'checked-in' }" :aria-pressed="activeView === 'checked-in'" @click="activeView = 'checked-in'"><span class="metric-icon rose"><Check /></span><span><small>Jetzt eingecheckt</small><strong>{{ checkedIn.length }}</strong><em>jederzeit auscheckbar</em></span></button>
     </section>
     <section class="panel operations-list">
       <header><div><h2>{{ activeViewTitle }}</h2><p>{{ activeViewDescription }}</p></div><div class="list-header-actions"><button class="text-button" type="button" aria-label="Aktuelle Vorgänge als CSV exportieren" @click="exportOperations"><Download :size="15" /> Exportieren</button><label class="directory-search"><Search :size="17" /><input v-model="localQuery" placeholder="Tier, Kunde oder Zimmer suchen …" /></label></div></header>
