@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { MAX_ALLERGY_NOTE_LENGTH, MAX_FEEDING_PLAN_LENGTH, MAX_MEDICATION_PLAN_LENGTH, MAX_PET_NOTE_LENGTH, MAX_VACCINATION_STATUS_LENGTH } from './domain/petProfile'
 import { createPensionStore } from './usePensionStore'
 
 describe('PensionStore', () => {
@@ -39,34 +40,140 @@ describe('PensionStore', () => {
   it('creates a pet for an existing customer and rejects incomplete or unknown assignments', () => {
     const store = createPensionStore()
 
-    expect(store.createPet({ customerId: 'c-1', name: '  Kiwi ', species: 'cat', breed: ' Hauskatze ', note: '  Schreckhaft  ' })).toBe(true)
+    expect(store.createPet({ customerId: 'c-1', name: '  Kiwi ', species: 'cat', breed: ' Hauskatze ', note: '  Schreckhaft  ', feedingPlan: '  Zweimal täglich  ', medicationPlan: '  Tablette um 18 Uhr ', allergyNote: '  Kein Geflügel  ', vaccinationStatus: '  Impfpass geprüft  ', veterinaryContact: { practiceName: '  Tierarztpraxis am Park ', phone: '030 1234567' } })).toBe(true)
     expect(store.customerViews.value.find((customer) => customer.id === 'c-1')?.pets.at(-1)).toMatchObject({
-      id: 'p-102', customerId: 'c-1', name: 'Kiwi', species: 'cat', breed: 'Hauskatze', initials: 'KI', note: 'Schreckhaft'
+      id: 'p-102', customerId: 'c-1', name: 'Kiwi', species: 'cat', breed: 'Hauskatze', initials: 'KI', note: 'Schreckhaft', feedingPlan: 'Zweimal täglich', medicationPlan: 'Tablette um 18 Uhr', allergyNote: 'Kein Geflügel', vaccinationStatus: 'Impfpass geprüft', veterinaryContact: { practiceName: 'Tierarztpraxis am Park', phone: '030 1234567' }
     })
     expect(store.announcement.value).toBe('Kiwi wurde im Kundenprofil angelegt.')
     expect(store.createPet({ customerId: 'missing', name: 'Momo', species: 'dog', breed: 'Pudel' })).toBe(false)
     expect(store.createPet({ customerId: 'c-1', name: '', species: 'dog', breed: 'Pudel' })).toBe(false)
+    expect(store.createPet({ customerId: 'c-1', name: 'Momo', species: 'dog', breed: 'Pudel', note: 'x'.repeat(MAX_PET_NOTE_LENGTH + 1) })).toBe(false)
+    expect(store.createPet({ customerId: 'c-1', name: 'Momo', species: 'dog', breed: 'Pudel', medicationPlan: 'x'.repeat(MAX_MEDICATION_PLAN_LENGTH + 1) })).toBe(false)
+    expect(store.createPet({ customerId: 'c-1', name: 'Momo', species: 'dog', breed: 'Pudel', feedingPlan: 'x'.repeat(MAX_FEEDING_PLAN_LENGTH + 1) })).toBe(false)
+    expect(store.createPet({ customerId: 'c-1', name: 'Momo', species: 'dog', breed: 'Pudel', allergyNote: 'x'.repeat(MAX_ALLERGY_NOTE_LENGTH + 1) })).toBe(false)
+    expect(store.createPet({ customerId: 'c-1', name: 'Momo', species: 'dog', breed: 'Pudel', vaccinationStatus: 'x'.repeat(MAX_VACCINATION_STATUS_LENGTH + 1) })).toBe(false)
+    expect(store.createPet({ customerId: 'c-1', name: 'Momo', species: 'dog', breed: 'Pudel', veterinaryContact: { practiceName: 'Praxis', phone: 'unbekannt' } })).toBe(false)
     expect(store.pets).toHaveLength(102)
   })
 
-  it('creates a normalized customer and rejects invalid or duplicate phone contacts', () => {
+  it('updates normalized pet master data without changing its booking references', () => {
+    const store = createPensionStore()
+    const original = store.pets.find((pet) => pet.id === 'p-1')!
+
+    expect(store.updatePet('p-1', { name: '  Balou ', breed: ' Labrador Retriever ', note: '  Benötigt Ruhe  ', feedingPlan: '  Zwei Portionen am Tag  ', medicationPlan: '  Eine Tablette abends  ', allergyNote: '  Kein Rind  ', vaccinationStatus: '  Gültig bis 2027  ', veterinaryContact: { practiceName: ' Tierarztpraxis Mitte ', phone: '030 7654321' } })).toBe(true)
+    expect(store.pets.find((pet) => pet.id === 'p-1')).toMatchObject({
+      id: 'p-1', customerId: original.customerId, species: original.species,
+      name: 'Balou', breed: 'Labrador Retriever', note: 'Benötigt Ruhe', feedingPlan: 'Zwei Portionen am Tag', medicationPlan: 'Eine Tablette abends', allergyNote: 'Kein Rind', vaccinationStatus: 'Gültig bis 2027', veterinaryContact: { practiceName: 'Tierarztpraxis Mitte', phone: '030 7654321' }
+    })
+    expect(store.bookingViews.value.find((booking) => booking.id === 'b-1')?.pet.name).toBe('Balou')
+    expect(store.updatePet('p-1', { name: '', breed: 'Labrador' })).toBe(false)
+    expect(store.updatePet('p-1', { name: 'Balu', breed: 'Labrador', note: 'x'.repeat(MAX_PET_NOTE_LENGTH + 1) })).toBe(false)
+    expect(store.updatePet('p-1', { name: 'Balu', breed: 'Labrador', medicationPlan: 'x'.repeat(MAX_MEDICATION_PLAN_LENGTH + 1) })).toBe(false)
+    expect(store.updatePet('p-1', { name: 'Balu', breed: 'Labrador', feedingPlan: 'x'.repeat(MAX_FEEDING_PLAN_LENGTH + 1) })).toBe(false)
+    expect(store.updatePet('p-1', { name: 'Balu', breed: 'Labrador', allergyNote: 'x'.repeat(MAX_ALLERGY_NOTE_LENGTH + 1) })).toBe(false)
+    expect(store.updatePet('p-1', { name: 'Balu', breed: 'Labrador', vaccinationStatus: 'x'.repeat(MAX_VACCINATION_STATUS_LENGTH + 1) })).toBe(false)
+    expect(store.updatePet('p-1', { name: 'Balu', breed: 'Labrador', veterinaryContact: { practiceName: 'Praxis', phone: 'unbekannt' } })).toBe(false)
+    expect(store.updatePet('missing', { name: 'Momo', breed: 'Pudel' })).toBe(false)
+  })
+
+  it('removes only pet profiles without stays and preserves historical references', () => {
+    const store = createPensionStore()
+    expect(store.createPet({ customerId: 'c-1', name: 'Kiwi', species: 'cat', breed: 'Hauskatze' })).toBe(true)
+
+    expect(store.removePet('p-102')).toBe(true)
+    expect(store.pets.some((pet) => pet.id === 'p-102')).toBe(false)
+    expect(store.announcement.value).toBe('Kiwi wurde aus dem Kundenprofil entfernt.')
+    expect(store.removePet('p-1')).toBe(false)
+    expect(store.bookingViews.value.find((booking) => booking.id === 'b-1')?.pet.id).toBe('p-1')
+    expect(store.removePet('missing')).toBe(false)
+  })
+
+  it('removes only an existing veterinary contact without changing the pet profile', () => {
+    const store = createPensionStore()
+    const original = store.pets.find((pet) => pet.id === 'p-1')!
+
+    expect(store.removePetVeterinaryContact('p-1')).toBe(true)
+    expect(store.pets.find((pet) => pet.id === 'p-1')).toMatchObject({
+      id: original.id, customerId: original.customerId, name: original.name, breed: original.breed
+    })
+    expect(store.pets.find((pet) => pet.id === 'p-1')?.veterinaryContact).toBeUndefined()
+    expect(store.announcement.value).toBe(`Der Tierarztkontakt von ${original.name} wurde entfernt.`)
+    expect(store.removePetVeterinaryContact('p-1')).toBe(false)
+    expect(store.removePetVeterinaryContact('missing')).toBe(false)
+  })
+
+  it('creates a normalized customer and rejects invalid or duplicate contact data', () => {
     const store = createPensionStore()
 
-    expect(store.createCustomer({ firstName: '  Ada ', lastName: ' Lovelace  ', phone: '+49 151 2345678' })).toBe(true)
-    expect(store.customers.at(-1)).toEqual({ id: 'c-101', firstName: 'Ada', lastName: 'Lovelace', phone: '+49 151 2345678' })
+    expect(store.createCustomer({ firstName: '  Ada ', lastName: ' Lovelace  ', email: ' ADA@EXAMPLE.DE ', phone: '+49 151 2345678' })).toBe(true)
+    expect(store.customers.at(-1)).toEqual({ id: 'c-101', firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.de', phone: '+49 151 2345678' })
     expect(store.customerViews.value.find((customer) => customer.id === 'c-101')).toMatchObject({ pets: [], bookings: [] })
     expect(store.announcement.value).toBe('Ada Lovelace wurde im Kundenverzeichnis angelegt.')
 
-    expect(store.createCustomer({ firstName: 'Grace', lastName: 'Hopper', phone: '+49 (151) 2345678' })).toBe(false)
-    expect(store.createCustomer({ firstName: '', lastName: 'Hopper', phone: '01512345679' })).toBe(false)
-    expect(store.createCustomer({ firstName: 'Grace', lastName: 'Hopper', phone: 'abc' })).toBe(false)
+    expect(store.createCustomer({ firstName: 'Grace', lastName: 'Hopper', email: 'grace@example.de', phone: '+49 (151) 2345678' })).toBe(false)
+    expect(store.createCustomer({ firstName: '', lastName: 'Hopper', email: 'grace@example.de', phone: '01512345679' })).toBe(false)
+    expect(store.createCustomer({ firstName: 'Grace', lastName: 'Hopper', email: 'not-an-email', phone: '01512345679' })).toBe(false)
+    expect(store.createCustomer({ firstName: 'Grace', lastName: 'Hopper', email: 'ada@example.de', phone: '01512345679' })).toBe(false)
+    expect(store.createCustomer({ firstName: 'Grace', lastName: 'Hopper', email: 'grace@example.de', phone: 'abc' })).toBe(false)
     expect(store.customers).toHaveLength(101)
+  })
+
+  it('updates customer contact data without losing the emergency contact or booking links', () => {
+    const store = createPensionStore()
+
+    expect(store.updateCustomer('c-1', {
+      firstName: '  Sophie ', lastName: ' Berger ', email: ' SOPHIE.BERGER@EXAMPLE.DE ', phone: ' 0176 445 21 92 '
+    })).toBe(true)
+    expect(store.customers.find((customer) => customer.id === 'c-1')).toMatchObject({
+      id: 'c-1', firstName: 'Sophie', lastName: 'Berger', email: 'sophie.berger@example.de', phone: '0176 445 21 92',
+      emergencyContact: { name: 'Tobias Berger', phone: '0176 445 21 91' }
+    })
+    expect(store.bookingViews.value.find((booking) => booking.id === 'b-1')?.customer.firstName).toBe('Sophie')
+    expect(store.announcement.value).toBe('Sophie Berger wurde im Kundenprofil aktualisiert.')
+
+    expect(store.updateCustomer('c-1', {
+      firstName: 'Sophie', lastName: 'Berger', email: 'mara.hoffmann@example.de', phone: '0176 445 21 92'
+    })).toBe(false)
+    expect(store.updateCustomer('missing', {
+      firstName: 'Sophie', lastName: 'Berger', email: 'sophie.berger@example.de', phone: '0176 445 21 92'
+    })).toBe(false)
+  })
+
+  it('stores a validated emergency contact on the customer and restores it with the demo reset', () => {
+    const store = createPensionStore()
+
+    expect(store.updateCustomerEmergencyContact('c-2', { name: '  Mara Klein ', phone: ' 0172 339 80 02 ' })).toBe(true)
+    expect(store.customers.find((customer) => customer.id === 'c-2')?.emergencyContact).toEqual({
+      name: 'Mara Klein', phone: '0172 339 80 02'
+    })
+    expect(store.updateCustomerEmergencyContact('c-2', { name: '', phone: '0172 339 80 02' })).toBe(false)
+    expect(store.updateCustomerEmergencyContact('missing', { name: 'Mara Klein', phone: '0172 339 80 02' })).toBe(false)
+
+    store.resetDemo()
+    expect(store.customers.find((customer) => customer.id === 'c-2')?.emergencyContact).toBeUndefined()
+    expect(store.customers.find((customer) => customer.id === 'c-1')?.emergencyContact).toEqual({
+      name: 'Tobias Berger', phone: '0176 445 21 91'
+    })
+  })
+
+  it('removes an existing emergency contact without changing other customer data', () => {
+    const store = createPensionStore()
+    const customer = store.customers.find((item) => item.id === 'c-1')!
+
+    expect(store.removeCustomerEmergencyContact('c-1')).toBe(true)
+    expect(customer).toMatchObject({
+      id: 'c-1', firstName: 'Sofia', lastName: 'Berger', email: 'sofia.berger@example.de', phone: '0176 445 21 90'
+    })
+    expect(customer.emergencyContact).toBeUndefined()
+    expect(store.announcement.value).toBe('Der Notfallkontakt für Sofia Berger wurde entfernt.')
+    expect(store.removeCustomerEmergencyContact('c-1')).toBe(false)
+    expect(store.removeCustomerEmergencyContact('missing')).toBe(false)
   })
 
   it('keeps confirmations as dismissible, structured toast notifications', () => {
     const store = createPensionStore({ now: () => new Date('2026-08-09T10:00:00.000Z') })
 
-    expect(store.createCustomer({ firstName: 'Ada', lastName: 'Lovelace', phone: '+49 151 2345678' })).toBe(true)
+    expect(store.createCustomer({ firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.de', phone: '+49 151 2345678' })).toBe(true)
     expect(store.createPet({ customerId: 'c-1', name: 'Kiwi', species: 'cat', breed: 'Hauskatze' })).toBe(true)
     expect(store.toastNotifications).toMatchObject([
       { id: 'toast-1', message: 'Ada Lovelace wurde im Kundenverzeichnis angelegt.', createdAt: '2026-08-09T10:00:00.000Z' },
@@ -89,6 +196,16 @@ describe('PensionStore', () => {
     expect(store.checkedIn.value).toHaveLength(guestCount + 1)
     expect(store.announcement.value).toBe('Balu ist jetzt eingecheckt.')
     expect(store.checkInOutHistory.value[0]).toMatchObject({ bookingId: 'b-1', type: 'check-in', occurredAt: '2026-08-09T10:00:00.000Z', booking: { id: 'b-1' } })
+  })
+
+  it('only checks in confirmed bookings on their arrival date', () => {
+    const store = createPensionStore({ now: () => new Date(2026, 7, 9, 12, 0) })
+    const tomorrowBooking = store.bookingViews.value.find((booking) => booking.id === 'b-4')!
+
+    expect(tomorrowBooking.arrivalDate).toBe('2026-08-10')
+    expect(store.checkIn(tomorrowBooking.id)).toBe(false)
+    expect(tomorrowBooking.status).toBe('confirmed')
+    expect(store.checkInOutHistory.value.some((event) => event.bookingId === tomorrowBooking.id)).toBe(false)
   })
 
   it('reverts a same-day check-in and records the reversal in the history', () => {
@@ -120,10 +237,17 @@ describe('PensionStore', () => {
     expect(store.checkOut('b-5')).toBe(true)
     expect(store.checkInOutHistory.value[0]).toMatchObject({ bookingId: 'b-5', type: 'check-out', occurredAt: '2026-08-09T16:30:00.000Z' })
     expect(store.checkInOutHistory.value).toHaveLength(initialHistoryLength + 1)
+    expect(store.bookingViews.value.find((booking) => booking.id === 'b-5')?.checkoutPrice).toEqual({
+      bookingId: 'b-5', dailyRateCents: 3500, billableDays: 2, totalCents: 7000
+    })
+
+    store.settings.dailyPetRates[0].amountCents = 9999
+    expect(store.bookingViews.value.find((booking) => booking.id === 'b-5')?.checkoutPrice?.totalCents).toBe(7000)
 
     store.resetDemo()
     expect(store.checkInOutHistory.value).toHaveLength(initialHistoryLength)
     expect(store.checkInOutHistory.value.some((event) => event.occurredAt === '2026-08-09T16:30:00.000Z')).toBe(false)
+    expect(store.bookingViews.value.find((booking) => booking.id === 'b-5')?.checkoutPrice).toBeUndefined()
   })
 
   it('shows only confirmed bookings for the current business day as arrivals', () => {
@@ -137,16 +261,67 @@ describe('PensionStore', () => {
     const store = createPensionStore()
     const bookingCount = store.bookingViews.value.length
 
-    expect(store.createBooking({ customerId: 'c-6', petId: 'p-6', roomId: 'r-2', arrivalDate: '2026-08-15', arrival: '12:15', departure: '2026-08-18' })).toBe(true)
+    expect(store.createBooking({ customerId: 'c-6', petId: 'p-6', roomId: 'r-2', arrivalDate: '2026-08-15', arrival: '12:15', departure: '2026-08-18', pickupTime: '15:30', bookingNote: '  Medikament mittags geben  ' })).toBe(true)
     expect(store.bookingViews.value).toHaveLength(bookingCount + 1)
     expect(store.bookingViews.value.at(-1)).toMatchObject({
-      id: 'b-101', status: 'confirmed', pet: { name: 'Frieda' }, room: { name: 'Gartenzimmer 2' }
+      id: 'b-101', status: 'confirmed', pickupTime: '15:30', bookingNote: 'Medikament mittags geben', pet: { name: 'Frieda' }, room: { name: 'Gartenzimmer 2' }
     })
     expect(store.announcement.value).toBe('Die Buchung für Frieda wurde angelegt.')
 
     expect(store.createBooking({ customerId: 'c-7', petId: 'p-7', roomId: 'r-1', arrivalDate: '2026-08-15', arrival: '10:00', departure: '2026-08-19' })).toBe(false)
     expect(store.createBooking({ customerId: 'c-6', petId: 'p-6', roomId: 'r-2', arrivalDate: '2026-08-15', arrival: '10:00', departure: '2026-08-19' })).toBe(false)
     expect(store.bookingViews.value).toHaveLength(bookingCount + 1)
+  })
+
+  it('updates a planned booking without counting the stay against its own room capacity', () => {
+    const store = createPensionStore()
+
+    expect(store.updateBooking('b-1', {
+      roomId: 'r-1', arrivalDate: '2026-08-09', arrival: '10:30', departure: '2026-08-12', pickupTime: '16:00', bookingNote: '  Ruhiger Abschied  '
+    })).toBe(true)
+    expect(store.bookingViews.value.find((booking) => booking.id === 'b-1')).toMatchObject({
+      room: { id: 'r-1' }, arrival: '10:30', departure: '2026-08-12', pickupTime: '16:00', bookingNote: 'Ruhiger Abschied', status: 'confirmed', overbooked: false
+    })
+    expect(store.announcement.value).toBe('Die Buchung für Balu wurde aktualisiert.')
+  })
+
+  it('rejects an invalid optional collection time before persisting a booking', () => {
+    const store = createPensionStore()
+
+    expect(store.createBooking({
+      customerId: 'c-6', petId: 'p-6', roomId: 'r-2', arrivalDate: '2026-08-15', arrival: '12:15', departure: '2026-08-18', pickupTime: 'after lunch'
+    })).toBe(false)
+    expect(store.updateBooking('b-1', {
+      roomId: 'r-1', arrivalDate: '2026-08-09', arrival: '10:30', departure: '2026-08-12', pickupTime: '99:99'
+    })).toBe(false)
+  })
+
+  it('rejects oversized booking notes before changing an existing stay', () => {
+    const store = createPensionStore()
+    const originalNote = store.bookingViews.value.find((booking) => booking.id === 'b-1')?.bookingNote
+
+    expect(store.updateBooking('b-1', {
+      roomId: 'r-1', arrivalDate: '2026-08-09', arrival: '10:30', departure: '2026-08-12', bookingNote: 'x'.repeat(301)
+    })).toBe(false)
+    expect(store.bookingViews.value.find((booking) => booking.id === 'b-1')?.bookingNote).toBe(originalNote)
+  })
+
+  it('protects started stays and requires acknowledgement for an overbooked booking update', () => {
+    const store = createPensionStore()
+    store.rooms.find((room) => room.id === 'r-1')!.capacity = 1
+
+    expect(store.updateBooking('b-1', {
+      roomId: 'r-1', arrivalDate: '2026-08-09', arrival: '09:00', departure: '2026-08-12'
+    })).toBe(false)
+    expect(store.updateBooking('b-1', {
+      roomId: 'r-1', arrivalDate: '2026-08-09', arrival: '09:00', departure: '2026-08-12', allowOverbooking: true
+    })).toBe(true)
+    expect(store.bookingViews.value.find((booking) => booking.id === 'b-1')?.overbooked).toBe(true)
+    const startedStore = createPensionStore()
+    expect(startedStore.checkIn('b-1')).toBe(true)
+    expect(startedStore.updateBooking('b-1', {
+      roomId: 'r-1', arrivalDate: '2026-08-10', arrival: '09:00', departure: '2026-08-12', allowOverbooking: true
+    })).toBe(false)
   })
 
   it('uses the same period capacity rule for direct bookings and accepted requests', () => {
@@ -190,6 +365,40 @@ describe('PensionStore', () => {
     expect(store.announcement.value).toBe('Die gemeinsame Reservierung für Frieda, Willi wurde angelegt.')
   })
 
+  it('normalizes a shared reservation note for the reservation and each animal stay', () => {
+    const store = createPensionStore()
+
+    expect(store.createBookingReservation({
+      customerId: 'c-6', petIds: ['p-6', 'p-13'], roomId: 'r-2',
+      arrivalDate: '2026-08-15', arrival: '12:15', departure: '2026-08-18', bookingNote: '  Zusammen unterbringen  '
+    })).toBe(true)
+    expect(store.bookingReservations[0]).toMatchObject({ bookingNote: 'Zusammen unterbringen' })
+    expect(store.bookingViews.value.slice(-2).map((booking) => booking.bookingNote)).toEqual([
+      'Zusammen unterbringen', 'Zusammen unterbringen'
+    ])
+  })
+
+  it('detaches an individually replanned stay from its shared reservation', () => {
+    const store = createPensionStore()
+    expect(store.createBookingReservation({
+      customerId: 'c-6', petIds: ['p-6', 'p-13'], roomId: 'r-2',
+      arrivalDate: '2026-08-15', arrival: '12:15', departure: '2026-08-18',
+      pickupTime: '15:30', bookingNote: 'Zusammen unterbringen'
+    })).toBe(true)
+    const reservationId = store.bookingReservations[0].id
+    const friedasBooking = store.bookingViews.value.slice(-2).find((booking) => booking.pet.id === 'p-6')!
+
+    expect(store.updateBooking(friedasBooking.id, {
+      roomId: 'r-1', arrivalDate: '2026-12-16', arrival: '12:15', departure: '2026-12-19',
+      pickupTime: '15:30', bookingNote: 'Zusammen unterbringen'
+    })).toBe(true)
+
+    expect(store.bookingReservations).toMatchObject([{ id: reservationId, petIds: ['p-13'] }])
+    const replannedStay = store.bookingViews.value.find((booking) => booking.id === friedasBooking.id)
+    expect(replannedStay).toMatchObject({ arrivalDate: '2026-12-16', departure: '2026-12-19' })
+    expect(replannedStay?.reservationId).toBeUndefined()
+  })
+
   it('does not partially create a multi-animal reservation without enough capacity', () => {
     const store = createPensionStore()
     store.rooms.find((room) => room.id === 'r-2')!.capacity = 1
@@ -200,6 +409,22 @@ describe('PensionStore', () => {
       arrivalDate: '2026-08-15', arrival: '12:15', departure: '2026-08-18'
     })).toBe(false)
     expect(store.bookingViews.value).toHaveLength(bookingCount)
+    expect(store.bookingReservations).toHaveLength(0)
+  })
+
+  it('keeps a shared reservation in sync when one of its stays is deleted', () => {
+    const store = createPensionStore()
+
+    expect(store.createBookingReservation({
+      customerId: 'c-6', petIds: ['p-6', 'p-13'], roomId: 'r-2',
+      arrivalDate: '2026-08-15', arrival: '12:15', departure: '2026-08-18'
+    })).toBe(true)
+    const [friedaStay, williStay] = store.bookingViews.value.slice(-2)
+
+    expect(store.deleteBooking(friedaStay!.id)).toBe(true)
+    expect(store.bookingReservations).toMatchObject([{ id: 'reservation-1', petIds: ['p-13'] }])
+
+    expect(store.deleteBooking(williStay!.id)).toBe(true)
     expect(store.bookingReservations).toHaveLength(0)
   })
 
@@ -521,7 +746,7 @@ describe('PensionStore', () => {
     expect(store.pets).toHaveLength(petCount + 1)
     expect(store.bookingViews.value).toHaveLength(bookingCount + 1)
     expect(store.bookingViews.value.at(-1)).toMatchObject({
-      status: 'confirmed', room: { id: 'r-2' }, pet: { name: 'Charlie' }, customer: { firstName: 'Hannah', lastName: 'Wolf' }
+      status: 'confirmed', room: { id: 'r-2' }, pet: { name: 'Charlie' }, customer: { firstName: 'Hannah', lastName: 'Wolf', email: 'hannah.wolf@example.test' }
     })
     expect(store.pendingRequests.value.some((request) => request.id === 'req-1')).toBe(false)
     expect(store.requestHistory.value.find((request) => request.id === 'req-1')?.status).toBe('accepted')
@@ -578,7 +803,13 @@ describe('PensionStore', () => {
     const declined = store.requestHistory.value.find((request) => request.id === 'req-3')
     expect(declined?.status).toBe('declined')
     expect(declined?.declineReason).toBe('Zeitraum bereits ausgebucht')
-    expect(store.announcement.value).toBe('Die Anfrage von Elias Brandt wurde abgelehnt.')
+    expect(declined?.declineNotification).toEqual({
+      channel: 'email',
+      recipient: 'elias.brandt@example.test',
+      status: 'scheduled',
+      createdAt: '2026-08-09T10:00:00.000Z'
+    })
+    expect(store.announcement.value).toBe('Die Anfrage von Elias Brandt wurde abgelehnt. Die E-Mail-Benachrichtigung ist vorbereitet.')
   })
 
   it('restores requests to their initial state after resetting the demo', () => {

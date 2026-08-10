@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { BookingView, DailyPetRate } from '../domain'
-import { calculateStayPrice } from './stayPrice'
+import { calculateReservationPrice, calculateStayPrice } from './stayPrice'
 
 const rates: DailyPetRate[] = [
   { id: 'rate-dog', species: 'dog', amountCents: 3500 },
@@ -32,5 +32,20 @@ describe('calculateStayPrice', () => {
   it('does not invent an amount when the matching rate or stay period is invalid', () => {
     expect(calculateStayPrice(dogStay, rates.filter((rate) => rate.species !== 'dog'))).toBeNull()
     expect(calculateStayPrice({ ...dogStay, departure: '2026-08-06' }, rates)).toBeNull()
+  })
+
+  it('sums the configured rates for every animal selected in a shared reservation', () => {
+    expect(calculateReservationPrice({
+      arrivalDate: '2026-08-07', arrival: '10:30', departure: '2026-08-10'
+    }, [
+      { id: 'p-1', species: 'dog' },
+      { id: 'p-2', species: 'cat' }
+    ], rates)).toMatchObject({
+      totalCents: 17700,
+      stays: [
+        { bookingId: 'preview-p-1', billableDays: 3, totalCents: 10500 },
+        { bookingId: 'preview-p-2', billableDays: 3, totalCents: 7200 }
+      ]
+    })
   })
 })

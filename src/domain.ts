@@ -6,10 +6,24 @@ export interface Customer {
   id: string
   firstName: string
   lastName: string
+  /** Primary contact channel, also used to identify existing requesters. */
+  email: string
   phone: string
+  /** Optional alternative contact for urgent questions during a stay. */
+  emergencyContact?: EmergencyContact
 }
 
 export type NewCustomer = Omit<Customer, 'id'>
+
+/** Editable contact data of an existing customer. The ID and optional emergency
+ * contact remain stable because bookings and operational contact details refer to
+ * the same customer record. */
+export type CustomerUpdate = Pick<Customer, 'firstName' | 'lastName' | 'email' | 'phone'>
+
+export interface EmergencyContact {
+  name: string
+  phone: string
+}
 
 export interface Pet {
   id: string
@@ -20,9 +34,28 @@ export interface Pet {
   initials: string
   color: string
   note?: string
+  /** Optional, structured operational handover instruction for medication. */
+  medicationPlan?: string
+  /** Optional feeding routine that accompanies the animal during a stay. */
+  feedingPlan?: string
+  /** Optional allergy and intolerance information needed during a stay. */
+  allergyNote?: string
+  /** Optional documented vaccination status for the operational handover. */
+  vaccinationStatus?: string
+  /** Optional veterinary practice to contact for this animal in an emergency. */
+  veterinaryContact?: VeterinaryContact
 }
 
-export type NewPet = Pick<Pet, 'customerId' | 'name' | 'species' | 'breed' | 'note'>
+export type NewPet = Pick<Pet, 'customerId' | 'name' | 'species' | 'breed' | 'note' | 'medicationPlan' | 'feedingPlan' | 'allergyNote' | 'vaccinationStatus' | 'veterinaryContact'>
+
+/** Editable master data of an existing animal. Owner and species stay stable so
+ * historical bookings keep their valid customer and room references. */
+export type PetUpdate = Pick<Pet, 'name' | 'breed' | 'note' | 'medicationPlan' | 'feedingPlan' | 'allergyNote' | 'vaccinationStatus' | 'veterinaryContact'>
+
+export interface VeterinaryContact {
+  practiceName: string
+  phone: string
+}
 
 export interface Room {
   id: string
@@ -129,13 +162,25 @@ export interface Booking {
   arrivalDate: string
   arrival: string
   departure: string
+  /** Optional agreed collection time on the departure date (HH:mm). */
+  pickupTime?: string
+  /** Short operational note for this individual animal stay. */
+  bookingNote?: string
   status: BookingStatus
   /** True when this stay was deliberately accepted beyond the room capacity. */
   overbooked?: boolean
+  /** Immutable invoice snapshot created when the stay is checked out. */
+  checkoutPrice?: StayPrice
 }
 
-export type NewBooking = Pick<Booking, 'petId' | 'roomId' | 'arrivalDate' | 'arrival' | 'departure'> & {
+export type NewBooking = Pick<Booking, 'petId' | 'roomId' | 'arrivalDate' | 'arrival' | 'departure' | 'pickupTime' | 'bookingNote'> & {
   customerId: Customer['id']
+  allowOverbooking?: boolean
+}
+
+/** Editable planning fields of an arrival that has not been checked in yet. */
+export type BookingUpdate = Pick<Booking, 'roomId' | 'arrivalDate' | 'arrival' | 'departure' | 'pickupTime' | 'bookingNote'> & {
+  /** Requires an explicit acknowledgement when the changed stay exceeds capacity. */
   allowOverbooking?: boolean
 }
 
@@ -148,6 +193,10 @@ export interface BookingReservation {
   arrivalDate: string
   arrival: string
   departure: string
+  /** Optional common collection time for all animal stays in this reservation. */
+  pickupTime?: string
+  /** Optional common operational note, copied to each animal stay. */
+  bookingNote?: string
   createdAt: string
 }
 
@@ -160,6 +209,21 @@ export interface BookingView extends Booking {
   pet: Pet
   customer: Customer
   room: Room
+}
+
+/** One continuous bar in the room-based booking timeline. */
+export interface BookingTimelineBar {
+  booking: BookingView
+  startDay: number
+  duration: number
+}
+
+/** A room (or the fallback slot for unassigned stays) with collision-free bar lanes. */
+export interface BookingTimelineRow {
+  id: string
+  label: string
+  room?: Room
+  lanes: BookingTimelineBar[][]
 }
 
 export type DepartureView = BookingView
@@ -211,6 +275,12 @@ export interface StayPrice {
   totalCents: number
 }
 
+/** A transparent planning total for one or several animals in a reservation. */
+export interface ReservationPrice {
+  stays: StayPrice[]
+  totalCents: number
+}
+
 export type AccountRole = 'root' | 'staff'
 
 export interface Account {
@@ -235,10 +305,19 @@ export interface DemoEnvironment {
 
 export type BookingRequestStatus = 'pending' | 'accepted' | 'declined'
 
+/** A traceable, demo-local notification that belongs to a request decision. */
+export interface BookingRequestNotification {
+  channel: 'email'
+  recipient: string
+  status: 'scheduled'
+  createdAt: string
+}
+
 export interface BookingRequest {
   id: string
   customerFirstName: string
   customerLastName: string
+  contactEmail: string
   phone: string
   petName: string
   species: PetSpecies
@@ -250,4 +329,5 @@ export interface BookingRequest {
   status: BookingRequestStatus
   submittedAt: string
   declineReason?: string
+  declineNotification?: BookingRequestNotification
 }

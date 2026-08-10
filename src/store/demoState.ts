@@ -51,7 +51,10 @@ export interface DemoState {
 export function createDemoState(): DemoState {
   return {
     account: { ...initialAccount },
-    bookingRequests: initialBookingRequests.map((request) => ({ ...request })),
+    bookingRequests: initialBookingRequests.map((request) => ({
+      ...request,
+      declineNotification: request.declineNotification && { ...request.declineNotification }
+    })),
     bookingReservations: initialBookingReservations.map((reservation) => ({
       ...reservation,
       petIds: [...reservation.petIds]

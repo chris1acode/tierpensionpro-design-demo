@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import { LogOut } from '@lucide/vue'
 import type { DepartureView, StayPrice } from '../domain'
+import { formatEuroCents } from '../presentation/currencyFormat'
 import BaseModal from './BaseModal.vue'
 
 const props = defineProps<{
   departure: DepartureView
   price: StayPrice | null
 }>()
-
-const euroFormatter = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' })
-const formatEuro = (amountCents: number) => euroFormatter.format(amountCents / 100)
 
 defineEmits<{
   close: []
@@ -29,11 +27,12 @@ defineEmits<{
     <dl>
       <div><dt>Tier</dt><dd>{{ departure.pet.name }} · {{ departure.pet.breed }}</dd></div>
       <div><dt>Zimmer</dt><dd>{{ departure.room.name }}</dd></div>
+      <div v-if="departure.pickupTime"><dt>Vereinbarte Abholung</dt><dd>{{ departure.pickupTime }} Uhr</dd></div>
     </dl>
     <section v-if="props.price" class="checkout-price" aria-label="Preisberechnung">
       <p>Preisberechnung</p>
-      <span>{{ props.price.billableDays }} {{ props.price.billableDays === 1 ? 'Betreuungstag' : 'Betreuungstage' }} × {{ formatEuro(props.price.dailyRateCents) }}</span>
-      <strong>{{ formatEuro(props.price.totalCents) }}</strong>
+      <span>{{ props.price.billableDays }} {{ props.price.billableDays === 1 ? 'Betreuungstag' : 'Betreuungstage' }} × {{ formatEuroCents(props.price.dailyRateCents) }}</span>
+      <strong>{{ formatEuroCents(props.price.totalCents) }}</strong>
       <small>Der Abreisetag wird nicht berechnet.</small>
     </section>
     <p v-else class="checkout-price-unavailable">Für diesen Aufenthalt ist kein gültiger Tagespreis hinterlegt.</p>

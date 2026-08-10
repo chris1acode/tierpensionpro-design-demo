@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import type { Customer } from '../domain'
+import { matchesSearchTerm, resolveSearchTerm } from '../shared/search'
 
 const props = defineProps<{
   customers: readonly Customer[]
@@ -16,15 +17,17 @@ const query = ref('')
 const isOpen = ref(false)
 const activeIndex = ref(-1)
 const input = ref<HTMLInputElement | null>(null)
+let closeTimer: ReturnType<typeof window.setTimeout> | undefined
 const listId = `${props.inputId}-suggestions`
 const selectedCustomer = computed(() => props.customers.find((customer) => customer.id === model.value))
 const minimumQueryLength = computed(() => Math.max(0, props.minQueryLength ?? 0))
-const normalizedQuery = computed(() => query.value.trim())
+const normalizedQuery = computed(() => resolveSearchTerm(query.value))
 const queryIsLongEnough = computed(() => normalizedQuery.value.length >= minimumQueryLength.value)
 const matches = computed(() => {
   if (!queryIsLongEnough.value) return []
-  const search = normalizedQuery.value.toLocaleLowerCase('de')
-  const customers = props.customers.filter((customer) => `${customer.firstName} ${customer.lastName} ${customer.phone}`.toLocaleLowerCase('de').includes(search))
+  const customers = props.customers.filter((customer) => matchesSearchTerm(normalizedQuery.value, [
+    customer.firstName, customer.lastName, customer.email, customer.phone
+  ]))
   return customers.slice(0, 8)
 })
 
@@ -34,6 +37,7 @@ watch(selectedCustomer, (customer) => {
 }, { immediate: true })
 
 function open(): void {
+  if (closeTimer) window.clearTimeout(closeTimer)
   isOpen.value = true
   activeIndex.value = matches.value.length ? 0 : -1
 }
@@ -76,12 +80,18 @@ function handleKeydown(event: KeyboardEvent): void {
 }
 
 function close(): void {
-  window.setTimeout(() => {
+  if (closeTimer) window.clearTimeout(closeTimer)
+  closeTimer = window.setTimeout(() => {
     isOpen.value = false
     activeIndex.value = -1
     query.value = selectedCustomer.value ? `${selectedCustomer.value.firstName} ${selectedCustomer.value.lastName}` : ''
+    closeTimer = undefined
   }, 120)
 }
+
+onBeforeUnmount(() => {
+  if (closeTimer) window.clearTimeout(closeTimer)
+})
 </script>
 
 <template>
@@ -106,7 +116,7 @@ function close(): void {
     />
     <ul v-if="isOpen" :id="listId" class="customer-autocomplete-options" role="listbox" :aria-label="`${label}-Vorschläge`">
       <li v-for="(customer, index) in matches" :id="`${listId}-${index}`" :key="customer.id" role="option" :aria-selected="customer.id === model" :class="{ active: index === activeIndex }">
-        <button type="button" @mousedown.prevent @click="select(customer)"><strong>{{ customer.firstName }} {{ customer.lastName }}</strong><span>{{ customer.phone }}</span></button>
+        <button type="button" @mousedown.prevent @click="select(customer)"><strong>{{ customer.firstName }} {{ customer.lastName }}</strong><span>{{ customer.email }} · {{ customer.phone }}</span></button>
       </li>
       <li v-if="!queryIsLongEnough" class="customer-autocomplete-empty" role="status">{{ minimumQueryLength }} Zeichen eingeben, um Kundschaft zu suchen.</li>
       <li v-else-if="!matches.length" class="customer-autocomplete-empty" role="status">Keine Kundschaft gefunden.</li>

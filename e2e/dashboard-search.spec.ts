@@ -60,6 +60,20 @@ test('waits for two characters before showing customer suggestions in a new book
   await expect(suggestions.getByRole('option', { name: /Lea Albrecht/ })).toBeVisible()
 })
 
+test('keeps customer pagination compact and provides first and last page actions', async ({ page }, testInfo) => {
+  await page.goto('/kunden-tiere')
+
+  const pagination = page.getByRole('navigation', { name: 'Seiten im Kundenverzeichnis' })
+  await expect(pagination.getByText('…')).toHaveCount(1)
+  await expect(pagination.locator('button:not([aria-label])')).toHaveCount(testInfo.project.name === 'mobile' ? 3 : 6)
+
+  await pagination.getByRole('button', { name: 'Letzte Seite' }).click()
+  await expect(pagination.getByRole('button', { name: '20', exact: true })).toHaveAttribute('aria-current', 'page')
+
+  await pagination.getByRole('button', { name: 'Erste Seite' }).click()
+  await expect(pagination.getByRole('button', { name: '1', exact: true })).toHaveAttribute('aria-current', 'page')
+})
+
 test('exports the data behind every list as CSV', async ({ page }) => {
   const exports = [
     ['/buchungen', 'Buchungen als CSV exportieren', 'buchungen.csv'],
@@ -117,20 +131,21 @@ test('resets open settings and account form drafts with the demo data', async ({
   await expect(firstName).toHaveValue('Robin')
 })
 
-test('shows a search-specific empty state when no arrival matches', async ({ page }) => {
+test('uses local searches instead of a global dashboard search', async ({ page }) => {
   await page.goto('/')
+  await expect(page.getByRole('searchbox', { name: 'Globale Suche' })).toHaveCount(0)
 
-  await page.getByPlaceholder('Tiere, Kunden oder Zimmer suchen …').fill('nichtvorhanden')
-
-  const emptyState = page.locator('.arrivals-panel .empty-state')
-  await expect(emptyState).toContainText('Keine Treffer gefunden.')
-  await expect(emptyState).not.toContainText('Alle erwarteten Tiere sind angekommen.')
+  await page.goto('/kunden-tiere')
+  const customerSearch = page.getByPlaceholder('Kundenname oder Tiername suchen …')
+  await customerSearch.fill('nichtvorhanden')
+  await expect(page.getByText('Keine passenden Stammdaten.')).toBeVisible()
 })
 
-test('exposes the global search with a meaningful accessible name', async ({ page }) => {
+test('uses a neutral dashboard heading instead of a personal greeting', async ({ page }) => {
   await page.goto('/')
 
-  await expect(page.getByRole('searchbox', { name: 'Globale Suche' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Tagesübersicht' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Guten Morgen/i })).toHaveCount(0)
 })
 
 test('aligns arrival metadata and check-in actions despite optional arrival notes', async ({ page }, testInfo) => {
@@ -152,18 +167,6 @@ test('aligns arrival metadata and check-in actions despite optional arrival note
   expect(baluMetaBox?.x).toBe(miloMetaBox?.x)
 })
 
-test('applies the global dashboard search to departures as well', async ({ page }) => {
-  await page.goto('/')
-
-  await page.getByPlaceholder('Tiere, Kunden oder Zimmer suchen …').fill('nichtvorhanden')
-  await page.getByRole('button', { name: 'Abreisen' }).click()
-
-  const departures = page.locator('.arrivals-panel')
-  await expect(departures.getByText('0 Tiere sind abholbereit')).toBeVisible()
-  await expect(departures.locator('.departure-row')).toHaveCount(0)
-  await expect(departures.locator('.empty-state')).toContainText('Keine Treffer gefunden.')
-})
-
 test('labels the current occupancy as animals in the house', async ({ page }) => {
   await page.goto('/')
 
@@ -176,13 +179,18 @@ test('navigates from dashboard category widgets to their detail pages', async ({
   await page.goto('/')
 
   await page.getByRole('link', { name: 'Anreisen heute in Check-in und Check-out öffnen' }).click()
-  await expect(page).toHaveURL(/\/check-in-out$/)
+  await expect(page).toHaveURL(/\/check-in-out\?view=arrivals$/)
   await expect(page.getByRole('heading', { name: 'Check-in/out' })).toBeVisible()
 
   await page.goto('/')
-  await page.getByRole('link', { name: 'Tiere im Haus in der Belegung öffnen' }).click()
-  await expect(page).toHaveURL(/\/belegung$/)
-  await expect(page.getByRole('heading', { name: 'Belegung' })).toBeVisible()
+  await page.getByRole('link', { name: 'Abreisen heute in Check-in und Check-out öffnen' }).click()
+  await expect(page).toHaveURL(/\/check-in-out\?view=departures$/)
+  await expect(page.getByRole('heading', { name: 'Geplante Abreisen' })).toBeVisible()
+
+  await page.goto('/')
+  await page.getByRole('link', { name: 'Tiere im Haus in Check-in und Check-out öffnen' }).click()
+  await expect(page).toHaveURL(/\/check-in-out\?view=checked-in$/)
+  await expect(page.getByRole('heading', { name: 'Jetzt eingecheckt' })).toBeVisible()
 
   await page.goto('/')
   await page.getByRole('link', { name: 'Alle Check-ins und Check-outs' }).click()
@@ -247,13 +255,16 @@ test('records closure periods and removes all capacity for their dates', async (
   await expect(page.getByText('Betriebsferien', { exact: true })).toHaveCount(0)
 })
 
-test('does not offer rooms for requests that overlap a closure', async ({ page }) => {
+test('does not offer rooms for requests that overlap a closure', async ({ page }, testInfo) => {
   await page.goto('/belegung')
 
   await page.getByLabel('Schließzeit von').fill('2026-08-17')
   await page.getByLabel('Schließzeit bis').fill('2026-08-20')
   await page.getByRole('button', { name: 'Schließzeit hinterlegen' }).click()
 
+  if (testInfo.project.name === 'mobile') {
+    await page.getByRole('button', { name: 'Navigation öffnen' }).click()
+  }
   await page.getByRole('link', { name: 'Anfragen', exact: true }).click()
   await expect(page).toHaveURL(/\/anfragen$/)
   const request = page.locator('.request-card').filter({ hasText: 'Hannah Wolf' })
@@ -331,29 +342,10 @@ test('does not show a redundant main-location control', async ({ page }) => {
   await expect(page.getByText('Inhaber', { exact: true })).toHaveCount(1)
 })
 
-test('focuses the global search with the advertised keyboard shortcut', async ({ page }) => {
+test('does not show the removed room-status control on the dashboard', async ({ page }) => {
   await page.goto('/')
 
-  const search = page.getByPlaceholder('Tiere, Kunden oder Zimmer suchen …')
-  await page.keyboard.press('Control+K')
-
-  await expect(search).toBeFocused()
-})
-
-test('moves focus into dialogs and closes them with Escape', async ({ page }) => {
-  await page.goto('/')
-
-  const trigger = page.getByRole('button', { name: 'Zimmerstatus verwalten' })
-  await trigger.click()
-
-  const dialog = page.getByRole('dialog')
-  await expect(dialog).toBeVisible()
-  await expect(dialog.getByRole('button', { name: 'Dialog schließen' })).toBeFocused()
-
-  await page.keyboard.press('Escape')
-
-  await expect(dialog).toHaveCount(0)
-  await expect(trigger).toBeFocused()
+  await expect(page.getByRole('button', { name: 'Zimmerstatus verwalten' })).toHaveCount(0)
 })
 
 test('keeps keyboard focus inside an open dialog', async ({ page }) => {
@@ -373,30 +365,6 @@ test('keeps keyboard focus inside an open dialog', async ({ page }) => {
   await expect(closeButton).toBeFocused()
 })
 
-test('does not move focus behind an open dialog with the global search shortcut', async ({ page }) => {
-  await page.goto('/')
-
-  await page.getByRole('button', { name: 'Zimmerstatus verwalten' }).click()
-  const closeButton = page.getByRole('dialog').getByRole('button', { name: 'Dialog schließen' })
-  await expect(closeButton).toBeFocused()
-
-  await page.keyboard.press('Control+K')
-
-  await expect(closeButton).toBeFocused()
-})
-
-test('does not move focus behind the account cancellation dialog with the global search shortcut', async ({ page }) => {
-  await page.goto('/konto')
-
-  await page.getByRole('button', { name: 'Pension kündigen' }).click()
-  const closeButton = page.getByRole('dialog').getByRole('button', { name: 'Dialog schließen' })
-  await expect(closeButton).toBeFocused()
-
-  await page.keyboard.press('Control+K')
-
-  await expect(closeButton).toBeFocused()
-})
-
 test('separates account actions clearly from the cancellation area', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop', 'The desktop spacing is covered by this layout regression test.')
   await page.goto('/konto')
@@ -410,20 +378,33 @@ test('separates account actions clearly from the cancellation area', async ({ pa
   expect(panelBox!.y - (saveBox!.y + saveBox!.height)).toBeGreaterThanOrEqual(28)
 })
 
-test('shows bookings in a filterable monthly calendar alongside the list', async ({ page }) => {
+test('shows bookings as filterable, room-based continuous bars in the timeline', async ({ page }) => {
   await page.goto('/buchungen')
 
-  await page.getByRole('button', { name: 'Kalenderansicht' }).click()
-  const calendar = page.getByLabel('Buchungskalender')
-  await expect(calendar).toBeVisible()
-  await expect(calendar).toContainText('Balu')
+  await page.goto('/buchungen')
+  await page.getByRole('button', { name: 'Zeitachsenansicht' }).click()
+  const timeline = page.getByLabel('Buchungszeitachse')
+  await expect(timeline).toBeVisible()
+  await expect(timeline.getByRole('region', { name: 'Waldzimmer 1' })).toContainText('Sofia Berger')
+  await expect(timeline).toContainText('Balu')
+
+  await timeline.getByRole('button', { name: 'Buchung von Sofia Berger für Balu öffnen' }).click()
+  await expect(page).toHaveURL(/\/buchungen\?bookingId=b-1$/)
+  await expect(page.locator('#booking-b-1')).toHaveClass(/focused-booking/)
+
+  await page.getByRole('button', { name: 'Zeitachsenansicht' }).click()
 
   await page.getByRole('button', { name: 'Eingecheckt' }).click()
-  await expect(calendar).toContainText('Rocky')
-  await expect(calendar).not.toContainText('Balu')
+  await expect(timeline).toContainText('Luna')
+  await expect(timeline).not.toContainText('Balu')
 
-  await page.getByRole('button', { name: 'Nächster Monat' }).click()
-  await expect(page.locator('.booking-calendar-navigation')).toContainText('September 2026')
+  await page.getByRole('button', { name: 'Nächste Woche' }).click()
+  await expect(page.locator('.booking-calendar-navigation')).toContainText('16.08. – 22.08.')
+  const todayButton = page.getByRole('button', { name: 'Heute' })
+  await expect(todayButton).toBeEnabled()
+  await todayButton.click()
+  await expect(page.locator('.booking-calendar-navigation')).toContainText('09.08. – 15.08.')
+  await expect(todayButton).toBeDisabled()
   await expect(page.getByRole('button', { name: 'Listenansicht' })).toBeVisible()
 })
 
@@ -499,19 +480,6 @@ test('keeps keyboard focus inside the mobile navigation', async ({ page }, testI
   await expect(firstLink).toBeFocused()
 })
 
-test('does not move focus behind the mobile navigation with the global search shortcut', async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== 'mobile', 'The desktop navigation is not a modal drawer.')
-  await page.goto('/')
-
-  await page.getByRole('button', { name: 'Navigation öffnen' }).click()
-  const closeButton = page.getByRole('button', { name: 'Navigation schließen' })
-  await expect(closeButton).toBeFocused()
-
-  await page.keyboard.press('Control+K')
-
-  await expect(closeButton).toBeFocused()
-})
-
 test('gives the customer directory two thirds of the desktop content width', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop', 'The customer page stacks both panels on mobile.')
   await page.goto('/kunden-tiere')
@@ -573,6 +541,31 @@ test('uses a master-detail flow for customers on small screens', async ({ page }
   await expect(page.locator('.customer-details')).toBeHidden()
 })
 
+test('shows customer pets as readable species profile cards', async ({ page }) => {
+  await page.goto('/kunden-tiere')
+  await page.getByRole('button', { name: /Sofia Berger/ }).click()
+
+  const petCard = page.locator('.pet-profile-card').filter({ hasText: 'Balu' })
+  await expect(petCard).toBeVisible()
+  await expect(petCard).toContainText('Golden Retriever')
+  await expect(petCard.getByText('Hund', { exact: true })).toBeVisible()
+  await expect(petCard.locator('.pet-profile-avatar svg')).toHaveCount(1)
+})
+
+test('starts a booking from a customer profile with that customer preselected', async ({ page }) => {
+  await page.goto('/kunden-tiere')
+  await page.getByPlaceholder('Kundenname oder Tiername suchen …').fill('Sofia')
+  await page.getByRole('button', { name: /Sofia Berger/ }).click()
+
+  await page.getByRole('link', { name: 'Jetzt Buchung anlegen' }).click()
+
+  await expect(page).toHaveURL(/\/buchungen\?customerId=c-1$/)
+  const form = page.locator('.booking-form')
+  await expect(form).toBeVisible()
+  await expect(form.getByRole('combobox', { name: 'Kund:in' })).toHaveValue('Sofia Berger')
+  await expect(form.getByRole('group', { name: 'Tiere' })).not.toContainText('Zuerst Kund:in wählen')
+})
+
 test('completes a check-in from the check-in/out page', async ({ page }) => {
   await page.goto('/check-in-out')
 
@@ -598,6 +591,65 @@ test('completes a check-in from the check-in/out page', async ({ page }) => {
   await expect(page).toHaveURL(/\/buchungen\?bookingId=b-1/)
   await expect(page.locator('#booking-b-1')).toHaveClass(/focused-booking/)
   await expect(page.locator('.booking-table article')).toHaveCount(1)
+})
+
+test('lists currently checked-in animals independently of the selected operational day and checks them out', async ({ page }) => {
+  await page.goto('/check-in-out?view=checked-in')
+
+  await expect(page.getByRole('heading', { name: 'Jetzt eingecheckt' })).toBeVisible()
+  await expect(page.getByRole('textbox', { name: 'Datum für Check-in und Check-out' })).toHaveCount(0)
+  const checkedInRow = page.locator('.operation-row').first()
+  await expect(checkedInRow).toContainText('Auschecken')
+  await checkedInRow.getByRole('button', { name: 'Auschecken' }).click()
+  await expect(page.getByRole('dialog')).toBeVisible()
+  await page.getByRole('dialog').getByRole('button', { name: 'Jetzt auschecken' }).click()
+  await expect(page.locator('.operation-row')).toHaveCount(1)
+})
+
+test('checks out an animal directly from its booking while recording the completed stay', async ({ page }) => {
+  await page.goto('/buchungen')
+  await page.getByRole('button', { name: 'Eingecheckt' }).click()
+
+  const booking = page.locator('.booking-table article').filter({ hasText: 'Luna' }).first()
+  await expect(booking).toBeVisible()
+  await booking.getByRole('button', { name: 'Luna auschecken' }).click()
+
+  const dialog = page.getByRole('dialog')
+  await expect(dialog).toContainText('Check-out für')
+  await dialog.getByRole('button', { name: 'Jetzt auschecken' }).click()
+
+  await page.getByRole('button', { name: 'Alle' }).click()
+  await page.getByPlaceholder('Tier, Kunde oder Zimmer suchen …').fill('Luna')
+  const completedBooking = page.locator('.booking-table article').filter({ hasText: 'Luna' }).first()
+  await expect(completedBooking).toContainText('Abgeschlossen')
+  await expect(completedBooking.getByText(/Abgerechnet/)).toBeVisible()
+})
+
+test('opens and updates a planned arrival from check-in/out', async ({ page }) => {
+  await page.goto('/check-in-out')
+
+  await page.locator('.operation-row').filter({ hasText: 'Balu' })
+    .getByRole('link', { name: 'Buchung bearbeiten' }).click()
+  await expect(page).toHaveURL(/\/buchungen\?bookingId=b-1&edit=true/)
+
+  const form = page.locator('.edit-booking-form')
+  await expect(page.locator('.edit-booking-panel')).toContainText('Sofia Berger · Balu')
+  await expect(form.getByLabel('Ankunftszeit')).toHaveValue('08:30')
+  await form.getByLabel('Ankunftszeit').fill('10:30')
+  await form.getByRole('button', { name: 'Änderungen speichern' }).click()
+
+  await expect(form).toHaveCount(0)
+  await expect(page.locator('#booking-b-1')).toContainText('10:30 Uhr')
+})
+
+test('opens a planned booking for editing directly from the booking list', async ({ page }) => {
+  await page.goto('/buchungen')
+
+  const booking = page.locator('.booking-table article').filter({ hasText: 'Balu' })
+  await booking.getByRole('link', { name: 'Buchung für Balu bearbeiten' }).click()
+
+  await expect(page).toHaveURL(/\/buchungen\?bookingId=b-1&edit=true/)
+  await expect(page.locator('.edit-booking-panel')).toContainText('Sofia Berger · Balu')
 })
 
 test('selects the operational day for check-in and check-out tasks', async ({ page }) => {
@@ -656,16 +708,18 @@ test('creates a booking through its customer and pet relationship', async ({ pag
   await expect(friedasChoice).toBeEnabled()
   await expect(form.getByRole('checkbox', { name: 'Willi · Havaneser' })).toBeVisible()
   await friedasChoice.check()
-  await form.getByLabel('Zimmer').selectOption({ label: 'Gartenzimmer 2 · 2 Plätze' })
+  await form.getByLabel('Anreisedatum').fill('2026-08-15')
   await form.getByLabel('Abreise').fill('2026-08-18')
+  await form.getByLabel('Zimmer').selectOption({ label: 'Gartenzimmer 2 · 2 Plätze' })
   await form.getByRole('button', { name: 'Buchung anlegen' }).click()
 
+  await page.getByPlaceholder('Tier, Kunde oder Zimmer suchen …').fill('Frieda')
   const booking = page.locator('.booking-table article').filter({ hasText: 'Frieda' }).filter({ hasText: '2026-08-18' })
   await expect(booking).toContainText('Lea Albrecht')
   await expect(booking).toContainText('Gartenzimmer 2')
 })
 
-test('only offers rooms with free capacity for the selected stay', async ({ page }) => {
+test('marks rooms without free capacity as an explicit overbooking for the selected stay', async ({ page }) => {
   await page.goto('/buchungen')
   await page.getByRole('button', { name: 'Neue Buchung' }).click()
 
@@ -677,7 +731,7 @@ test('only offers rooms with free capacity for the selected stay', async ({ page
   await form.getByLabel('Abreise').fill('2026-08-14')
 
   const roomSelect = form.getByLabel('Zimmer')
-  await expect(roomSelect.locator('option[value="r-4"]')).toHaveCount(0)
+  await expect(roomSelect.locator('option[value="r-4"]')).toHaveText(/Überbuchung/)
   await expect(roomSelect.locator('option[value="r-3"]')).toHaveCount(1)
 })
 
@@ -725,7 +779,7 @@ test('requires an explicit customer choice when accepting a request and highligh
 
   const emiliaRequest = page.getByLabel('Kundschaft für Anfrage von Emilia Fischer').locator('xpath=ancestor::article')
   const customerSelect = emiliaRequest.getByLabel('Kundschaft für Anfrage von Emilia Fischer')
-  await expect(emiliaRequest).toContainText('Passende Kundschaft: Emilia Fischer · gleiche Telefonnummer. Mit der Auswahl wird die Anfrage dieser Kundschaft zugeordnet.')
+  await expect(emiliaRequest).toContainText('Passende Kundschaft: Emilia Fischer · gleiche E-Mail-Adresse. Mit der Auswahl wird die Anfrage dieser Kundschaft zugeordnet.')
   await expect(customerSelect.locator('optgroup')).toHaveAttribute('label', 'Passende bestehende Kundschaft')
   await expect(customerSelect.locator('option[value="c-8"]')).toHaveCount(1)
   await expect(customerSelect.locator('option[value="c-1"]')).toHaveCount(0)
@@ -749,6 +803,7 @@ test('declines a request in a modal and records its reason', async ({ page }) =>
   const confirm = dialog.getByRole('button', { name: 'Anfrage ablehnen' })
   await expect(reason).toBeVisible()
   await expect(confirm).toBeDisabled()
+  await expect(dialog).toContainText('hannah.wolf@example.test über die Stornierung benachrichtigt')
 
   await reason.fill('Zeitraum bereits ausgebucht')
   await confirm.click()
@@ -756,4 +811,5 @@ test('declines a request in a modal and records its reason', async ({ page }) =>
   await expect(dialog).toHaveCount(0)
   await expect(request).toHaveCount(0)
   await expect(page.locator('.request-history').filter({ hasText: 'Hannah Wolf' })).toContainText('Grund: Zeitraum bereits ausgebucht')
+  await expect(page.locator('.request-history').filter({ hasText: 'Hannah Wolf' })).toContainText('E-Mail-Benachrichtigung an hannah.wolf@example.test vorgemerkt')
 })

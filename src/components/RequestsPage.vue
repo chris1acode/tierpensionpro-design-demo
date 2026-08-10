@@ -3,6 +3,7 @@ import { computed, reactive, ref } from 'vue'
 import { Cat, Check, CircleAlert, CircleCheck, Dog, Download, Inbox, ThumbsDown, ThumbsUp } from '@lucide/vue'
 import type { BookingRequest } from '../domain'
 import DeclineRequestModal from './DeclineRequestModal.vue'
+import { getCustomerRequestMatch } from '../domain/customerProfile'
 import { getRequestRoomOptions } from '../domain/roomAvailability'
 import { requestStatusLabels } from '../presentation/requestStatus'
 import { selectRoomOccupancyForPeriod } from '../store/pensionSelectors'
@@ -19,14 +20,6 @@ const customerSelection = reactive<Record<string, string>>(
 const requestError = reactive<Record<string, string>>({})
 const requestToDecline = ref<BookingRequest | null>(null)
 
-function matchingCustomersFor(request: BookingRequest) {
-  return store.customers.filter((customer) =>
-    customer.phone === request.phone
-    || (customer.firstName.localeCompare(request.customerFirstName, 'de', { sensitivity: 'base' }) === 0
-      && customer.lastName.localeCompare(request.customerLastName, 'de', { sensitivity: 'base' }) === 0)
-  )
-}
-
 const pendingRequestDetails = computed(() => store.pendingRequests.value.map((request) => {
   const roomOptions = getRequestRoomOptions(
     store.roomViews.value,
@@ -42,7 +35,10 @@ const pendingRequestDetails = computed(() => store.pendingRequests.value.map((re
     request,
     availableRooms: roomOptions.rooms,
     availability: roomOptions.availability,
-    matchingCustomers: matchingCustomersFor(request),
+    matchingCustomers: store.customers.flatMap((customer) => {
+      const match = getCustomerRequestMatch(customer, request)
+      return match ? [{ customer, match }] : []
+    }),
     selectedRoomOccupancy: selectedRoom
       ? selectRoomOccupancyForPeriod(selectedRoom, store.bookingViews.value, request.arrivalDate, request.departure)
       : null
@@ -129,12 +125,12 @@ function exportRequests(scope: 'pending' | 'history') {
                 <option value="" disabled>Kundschaft wählen</option>
                 <option value="new">Als neue Kundschaft aufnehmen</option>
                 <optgroup v-if="requestDetail.matchingCustomers.length" label="Passende bestehende Kundschaft">
-                  <option v-for="customer in requestDetail.matchingCustomers" :key="customer.id" :value="customer.id">{{ customer.firstName }} {{ customer.lastName }} · {{ customer.phone }}</option>
+                  <option v-for="{ customer } in requestDetail.matchingCustomers" :key="customer.id" :value="customer.id">{{ customer.firstName }} {{ customer.lastName }} · {{ customer.email }}</option>
                 </optgroup>
               </select>
               <p v-if="requestDetail.matchingCustomers.length" class="customer-match-hint">
-                Passende Kundschaft: {{ requestDetail.matchingCustomers.map((customer) => `${customer.firstName} ${customer.lastName}`).join(', ') }}
-                <template v-if="requestDetail.matchingCustomers.some((customer) => customer.phone === request.phone)"> · gleiche Telefonnummer</template>.
+                Passende Kundschaft: {{ requestDetail.matchingCustomers.map(({ customer }) => `${customer.firstName} ${customer.lastName}`).join(', ') }}
+                <template v-if="requestDetail.matchingCustomers.some(({ match }) => match === 'email')"> · gleiche E-Mail-Adresse</template><template v-else-if="requestDetail.matchingCustomers.some(({ match }) => match === 'phone')"> · gleiche Telefonnummer</template>.
                 Mit der Auswahl wird die Anfrage dieser Kundschaft zugeordnet.
               </p>
               <select v-model="roomSelection[request.id]" :aria-label="`Zimmer für Anfrage von ${request.customerFirstName} ${request.customerLastName}`">
@@ -170,6 +166,7 @@ function exportRequests(scope: 'pending' | 'history') {
               <strong>{{ request.customerFirstName }} {{ request.customerLastName }}</strong>
               <span>{{ request.petName }} · {{ request.breed }}</span>
               <span v-if="request.declineReason" class="note-badge">Grund: {{ request.declineReason }}</span>
+              <span v-if="request.declineNotification" class="request-notification">E-Mail-Benachrichtigung an {{ request.declineNotification.recipient }} vorgemerkt</span>
             </div>
             <div><small>Aufenthalt</small><span>{{ request.arrivalDate }} – {{ request.departure }}</span></div>
             <span class="booking-status" :class="request.status === 'accepted' ? 'checked-in' : 'checked-out'">{{ requestStatusLabels[request.status] }}</span>

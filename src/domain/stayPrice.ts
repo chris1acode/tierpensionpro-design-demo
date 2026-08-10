@@ -1,4 +1,4 @@
-import type { BookingView, DailyPetRate, PetSpecies, StayPrice } from '../domain'
+import type { BookingView, DailyPetRate, Pet, PetSpecies, ReservationPrice, StayPrice } from '../domain'
 import { enumerateStayDates, isValidBookingPeriod } from './bookingPeriod'
 
 function dailyRateFor(species: PetSpecies, rates: readonly DailyPetRate[]): number | null {
@@ -11,7 +11,7 @@ function dailyRateFor(species: PetSpecies, rates: readonly DailyPetRate[]): numb
  * occupied calendar days. The departure day itself is not charged.
  */
 export function calculateStayPrice(
-  booking: Pick<BookingView, 'id' | 'arrivalDate' | 'arrival' | 'departure' | 'pet'>,
+  booking: Pick<BookingView, 'id' | 'arrivalDate' | 'arrival' | 'departure'> & { pet: Pick<Pet, 'species'> },
   rates: readonly DailyPetRate[]
 ): StayPrice | null {
   if (!isValidBookingPeriod(booking.arrivalDate, booking.arrival, booking.departure)) return null
@@ -25,5 +25,26 @@ export function calculateStayPrice(
     dailyRateCents,
     billableDays,
     totalCents: billableDays * dailyRateCents
+  }
+}
+
+/**
+ * Calculates a non-binding total for the animals selected in one reservation.
+ * A missing rate or invalid period deliberately produces no invented amount.
+ */
+export function calculateReservationPrice(
+  stay: Pick<BookingView, 'arrivalDate' | 'arrival' | 'departure'>,
+  pets: readonly Pick<Pet, 'id' | 'species'>[],
+  rates: readonly DailyPetRate[]
+): ReservationPrice | null {
+  if (!pets.length) return null
+
+  const stays = pets.map((pet) => calculateStayPrice({ ...stay, id: `preview-${pet.id}`, pet }, rates))
+  if (stays.some((price) => price === null)) return null
+
+  const resolvedStays = stays as StayPrice[]
+  return {
+    stays: resolvedStays,
+    totalCents: resolvedStays.reduce((total, price) => total + price.totalCents, 0)
   }
 }

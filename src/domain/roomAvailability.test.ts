@@ -44,7 +44,7 @@ describe('room availability', () => {
     ]
     const bookingViews: BookingView[] = [{
       ...bookings[0], roomId: 'r-full',
-      pet: { ...pet, id: 'p-booked' }, customer: { id: 'c-1', firstName: 'Kim', lastName: 'Muster', phone: '123' }, room: rooms[1]
+      pet: { ...pet, id: 'p-booked' }, customer: { id: 'c-1', firstName: 'Kim', lastName: 'Muster', email: 'kim@example.de', phone: '123' }, room: rooms[1]
     }]
 
     expect(selectAvailableRoomsForBooking(rooms, bookingViews, pet, '2026-08-11', '09:00', '2026-08-12').map((room) => room.id)).toEqual(['r-ready'])
@@ -67,7 +67,7 @@ describe('room availability', () => {
     const room: RoomView = { id: 'r-full', name: 'Katzennest', category: 'Katzenzimmer', capacity: 1, availablePlaces: 0, guests: [], operationalState: { id: 'os-1', roomId: 'r-full', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' } }
     const bookingViews: BookingView[] = [{
       ...bookings[0], roomId: room.id, pet: { ...pet, id: 'p-booked' },
-      customer: { id: 'c-1', firstName: 'Kim', lastName: 'Muster', phone: '123' }, room
+      customer: { id: 'c-1', firstName: 'Kim', lastName: 'Muster', email: 'kim@example.de', phone: '123' }, room
     }]
 
     expect(selectRoomBookingAvailability([room], bookingViews, pet, '2026-08-11', '09:00', '2026-08-12'))
@@ -82,7 +82,7 @@ describe('room availability', () => {
     }
     const bookedRoom: BookingView = {
       ...bookings[0], roomId: room.id, pet: { id: 'p-booked', customerId: 'c-1', name: 'Mika', species: 'cat', breed: 'EKH', initials: 'M', color: '#fff' },
-      customer: { id: 'c-1', firstName: 'Kim', lastName: 'Muster', phone: '123' }, room
+      customer: { id: 'c-1', firstName: 'Kim', lastName: 'Muster', email: 'kim@example.de', phone: '123' }, room
     }
 
     expect(getRequestAvailability([room], [], pet, '2026-08-14', '09:00', '2026-08-16')).toEqual({

@@ -31,14 +31,6 @@ const gridStyle = computed(() => ({
   gridTemplateColumns: `200px repeat(${store.occupancyDates.value.length}, minmax(64px, 1fr))`
 }))
 
-function formatWeekday(date: string): string {
-  return formatShortWeekday(date)
-}
-
-function formatDay(date: string): string {
-  return formatDayAndMonth(date)
-}
-
 function occupancyLabel(day: DailyOccupancy): string {
   if (day.level === 'unavailable') return 'Keine Plätze verfügbar'
   if (day.level === 'overbooked') return `Überbucht · ${day.occupied - day.capacity} Plätze zu viel`
@@ -75,7 +67,9 @@ function saveClosure(): void {
 }
 
 function closureLabel(startDate: string, endDate: string): string {
-  return startDate === endDate ? formatDay(startDate) : `${formatDay(startDate)} – ${formatDay(endDate)}`
+  return startDate === endDate
+    ? formatDayAndMonth(startDate)
+    : `${formatDayAndMonth(startDate)} – ${formatDayAndMonth(endDate)}`
 }
 </script>
 
@@ -131,8 +125,8 @@ function closureLabel(startDate: string, endDate: string): string {
             :data-date="day.date"
             :data-occupancy-level="day.level"
           >
-            <span class="occupancy-weekday">{{ formatWeekday(day.date) }}</span>
-            <span class="occupancy-daynum">{{ formatDay(day.date) }}</span>
+            <span class="occupancy-weekday">{{ formatShortWeekday(day.date) }}</span>
+            <span class="occupancy-daynum">{{ formatDayAndMonth(day.date) }}</span>
             <span class="occupancy-rate" :class="levelClass(day.level)" :aria-label="`${occupancyLabel(day)}: ${occupancyCount(day.occupied, day.capacity)} belegt`">
               <i aria-hidden="true"><b :style="{ width: `${Math.min(100, day.rate)}%` }" /></i>
               {{ day.isClosed ? 'Zu' : occupancyCount(day.occupied, day.capacity) }}
@@ -189,7 +183,7 @@ function closureLabel(startDate: string, endDate: string): string {
       >
         <header>
           <div>
-            <span>{{ formatWeekday(day.date) }} · {{ formatDay(day.date) }}</span>
+            <span>{{ formatShortWeekday(day.date) }} · {{ formatDayAndMonth(day.date) }}</span>
             <strong>{{ occupancyLabel(day) }}</strong>
           </div>
           <b>{{ day.rate }} %</b>

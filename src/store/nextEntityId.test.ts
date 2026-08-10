@@ -10,8 +10,8 @@ describe('nextEntityId', () => {
     expect(nextEntityId(entities, prefix)).toBe(expected)
   })
 
-  it('ignores ids whose suffix is not a positive integer', () => {
-    const entities = [{ id: 'p-draft' }, { id: 'p-4-copy' }, { id: 'p-2' }]
+  it('ignores ids whose suffix is not a positive safe integer', () => {
+    const entities = [{ id: 'p-0' }, { id: 'p-draft' }, { id: 'p-4-copy' }, { id: 'p-9007199254740992' }, { id: 'p-2' }]
 
     expect(nextEntityId(entities, 'p')).toBe('p-3')
   })

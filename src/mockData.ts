@@ -24,22 +24,22 @@ export const initialPensionSettings: PensionSettings = {
 }
 
 const coreCustomers: Customer[] = [
-  { id: 'c-1', firstName: 'Sofia', lastName: 'Berger', phone: '0176 445 21 90' },
-  { id: 'c-2', firstName: 'Jonas', lastName: 'Klein', phone: '0151 820 44 13' },
-  { id: 'c-3', firstName: 'Mara', lastName: 'Hoffmann', phone: '0172 339 80 02' },
-  { id: 'c-4', firstName: 'Nina', lastName: 'Schulz', phone: '0160 791 62 18' },
-  { id: 'c-5', firstName: 'David', lastName: 'Koch', phone: '0178 220 65 74' },
-  { id: 'c-6', firstName: 'Lea', lastName: 'Albrecht', phone: '0157 312 48 06' },
-  { id: 'c-7', firstName: 'Tobias', lastName: 'Bauer', phone: '0176 908 17 42' },
-  { id: 'c-8', firstName: 'Emilia', lastName: 'Fischer', phone: '0151 654 39 21' },
-  { id: 'c-9', firstName: 'Felix', lastName: 'Krüger', phone: '0172 483 70 15' },
-  { id: 'c-10', firstName: 'Johanna', lastName: 'Neumann', phone: '0160 225 84 63' },
-  { id: 'c-11', firstName: 'Paul', lastName: 'Richter', phone: '0178 761 02 49' },
-  { id: 'c-12', firstName: 'Clara', lastName: 'Vogel', phone: '0152 396 18 57' }
+  { id: 'c-1', firstName: 'Sofia', lastName: 'Berger', email: 'sofia.berger@example.de', phone: '0176 445 21 90', emergencyContact: { name: 'Tobias Berger', phone: '0176 445 21 91' } },
+  { id: 'c-2', firstName: 'Jonas', lastName: 'Klein', email: 'jonas.klein@example.de', phone: '0151 820 44 13' },
+  { id: 'c-3', firstName: 'Mara', lastName: 'Hoffmann', email: 'mara.hoffmann@example.de', phone: '0172 339 80 02' },
+  { id: 'c-4', firstName: 'Nina', lastName: 'Schulz', email: 'nina.schulz@example.de', phone: '0160 791 62 18' },
+  { id: 'c-5', firstName: 'David', lastName: 'Koch', email: 'david.koch@example.de', phone: '0178 220 65 74' },
+  { id: 'c-6', firstName: 'Lea', lastName: 'Albrecht', email: 'lea.albrecht@example.de', phone: '0157 312 48 06' },
+  { id: 'c-7', firstName: 'Tobias', lastName: 'Bauer', email: 'tobias.bauer@example.de', phone: '0176 908 17 42' },
+  { id: 'c-8', firstName: 'Emilia', lastName: 'Fischer', email: 'emilia.fischer@example.test', phone: '0151 654 39 21' },
+  { id: 'c-9', firstName: 'Felix', lastName: 'Krüger', email: 'felix.krueger@example.de', phone: '0172 483 70 15' },
+  { id: 'c-10', firstName: 'Johanna', lastName: 'Neumann', email: 'johanna.neumann@example.de', phone: '0160 225 84 63' },
+  { id: 'c-11', firstName: 'Paul', lastName: 'Richter', email: 'paul.richter@example.de', phone: '0178 761 02 49' },
+  { id: 'c-12', firstName: 'Clara', lastName: 'Vogel', email: 'clara.vogel@example.de', phone: '0152 396 18 57' }
 ]
 
 const corePets: Pet[] = [
-  { id: 'p-1', customerId: 'c-1', name: 'Balu', species: 'dog', breed: 'Golden Retriever', initials: 'BA', color: '#DCE9E5', note: 'Benötigt sein Schilddrüsenmedikament um 18 Uhr.' },
+  { id: 'p-1', customerId: 'c-1', name: 'Balu', species: 'dog', breed: 'Golden Retriever', initials: 'BA', color: '#DCE9E5', note: 'Bitte mit dem gewohnten Futter füttern.', feedingPlan: 'Morgens und abends je 180 g des mitgebrachten Trockenfutters; kein Rind.', medicationPlan: 'Schilddrüsenmedikament: 1 Tablette täglich um 18 Uhr mit dem Abendfutter.', allergyNote: 'Unverträglichkeit gegen Rind; keine Rinderleckerlis geben.', vaccinationStatus: 'Impfpass geprüft: Staupe, Hepatitis, Parvovirose und Tollwut gültig bis März 2027.', veterinaryContact: { practiceName: 'Tierarztpraxis am Park', phone: '030 554 82 19' } },
   { id: 'p-2', customerId: 'c-2', name: 'Milo', species: 'cat', breed: 'Britisch Kurzhaar', initials: 'MI', color: '#F3E3D7' },
   { id: 'p-3', customerId: 'c-3', name: 'Luna', species: 'dog', breed: 'Labrador', initials: 'LU', color: '#E8E1F0' },
   { id: 'p-4', customerId: 'c-4', name: 'Nala', species: 'cat', breed: 'Europäisch Kurzhaar', initials: 'NA', color: '#E5E9D8', note: 'Bitte nur das mitgebrachte Futter verwenden.' },
@@ -89,6 +89,7 @@ const additionalCustomers: Customer[] = additionalCustomerNames.map(([firstName,
   id: `c-${index + 13}`,
   firstName,
   lastName,
+  email: `${firstName.toLocaleLowerCase('de')}.${lastName.toLocaleLowerCase('de').replaceAll('ä', 'ae').replaceAll('ö', 'oe').replaceAll('ü', 'ue').replaceAll('ß', 'ss')}@example.de`,
   phone: `0176 ${String(31000000 + index * 791).padStart(8, '0').replace(/(\\d{4})(\\d{4})/, '$1 $2')}`
 }))
 
@@ -144,11 +145,11 @@ export const initialDemoEnvironment: DemoEnvironment = {
 }
 
 const coreBookings: Booking[] = [
-  { id: 'b-1', petId: 'p-1', roomId: 'r-1', arrivalDate: '2026-08-09', arrival: '08:30', departure: '2026-08-12', status: 'confirmed' },
+  { id: 'b-1', petId: 'p-1', roomId: 'r-1', arrivalDate: '2026-08-09', arrival: '08:30', departure: '2026-08-12', bookingNote: 'Futterportion liegt beschriftet im Kühlschrank.', status: 'confirmed' },
   { id: 'b-2', petId: 'p-2', roomId: 'r-3', arrivalDate: '2026-08-09', arrival: '09:15', departure: '2026-08-11', status: 'confirmed' },
-  { id: 'b-3', petId: 'p-3', roomId: 'r-2', arrivalDate: '2026-08-08', arrival: '07:45', departure: '2026-08-10', status: 'checked-in' },
+  { id: 'b-3', petId: 'p-3', roomId: 'r-2', arrivalDate: '2026-08-08', arrival: '07:45', departure: '2026-08-10', pickupTime: '10:30', status: 'checked-in' },
   { id: 'b-4', petId: 'p-4', roomId: 'r-4', arrivalDate: '2026-08-10', arrival: '10:30', departure: '2026-08-14', status: 'confirmed' },
-  { id: 'b-5', petId: 'p-5', roomId: 'r-1', arrivalDate: '2026-08-07', arrival: '11:00', departure: '2026-08-09', status: 'checked-in' },
+  { id: 'b-5', petId: 'p-5', roomId: 'r-1', arrivalDate: '2026-08-07', arrival: '11:00', departure: '2026-08-09', pickupTime: '14:00', status: 'checked-in' },
   { id: 'b-6', petId: 'p-6', roomId: 'r-2', arrivalDate: '2026-07-14', arrival: '09:00', departure: '2026-07-18', status: 'checked-out' },
   { id: 'b-7', petId: 'p-7', roomId: 'r-3', arrivalDate: '2026-07-19', arrival: '10:15', departure: '2026-07-22', status: 'checked-out' },
   { id: 'b-8', petId: 'p-8', roomId: 'r-1', arrivalDate: '2026-06-10', arrival: '08:45', departure: '2026-06-14', status: 'checked-out' },
@@ -238,6 +239,7 @@ export const initialBookingRequests: BookingRequest[] = [
     id: 'req-1',
     customerFirstName: 'Hannah',
     customerLastName: 'Wolf',
+    contactEmail: 'hannah.wolf@example.test',
     phone: '0176 220 93 44',
     petName: 'Charlie',
     species: 'dog',
@@ -253,6 +255,7 @@ export const initialBookingRequests: BookingRequest[] = [
     id: 'req-2',
     customerFirstName: 'Emilia',
     customerLastName: 'Fischer',
+    contactEmail: 'emilia.fischer@example.test',
     phone: '0151 654 39 21',
     petName: 'Oskar',
     species: 'dog',
@@ -267,6 +270,7 @@ export const initialBookingRequests: BookingRequest[] = [
     id: 'req-3',
     customerFirstName: 'Elias',
     customerLastName: 'Brandt',
+    contactEmail: 'elias.brandt@example.test',
     phone: '0151 660 27 38',
     petName: 'Mimi',
     species: 'cat',
@@ -282,6 +286,7 @@ export const initialBookingRequests: BookingRequest[] = [
     id: 'req-4',
     customerFirstName: 'Marlene',
     customerLastName: 'Sommer',
+    contactEmail: 'marlene.sommer@example.test',
     phone: '0172 558 90 21',
     petName: 'Bruno',
     species: 'dog',
@@ -296,6 +301,7 @@ export const initialBookingRequests: BookingRequest[] = [
     id: 'req-5',
     customerFirstName: 'Jonas',
     customerLastName: 'Wagner',
+    contactEmail: 'jonas.wagner@example.test',
     phone: '0160 774 32 18',
     petName: 'Zorro',
     species: 'cat',

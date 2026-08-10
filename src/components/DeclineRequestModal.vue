@@ -28,6 +28,7 @@ function confirm() {
     <p class="eyebrow">Anfrage ablehnen</p>
     <h2 id="decline-request-title">Anfrage von {{ request.customerFirstName }} {{ request.customerLastName }} ablehnen?</h2>
     <p>{{ request.petName }} bleibt ohne Reservierung. Der Grund wird im Anfrageverlauf dokumentiert.</p>
+    <p class="modal-notification-hint" role="status">Nach der Ablehnung wird {{ request.customerFirstName }} {{ request.customerLastName }} per E-Mail an {{ request.contactEmail }} über die Stornierung benachrichtigt.</p>
     <form class="decline-request-form" @submit.prevent="confirm">
       <label for="decline-request-reason">Ablehnungsgrund</label>
       <textarea id="decline-request-reason" v-model="reason" rows="3" required placeholder="z. B. Zeitraum bereits ausgebucht"></textarea>

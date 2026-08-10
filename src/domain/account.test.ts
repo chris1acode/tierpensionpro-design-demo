@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { AccountUpdate } from '../domain'
-import { accountInitials, isValidAccountUpdate } from './account'
+import { accountInitials, areAccountUpdatesEqual, isValidAccountUpdate } from './account'
 
 const validUpdate: AccountUpdate = {
   firstName: 'Robin',
@@ -27,5 +27,19 @@ describe('isValidAccountUpdate', () => {
 describe('accountInitials', () => {
   it('combines the first letters of first and last name in upper case', () => {
     expect(accountInitials({ firstName: 'robin', lastName: 'muster' })).toBe('RM')
+  })
+})
+
+describe('areAccountUpdatesEqual', () => {
+  it('recognizes unchanged editable account data', () => {
+    expect(areAccountUpdatesEqual(validUpdate, { ...validUpdate })).toBe(true)
+  })
+
+  it.each([
+    ['first name', { firstName: 'Alex' }],
+    ['last name', { lastName: 'Beispiel' }],
+    ['email address', { email: 'alex@tierpension-pro.de' }]
+  ])('recognizes a changed %s', (_field, change) => {
+    expect(areAccountUpdatesEqual(validUpdate, { ...validUpdate, ...change })).toBe(false)
   })
 })

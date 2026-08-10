@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addDaysToIsoDate, buildDateRange, enumerateStayDates, fromLocalIsoDate, isDateWithinStay, isValidBookingPeriod, isValidIsoDate, toLocalIsoDate } from './bookingPeriod'
+import { addDaysToIsoDate, buildDateRange, enumerateStayDates, fromLocalIsoDate, isDateWithinStay, isValidBookingPeriod, isValidIsoDate, isValidOptionalTime, toLocalIsoDate } from './bookingPeriod'
 
 describe('booking period', () => {
   it('accepts same-day and multi-day stays', () => {
@@ -12,6 +12,14 @@ describe('booking period', () => {
     expect(isValidBookingPeriod('2026-02-30', '09:30', '2026-03-01')).toBe(false)
     expect(isValidBookingPeriod('2026-08-09', '25:00', '2026-08-10')).toBe(false)
     expect(isValidIsoDate('09.08.2026')).toBe(false)
+  })
+
+  it('accepts an omitted collection time but rejects malformed optional values', () => {
+    expect(isValidOptionalTime(undefined)).toBe(true)
+    expect(isValidOptionalTime('')).toBe(true)
+    expect(isValidOptionalTime('14:30')).toBe(true)
+    expect(isValidOptionalTime('24:00')).toBe(false)
+    expect(isValidOptionalTime('14.30')).toBe(false)
   })
 
   it('formats the injected local business date without UTC shifts', () => {

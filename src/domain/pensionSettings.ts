@@ -1,6 +1,31 @@
 import type { PensionSettingsUpdate } from '../domain'
 import { isValidEmail } from './email'
 
+/**
+ * Compares the editable pension profile including its price-list entities.
+ * Keeping this policy outside the form prevents UI-only "dirty" state from
+ * drifting away from the data that is actually persisted by the store.
+ */
+export function arePensionSettingsEqual(
+  first: PensionSettingsUpdate,
+  second: PensionSettingsUpdate
+): boolean {
+  return first.businessName === second.businessName
+    && first.contactEmail === second.contactEmail
+    && first.contactPhone === second.contactPhone
+    && first.checkInFrom === second.checkInFrom
+    && first.checkInUntil === second.checkInUntil
+    && first.checkOutUntil === second.checkOutUntil
+    && first.requestsEnabled === second.requestsEnabled
+    && first.dailyPetRates.length === second.dailyPetRates.length
+    && first.dailyPetRates.every((rate, index) => {
+      const otherRate = second.dailyPetRates[index]
+      return rate.id === otherRate?.id
+        && rate.species === otherRate.species
+        && rate.amountCents === otherRate.amountCents
+    })
+}
+
 export function isValidPensionSettingsUpdate(settings: PensionSettingsUpdate): boolean {
   const allFieldsAreFilled = [
     settings.businessName,

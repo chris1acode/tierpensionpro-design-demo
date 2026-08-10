@@ -1,6 +1,11 @@
 const isoDatePattern = /^\d{4}-\d{2}-\d{2}$/
 const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/
 
+/** A collection time is deliberately optional, but never stored in an invalid format. */
+export function isValidOptionalTime(value: string | undefined): boolean {
+  return value === undefined || value === '' || timePattern.test(value)
+}
+
 export function isValidIsoDate(value: string): boolean {
   if (!isoDatePattern.test(value)) return false
   const [year, month, day] = value.split('-').map(Number)

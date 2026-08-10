@@ -1,14 +1,17 @@
 import { computed, reactive, ref } from 'vue'
-import type { AccountUpdate, Booking, BookingRequest, BookingReservation, CheckInOutEvent, Customer, NewBooking, NewBookingReservation, NewCustomer, NewPet, NewPensionClosure, OccupancyRangeDays, PensionSettingsUpdate, RoomInput, RoomOperationalStatus, ToastNotification } from './domain'
+import type { AccountUpdate, Booking, BookingRequest, BookingReservation, BookingUpdate, CheckInOutEvent, Customer, CustomerUpdate, EmergencyContact, NewBooking, NewBookingReservation, NewCustomer, NewPet, NewPensionClosure, OccupancyRangeDays, PensionSettingsUpdate, PetUpdate, RoomInput, RoomOperationalStatus, ToastNotification } from './domain'
 import { isValidAccountUpdate } from './domain/account'
-import { addDaysToIsoDate, buildDateRange, enumerateStayDates, fromLocalIsoDate, isValidBookingPeriod, isValidIsoDate, toLocalIsoDate } from './domain/bookingPeriod'
-import { createCustomerProfile } from './domain/customerProfile'
-import { createPetProfile } from './domain/petProfile'
+import { isValidBookingNote, normalizeBookingNote } from './domain/bookingNote'
+import { addDaysToIsoDate, buildDateRange, enumerateStayDates, fromLocalIsoDate, isValidBookingPeriod, isValidIsoDate, isValidOptionalTime, toLocalIsoDate } from './domain/bookingPeriod'
+import { createCustomerProfile, updateCustomerProfile } from './domain/customerProfile'
+import { normalizeEmergencyContact } from './domain/emergencyContact'
+import { createPetProfile, updatePetProfile } from './domain/petProfile'
 import { isValidPensionSettingsUpdate } from './domain/pensionSettings'
 import { isValidRoomInput } from './domain/roomConfiguration'
 import { doesStayOverlapClosure, isValidPensionClosure } from './domain/pensionClosure'
 import { hasRoomCapacityForStay } from './domain/roomAvailability'
 import { isRoomCompatibleWithSpecies } from './domain/roomCompatibility'
+import { calculateStayPrice } from './domain/stayPrice'
 import {
   selectBookingViews,
   selectArrivals,
@@ -16,6 +19,7 @@ import {
   selectCustomerViews,
   selectDailyOccupancy,
   selectDepartures,
+  selectCheckedIn,
   selectOccupancyByCategory,
   selectPendingRequests,
   selectRequestHistory,
@@ -24,6 +28,7 @@ import {
 } from './store/pensionSelectors'
 import { nextEntityId } from './store/nextEntityId'
 import { createDemoState } from './store/demoState'
+import { replaceArrayContents } from './store/replaceArrayContents'
 
 export interface PensionStoreDependencies {
   now: () => Date
@@ -61,7 +66,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
 
   const arrivals = computed(() => selectArrivals(bookingViews.value, businessDate.value))
   const customerViews = computed(() => selectCustomerViews(customers, pets, bookingViews.value))
-  const checkedIn = computed(() => bookingViews.value.filter((item) => item.status === 'checked-in'))
+  const checkedIn = computed(() => selectCheckedIn(bookingViews.value))
   const departures = computed(() => selectDepartures(bookingViews.value, businessDate.value))
   const roomViews = computed(() => selectRoomViews(rooms, checkedIn.value, roomOperationalStates))
   const totalCapacity = computed(() => roomViews.value.reduce((sum, room) =>
@@ -107,7 +112,8 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     const pet = booking && pets.find((item) => item.id === booking.petId)
     const room = booking && rooms.find((item) => item.id === booking.roomId)
     const roomState = roomOperationalStates.find((item) => item.roomId === booking?.roomId)
-    if (!booking || !pet || !room || roomState?.status !== 'ready' || booking.status !== 'confirmed') return false
+    if (!booking || !pet || !room || roomState?.status !== 'ready'
+      || booking.status !== 'confirmed' || booking.arrivalDate !== businessDate.value) return false
 
     const occupiedPlaces = bookings.filter((item) => item.roomId === room.id && item.status === 'checked-in').length
     if (occupiedPlaces >= room.capacity) return false
@@ -151,6 +157,8 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     const exceedsCapacity = room && !hasRoomCapacityForStay(bookings, room.id, room.capacity, input.arrivalDate, input.departure)
     if (!petBelongsToCustomer || !room || !speciesMatchesRoom || !roomIsReady || hasActiveBooking
       || !isValidBookingPeriod(input.arrivalDate, input.arrival, input.departure)
+      || !isValidOptionalTime(input.pickupTime)
+      || !isValidBookingNote(input.bookingNote)
       || doesStayOverlapClosure(input.arrivalDate, input.departure, pensionClosures)
       || (exceedsCapacity && !input.allowOverbooking)) return false
 
@@ -161,6 +169,8 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       arrivalDate: input.arrivalDate,
       arrival: input.arrival,
       departure: input.departure,
+      ...(input.pickupTime ? { pickupTime: input.pickupTime } : {}),
+      ...(normalizeBookingNote(input.bookingNote) ? { bookingNote: normalizeBookingNote(input.bookingNote) } : {}),
       status: 'confirmed',
       overbooked: Boolean(exceedsCapacity)
     })
@@ -172,7 +182,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
 
   /** Creates all animal stays together, after validating capacity for the whole group. */
   function createBookingReservation(input: NewBookingReservation): boolean {
-    const { allowOverbooking = false, ...reservationInput } = input
+    const { allowOverbooking = false, bookingNote, ...reservationInput } = input
     const petIds = [...new Set(input.petIds)]
     const customer = customers.find((item) => item.id === input.customerId)
     const room = rooms.find((item) => item.id === input.roomId)
@@ -185,15 +195,23 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     const exceedsCapacity = room && !hasRoomCapacityForStay(bookings, room.id, room.capacity, input.arrivalDate, input.departure, petIds.length)
     if (!customer || !room || !petIds.length || !petsBelongToCustomer || !allPetsAreCompatible || !roomIsReady || hasActiveBooking
       || !isValidBookingPeriod(input.arrivalDate, input.arrival, input.departure)
+      || !isValidOptionalTime(input.pickupTime)
+      || !isValidBookingNote(input.bookingNote)
       || doesStayOverlapClosure(input.arrivalDate, input.departure, pensionClosures)
       || (exceedsCapacity && !allowOverbooking)) return false
 
     const reservationId = nextEntityId(bookingReservations, 'reservation')
-    bookingReservations.push({ ...reservationInput, id: reservationId, petIds, createdAt: dependencies.now().toISOString() })
+    bookingReservations.push({
+      ...reservationInput, id: reservationId, petIds, createdAt: dependencies.now().toISOString(),
+      ...(normalizeBookingNote(bookingNote) ? { bookingNote: normalizeBookingNote(bookingNote) } : {})
+    })
     for (const petId of petIds) {
       bookings.push({
         id: nextEntityId(bookings, 'b'), reservationId, petId, roomId: room.id,
-        arrivalDate: input.arrivalDate, arrival: input.arrival, departure: input.departure, status: 'confirmed', overbooked: Boolean(exceedsCapacity)
+        arrivalDate: input.arrivalDate, arrival: input.arrival, departure: input.departure,
+        ...(input.pickupTime ? { pickupTime: input.pickupTime } : {}),
+        ...(normalizeBookingNote(bookingNote) ? { bookingNote: normalizeBookingNote(bookingNote) } : {}),
+        status: 'confirmed', overbooked: Boolean(exceedsCapacity)
       })
     }
     const names = selectedPets.map((pet) => pet!.name).join(', ')
@@ -202,6 +220,57 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       : petIds.length === 1
         ? `Die Reservierung für ${names} wurde angelegt.`
         : `Die gemeinsame Reservierung für ${names} wurde angelegt.`)
+    return true
+  }
+
+  /** Updates an unstarted stay while preserving its pet/customer references and status. */
+  function updateBooking(bookingId: string, input: BookingUpdate): boolean {
+    const booking = bookings.find((item) => item.id === bookingId)
+    const pet = booking && pets.find((item) => item.id === booking.petId)
+    const room = rooms.find((item) => item.id === input.roomId)
+    const roomIsReady = roomOperationalStates.some((state) => state.roomId === room?.id && state.status === 'ready')
+    const speciesMatchesRoom = pet && room && isRoomCompatibleWithSpecies(room, pet.species)
+    const otherBookings = bookings.filter((item) => item.id !== bookingId)
+    const exceedsCapacity = room && !hasRoomCapacityForStay(
+      otherBookings, room.id, room.capacity, input.arrivalDate, input.departure
+    )
+    if (!booking || !pet || booking.status !== 'confirmed' || !room || !roomIsReady || !speciesMatchesRoom
+      || !isValidBookingPeriod(input.arrivalDate, input.arrival, input.departure)
+      || !isValidOptionalTime(input.pickupTime)
+      || !isValidBookingNote(input.bookingNote)
+      || doesStayOverlapClosure(input.arrivalDate, input.departure, pensionClosures)
+      || (exceedsCapacity && !input.allowOverbooking)) return false
+
+    const bookingNote = normalizeBookingNote(input.bookingNote)
+    const reservation = booking.reservationId
+      ? bookingReservations.find((item) => item.id === booking.reservationId)
+      : undefined
+    const separatesFromReservation = reservation && (
+      reservation.roomId !== room.id
+      || reservation.arrivalDate !== input.arrivalDate
+      || reservation.arrival !== input.arrival
+      || reservation.departure !== input.departure
+      || reservation.pickupTime !== (input.pickupTime || undefined)
+      || reservation.bookingNote !== bookingNote
+    )
+
+    booking.roomId = room.id
+    booking.arrivalDate = input.arrivalDate
+    booking.arrival = input.arrival
+    booking.departure = input.departure
+    if (input.pickupTime) booking.pickupTime = input.pickupTime
+    else delete booking.pickupTime
+    if (bookingNote) booking.bookingNote = bookingNote
+    else delete booking.bookingNote
+    booking.overbooked = Boolean(exceedsCapacity)
+    if (separatesFromReservation && reservation) {
+      reservation.petIds = reservation.petIds.filter((petId) => petId !== booking.petId)
+      delete booking.reservationId
+      if (!reservation.petIds.length) {
+        bookingReservations.splice(bookingReservations.indexOf(reservation), 1)
+      }
+    }
+    showToast(`Die Buchung für ${pet.name} wurde aktualisiert.`)
     return true
   }
 
@@ -223,6 +292,17 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       .reverse()
     for (const eventIndex of relatedEventIndexes) checkInOutEvents.splice(eventIndex, 1)
     bookings.splice(bookingIndex, 1)
+
+    // Reservations retain the remaining animal stays when one member is
+    // deleted. Remove the aggregate too once it no longer contains a stay.
+    if (booking.reservationId) {
+      const reservationIndex = bookingReservations.findIndex((reservation) => reservation.id === booking.reservationId)
+      const reservation = bookingReservations[reservationIndex]
+      if (reservation) {
+        reservation.petIds = reservation.petIds.filter((petId) => petId !== booking.petId)
+        if (!reservation.petIds.length) bookingReservations.splice(reservationIndex, 1)
+      }
+    }
     showToast(`Die Buchung für ${pet.name} wurde gelöscht.`)
     return true
   }
@@ -242,8 +322,9 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       customer = createCustomerProfile(nextEntityId(customers, 'c'), {
         firstName: request.customerFirstName,
         lastName: request.customerLastName,
+        email: request.contactEmail,
         phone: request.phone
-      }, customers.map((item) => item.phone))
+      }, customers.map((item) => item.phone), customers.map((item) => item.email))
       if (!customer) return false
       customers.push(customer)
     } else {
@@ -290,7 +371,13 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
 
     request.status = 'declined'
     request.declineReason = trimmedReason
-    showToast(`Die Anfrage von ${request.customerFirstName} ${request.customerLastName} wurde abgelehnt.`)
+    request.declineNotification = {
+      channel: 'email',
+      recipient: request.contactEmail,
+      status: 'scheduled',
+      createdAt: dependencies.now().toISOString()
+    }
+    showToast(`Die Anfrage von ${request.customerFirstName} ${request.customerLastName} wurde abgelehnt. Die E-Mail-Benachrichtigung ist vorbereitet.`)
     return true
   }
 
@@ -305,11 +392,45 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     return true
   }
 
+  function updatePet(petId: string, input: PetUpdate): boolean {
+    const pet = pets.find((item) => item.id === petId)
+    const updatedPet = pet && updatePetProfile(pet, input)
+    if (!pet || !updatedPet) return false
+
+    Object.assign(pet, updatedPet)
+    showToast(`${pet.name} wurde im Kundenprofil aktualisiert.`)
+    return true
+  }
+
+  /** Removes only the optional veterinary contact; the animal master data stays intact. */
+  function removePetVeterinaryContact(petId: string): boolean {
+    const pet = pets.find((item) => item.id === petId)
+    if (!pet?.veterinaryContact) return false
+
+    delete pet.veterinaryContact
+    showToast(`Der Tierarztkontakt von ${pet.name} wurde entfernt.`)
+    return true
+  }
+
+  /**
+   * A pet may only be removed before its first stay. Bookings intentionally keep
+   * their pet reference, including historical check-in/out events.
+   */
+  function removePet(petId: string): boolean {
+    const petIndex = pets.findIndex((item) => item.id === petId)
+    if (petIndex < 0 || bookings.some((booking) => booking.petId === petId)) return false
+
+    const [pet] = pets.splice(petIndex, 1)
+    showToast(`${pet.name} wurde aus dem Kundenprofil entfernt.`)
+    return true
+  }
+
   function createCustomer(input: NewCustomer): boolean {
     const customer = createCustomerProfile(
       nextEntityId(customers, 'c'),
       input,
-      customers.map((item) => item.phone)
+      customers.map((item) => item.phone),
+      customers.map((item) => item.email)
     )
     if (!customer) return false
 
@@ -318,12 +439,52 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     return true
   }
 
+  function updateCustomer(customerId: string, input: CustomerUpdate): boolean {
+    const customer = customers.find((item) => item.id === customerId)
+    if (!customer) return false
+
+    const otherCustomers = customers.filter((item) => item.id !== customerId)
+    const updated = updateCustomerProfile(
+      customer,
+      input,
+      otherCustomers.map((item) => item.phone),
+      otherCustomers.map((item) => item.email)
+    )
+    if (!updated) return false
+
+    Object.assign(customer, updated)
+    showToast(`${customer.firstName} ${customer.lastName} wurde im Kundenprofil aktualisiert.`)
+    return true
+  }
+
+  function updateCustomerEmergencyContact(customerId: string, input: EmergencyContact): boolean {
+    const customer = customers.find((item) => item.id === customerId)
+    const emergencyContact = normalizeEmergencyContact(input)
+    if (!customer || !emergencyContact) return false
+
+    customer.emergencyContact = emergencyContact
+    showToast(`Der Notfallkontakt für ${customer.firstName} ${customer.lastName} wurde gespeichert.`)
+    return true
+  }
+
+  function removeCustomerEmergencyContact(customerId: string): boolean {
+    const customer = customers.find((item) => item.id === customerId)
+    if (!customer?.emergencyContact) return false
+
+    delete customer.emergencyContact
+    showToast(`Der Notfallkontakt für ${customer.firstName} ${customer.lastName} wurde entfernt.`)
+    return true
+  }
+
   function checkOut(bookingId: string): boolean {
     const booking = bookings.find((item) => item.id === bookingId)
     const pet = booking && pets.find((item) => item.id === booking.petId)
     if (!booking || !pet || booking.status !== 'checked-in') return false
 
+    const price = calculateStayPrice({ ...booking, pet }, settings.dailyPetRates)
     booking.status = 'checked-out'
+    // Keep the completed invoice independent from future rate changes.
+    booking.checkoutPrice = price ? { ...price } : undefined
     recordCheckInOutEvent(booking.id, 'check-out')
     showToast(`${pet.name} wurde ausgecheckt. Das Zimmer ist wieder frei.`)
     return true
@@ -489,15 +650,15 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
 
   function resetDemo() {
     const initialState = createDemoState()
-    customers.splice(0, customers.length, ...initialState.customers)
-    pets.splice(0, pets.length, ...initialState.pets)
-    rooms.splice(0, rooms.length, ...initialState.rooms)
-    roomOperationalStates.splice(0, roomOperationalStates.length, ...initialState.roomOperationalStates)
-    pensionClosures.splice(0, pensionClosures.length, ...initialState.pensionClosures)
-    bookings.splice(0, bookings.length, ...initialState.bookings)
-    bookingReservations.splice(0, bookingReservations.length, ...initialState.bookingReservations)
-    bookingRequests.splice(0, bookingRequests.length, ...initialState.bookingRequests)
-    checkInOutEvents.splice(0, checkInOutEvents.length, ...initialState.checkInOutEvents)
+    replaceArrayContents(customers, initialState.customers)
+    replaceArrayContents(pets, initialState.pets)
+    replaceArrayContents(rooms, initialState.rooms)
+    replaceArrayContents(roomOperationalStates, initialState.roomOperationalStates)
+    replaceArrayContents(pensionClosures, initialState.pensionClosures)
+    replaceArrayContents(bookings, initialState.bookings)
+    replaceArrayContents(bookingReservations, initialState.bookingReservations)
+    replaceArrayContents(bookingRequests, initialState.bookingRequests)
+    replaceArrayContents(checkInOutEvents, initialState.checkInOutEvents)
     Object.assign(settings, initialState.settings)
     Object.assign(account, initialState.account)
     delete account.cancelledAt
@@ -541,10 +702,17 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     demoEnvironment,
     createBooking,
     createBookingReservation,
+    updateBooking,
     canDeleteBooking,
     deleteBooking,
     createCustomer,
+    updateCustomer,
+    updateCustomerEmergencyContact,
+    removeCustomerEmergencyContact,
     createPet,
+    updatePet,
+    removePetVeterinaryContact,
+    removePet,
     checkIn,
     canUndoCheckIn,
     undoCheckIn,

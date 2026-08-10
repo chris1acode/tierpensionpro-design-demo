@@ -2,7 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import {
-  ArrowRight, CalendarDays, Check, Dog, LogOut, Menu, PawPrint, Search, X
+  ArrowRight, CalendarDays, Check, Dog, LogOut, Menu, PawPrint, X
 } from '@lucide/vue'
 import AccountSettingsPage from './components/AccountSettingsPage.vue'
 import CheckInModal from './components/CheckInModal.vue'
@@ -13,14 +13,12 @@ import CustomersPage from './components/CustomersPage.vue'
 import DemoDataControl from './components/DemoDataControl.vue'
 import OccupancyPage from './components/OccupancyPage.vue'
 import RequestsPage from './components/RequestsPage.vue'
-import RoomOccupancyModal from './components/RoomOccupancyModal.vue'
 import SettingsPage from './components/SettingsPage.vue'
 import ToastRegion from './components/ToastRegion.vue'
 import type { BookingView, DepartureView } from './domain'
 import { accountInitials } from './domain/account'
 import { calculateStayPrice } from './domain/stayPrice'
 import { navigationItems } from './navigation'
-import { matchesSearchTerm, resolveSearchTerm } from './shared/search'
 import { usePensionStore } from './usePensionStore'
 
 const store = usePensionStore()
@@ -29,9 +27,6 @@ const mobileNavOpen = ref(false)
 const selectedBooking = ref<BookingView | null>(null)
 const selectedDeparture = ref<DepartureView | null>(null)
 const scheduleView = ref<'arrivals' | 'departures'>('arrivals')
-const roomDialogOpen = ref(false)
-const query = ref('')
-const globalSearchInput = ref<HTMLInputElement | null>(null)
 const mobileNavTrigger = ref<HTMLButtonElement | null>(null)
 const mobileNavClose = ref<HTMLButtonElement | null>(null)
 const mobileNavigation = ref<HTMLElement | null>(null)
@@ -44,17 +39,9 @@ const currentPage = computed(() => ({
 const visibleNavigationItems = computed(() => navigationItems.filter((item) =>
   item.name !== 'requests' || store.settings.requestsEnabled))
 
-const filteredArrivals = computed(() => {
-  const term = resolveSearchTerm(query.value)
-  return store.arrivals.value.filter((booking) =>
-    matchesSearchTerm(term, [booking.pet.name, booking.customer.firstName, booking.customer.lastName, booking.room.name]))
-})
+const filteredArrivals = computed(() => store.arrivals.value)
 
-const filteredDepartures = computed(() => {
-  const term = resolveSearchTerm(query.value)
-  return store.departures.value.filter((departure) =>
-    matchesSearchTerm(term, [departure.pet.name, departure.customer.firstName, departure.customer.lastName, departure.room.name]))
-})
+const filteredDepartures = computed(() => store.departures.value)
 
 const selectedDeparturePrice = computed(() => selectedDeparture.value
   ? calculateStayPrice(selectedDeparture.value, store.settings.dailyPetRates)
@@ -66,14 +53,6 @@ function confirmCheckIn(booking: BookingView) {
 
 function confirmCheckout(departure: DepartureView) {
   if (store.checkOut(departure.id)) selectedDeparture.value = null
-}
-
-function focusGlobalSearch(event: KeyboardEvent) {
-  if (event.key.toLocaleLowerCase('en') !== 'k' || (!event.metaKey && !event.ctrlKey)) return
-  if (mobileNavOpen.value || selectedBooking.value || selectedDeparture.value || roomDialogOpen.value
-    || document.querySelector('[role="dialog"][aria-modal="true"]')) return
-  event.preventDefault()
-  globalSearchInput.value?.focus()
 }
 
 async function openMobileNavigation() {
@@ -116,12 +95,10 @@ function keepFocusInMobileNavigation(event: KeyboardEvent) {
 }
 
 onMounted(() => {
-  window.addEventListener('keydown', focusGlobalSearch)
   window.addEventListener('keydown', closeMobileNavigationWithEscape)
   window.addEventListener('keydown', keepFocusInMobileNavigation)
 })
 onBeforeUnmount(() => {
-  window.removeEventListener('keydown', focusGlobalSearch)
   window.removeEventListener('keydown', closeMobileNavigationWithEscape)
   window.removeEventListener('keydown', keepFocusInMobileNavigation)
 })
@@ -147,19 +124,19 @@ onBeforeUnmount(() => {
     <section class="main-area">
       <header class="topbar">
         <button ref="mobileNavTrigger" class="menu-button icon-button" aria-label="Navigation öffnen" @click="openMobileNavigation"><Menu /></button>
-        <label class="global-search"><Search :size="18" /><input ref="globalSearchInput" v-model="query" type="search" aria-label="Globale Suche" placeholder="Tiere, Kunden oder Zimmer suchen …" /><kbd>⌘ K</kbd></label>
         <DemoDataControl />
         <RouterLink class="top-avatar" to="/konto" aria-label="Zu den Kontoeinstellungen">{{ accountInitials(store.account) }}</RouterLink>
       </header>
 
       <main v-if="route.name === 'dashboard'">
         <div class="page-heading">
-          <div><p class="eyebrow">Sonntag, 9. August</p><h1>Guten Morgen, {{ store.account.firstName }}</h1><p>Hier ist der Überblick für den heutigen Pensionstag.</p></div>
+          <div><p class="eyebrow">Sonntag, 9. August</p><h1>Tagesübersicht</h1><p>Hier ist der Überblick für den heutigen Pensionstag.</p></div>
         </div>
 
         <section class="metrics" aria-label="Tageskennzahlen">
-          <RouterLink class="metric-card" to="/check-in-out" aria-label="Anreisen heute in Check-in und Check-out öffnen"><span class="metric-icon orange"><CalendarDays /></span><div><small>Anreisen heute</small><strong>{{ store.arrivals.value.length }}</strong><p>Nächste um {{ store.arrivals.value[0]?.arrival ?? '–' }} Uhr</p></div><ArrowRight class="metric-arrow" :size="18" /></RouterLink>
-          <RouterLink class="metric-card" to="/belegung" aria-label="Tiere im Haus in der Belegung öffnen"><span class="metric-icon teal"><Dog /></span><div><small>Tiere im Haus</small><strong>{{ store.checkedIn.value.length }}<em> / {{ store.totalCapacity.value }}</em></strong><p>{{ store.occupancyRate.value }} % der Plätze belegt</p></div><ArrowRight class="metric-arrow" :size="18" /></RouterLink>
+          <RouterLink class="metric-card" :to="{ path: '/check-in-out', query: { view: 'arrivals' } }" aria-label="Anreisen heute in Check-in und Check-out öffnen"><span class="metric-icon orange"><CalendarDays /></span><div><small>Anreisen heute</small><strong>{{ store.arrivals.value.length }}</strong><p>Nächste um {{ store.arrivals.value[0]?.arrival ?? '–' }} Uhr</p></div><ArrowRight class="metric-arrow" :size="18" /></RouterLink>
+          <RouterLink class="metric-card" :to="{ path: '/check-in-out', query: { view: 'departures' } }" aria-label="Abreisen heute in Check-in und Check-out öffnen"><span class="metric-icon teal"><LogOut /></span><div><small>Abreisen heute</small><strong>{{ store.departures.value.length }}</strong><p>{{ store.departures.value.length ? 'Heute abholbereit' : 'Keine Abreise geplant' }}</p></div><ArrowRight class="metric-arrow" :size="18" /></RouterLink>
+          <RouterLink class="metric-card" :to="{ path: '/check-in-out', query: { view: 'checked-in' } }" aria-label="Tiere im Haus in Check-in und Check-out öffnen"><span class="metric-icon teal"><Dog /></span><div><small>Tiere im Haus</small><strong>{{ store.checkedIn.value.length }}<em> / {{ store.totalCapacity.value }}</em></strong><p>{{ store.occupancyRate.value }} % der Plätze belegt</p></div><ArrowRight class="metric-arrow" :size="18" /></RouterLink>
         </section>
 
         <div class="dashboard-grid">
@@ -185,15 +162,9 @@ onBeforeUnmount(() => {
               </article>
             </div>
             <div v-else class="empty-state">
-              <span><Search v-if="query.trim()" /><Check v-else /></span>
-              <template v-if="query.trim()">
-                <strong>Keine Treffer gefunden.</strong>
-                <p>Versuche einen anderen Suchbegriff.</p>
-              </template>
-              <template v-else>
-                <strong>{{ scheduleView === 'arrivals' ? 'Alle erwarteten Tiere sind angekommen.' : 'Alle Abreisen sind abgeschlossen.' }}</strong>
-                <p>{{ scheduleView === 'arrivals' ? 'Für heute steht kein weiterer Check-in an.' : 'Für heute steht kein weiterer Check-out an.' }}</p>
-              </template>
+              <span><Check /></span>
+              <strong>{{ scheduleView === 'arrivals' ? 'Alle erwarteten Tiere sind angekommen.' : 'Alle Abreisen sind abgeschlossen.' }}</strong>
+              <p>{{ scheduleView === 'arrivals' ? 'Für heute steht kein weiterer Check-in an.' : 'Für heute steht kein weiterer Check-out an.' }}</p>
             </div>
             <RouterLink class="panel-navigation" to="/check-in-out">Alle Check-ins und Check-outs <ArrowRight :size="16" /></RouterLink>
           </section>
@@ -207,16 +178,13 @@ onBeforeUnmount(() => {
                 <p><strong>{{ summary.category }}</strong><small>{{ summary.occupied }} von {{ summary.capacity }} belegt</small></p><span>{{ summary.capacity }} Plätze</span>
               </div>
             </div>
-            <div class="occupancy-actions">
-              <RouterLink class="accent-button" to="/belegung">Belegung planen <ArrowRight :size="16" /></RouterLink>
-              <button class="outline-button" @click="roomDialogOpen = true">Zimmerstatus verwalten</button>
-            </div>
+            <div class="occupancy-actions"><RouterLink class="accent-button" to="/belegung">Belegung planen <ArrowRight :size="16" /></RouterLink></div>
           </aside>
         </div>
       </main>
-      <CustomersPage v-else-if="route.name === 'customers'" :query="query" />
-      <CheckInOutPage v-else-if="route.name === 'check-in-out'" :query="query" @check-in="selectedBooking = $event" @check-out="selectedDeparture = $event" />
-      <BookingsPage v-else-if="route.name === 'bookings'" :query="query" />
+      <CustomersPage v-else-if="route.name === 'customers'" />
+      <CheckInOutPage v-else-if="route.name === 'check-in-out'" @check-in="selectedBooking = $event" @check-out="selectedDeparture = $event" />
+      <BookingsPage v-else-if="route.name === 'bookings'" @check-out="selectedDeparture = $event" />
       <OccupancyPage v-else-if="route.name === 'occupancy'" />
       <RequestsPage v-else-if="route.name === 'requests'" />
       <SettingsPage v-else-if="route.name === 'settings'" />
@@ -248,13 +216,6 @@ onBeforeUnmount(() => {
       :price="selectedDeparturePrice"
       @close="selectedDeparture = null"
       @confirm="confirmCheckout(selectedDeparture)"
-    />
-
-    <RoomOccupancyModal
-      v-if="roomDialogOpen"
-      :rooms="store.roomViews.value"
-      @close="roomDialogOpen = false"
-      @change-status="store.setRoomOperationalStatus"
     />
 
   </div>

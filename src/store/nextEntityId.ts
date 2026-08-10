@@ -10,7 +10,10 @@ export function nextEntityId(entities: readonly Identifiable[], prefix: string):
     const suffix = entity.id.slice(idPrefix.length)
     if (!/^\d+$/.test(suffix)) return highest
 
-    return Math.max(highest, Number(suffix))
+    const number = Number(suffix)
+    if (!Number.isSafeInteger(number) || number < 1) return highest
+
+    return Math.max(highest, number)
   }, 0)
 
   return `${idPrefix}${highestNumber + 1}`

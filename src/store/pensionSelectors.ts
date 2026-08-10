@@ -77,6 +77,11 @@ export function selectDepartures(
   return bookingViews.filter((booking) => booking.status === 'checked-in' && booking.departure === today)
 }
 
+/** Animals that are currently accommodated, independent of their planned departure day. */
+export function selectCheckedIn(bookingViews: readonly BookingView[]): BookingView[] {
+  return bookingViews.filter((booking) => booking.status === 'checked-in')
+}
+
 /** Open arrivals for one operational calendar day. Kept next to departures so
  * every day-based check-in/out view applies the same booking status policy. */
 export function selectArrivals(

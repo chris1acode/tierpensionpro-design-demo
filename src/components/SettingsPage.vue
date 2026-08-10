@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { Banknote, Building2, Clock3, Inbox, Plus, Save, Trash2 } from '@lucide/vue'
 import type { PensionSettingsUpdate, PetSpecies, RoomInput } from '../domain'
 import { useSynchronizedDraft } from '../composables/useSynchronizedDraft'
+import { arePensionSettingsEqual } from '../domain/pensionSettings'
+import { areRoomConfigurationsEqual } from '../domain/roomConfiguration'
 import { usePensionStore } from '../usePensionStore'
 
 const store = usePensionStore()
@@ -26,6 +28,10 @@ const { draft: roomDraft, resetDraft: resetRoomDraft } = useSynchronizedDraft(
   () => store.rooms,
   () => { roomError.value = '' }
 )
+
+const hasUnsavedSettings = computed(() => !arePensionSettingsEqual(draft.value, settingsDraft()))
+const hasUnsavedRooms = computed(() => !areRoomConfigurationsEqual(roomDraft.value, store.rooms))
+const hasUnsavedChanges = computed(() => hasUnsavedSettings.value || hasUnsavedRooms.value)
 
 function save() {
   error.value = ''
@@ -159,7 +165,7 @@ function updateRate(species: PetSpecies, value: string) {
       </section>
 
       <p v-if="error" class="form-error" role="alert">{{ error }}</p>
-      <div class="settings-actions"><button class="secondary-button" type="button" @click="discard">Änderungen verwerfen</button><button class="primary-button" type="submit"><Save :size="16" /> Einstellungen speichern</button></div>
+      <div class="settings-actions"><button class="secondary-button" :disabled="!hasUnsavedChanges" type="button" @click="discard">Änderungen verwerfen</button><button class="primary-button" :disabled="!hasUnsavedSettings" type="submit"><Save :size="16" /> Einstellungen speichern</button></div>
     </form>
   </main>
 </template>

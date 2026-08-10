@@ -7,6 +7,7 @@ import {
   selectCustomerViews,
   selectDailyOccupancy,
   selectDepartures,
+  selectCheckedIn,
   occupancyLevelFor,
   selectReservationCandidates,
   selectRoomOccupancyForPeriod,
@@ -14,8 +15,8 @@ import {
 } from './pensionSelectors'
 
 const customers: Customer[] = [
-  { id: 'customer-1', firstName: 'Ada', lastName: 'Zeller', phone: '123' },
-  { id: 'customer-2', firstName: 'Bea', lastName: 'Albrecht', phone: '456' }
+  { id: 'customer-1', firstName: 'Ada', lastName: 'Zeller', email: 'ada@example.de', phone: '123' },
+  { id: 'customer-2', firstName: 'Bea', lastName: 'Albrecht', email: 'bea@example.de', phone: '456' }
 ]
 const pets: Pet[] = [
   { id: 'pet-1', customerId: 'customer-1', name: 'Balu', species: 'dog', breed: 'Mix', initials: 'BA', color: '#fff' }
@@ -48,6 +49,7 @@ describe('pension selectors', () => {
 
     expect(selectArrivals(bookingViews, '2026-08-10').map((booking) => booking.id)).toEqual(['booking-2'])
     expect(selectDepartures(bookingViews, '2026-08-10').map((booking) => booking.id)).toEqual(['booking-3'])
+    expect(selectCheckedIn(bookingViews).map((booking) => booking.id)).toEqual(['booking-3'])
   })
 
   it('reports the affected booking when a reference is invalid', () => {

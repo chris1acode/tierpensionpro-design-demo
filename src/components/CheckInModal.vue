@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Check, ClipboardCheck } from '@lucide/vue'
 import type { BookingView } from '../domain'
+import { toTelephoneHref } from '../presentation/phoneLink'
 import BaseModal from './BaseModal.vue'
 
 defineProps<{
@@ -22,13 +23,37 @@ defineEmits<{
       Ist {{ booking.pet.name }} angekommen? Mit der Bestätigung wird {{ booking.pet.name }} dem Zimmer
       <strong>{{ booking.room.name }}</strong> zugewiesen.
     </p>
-    <div v-if="booking.pet.note" class="pet-note">
-      <strong>Wichtiger Hinweis</strong>
-      <span>{{ booking.pet.note }}</span>
+    <div v-if="booking.pet.note || booking.pet.feedingPlan || booking.pet.medicationPlan || booking.pet.allergyNote || booking.pet.vaccinationStatus || booking.bookingNote" class="pet-note" aria-label="Operative Hinweise">
+      <div v-if="booking.pet.note">
+        <strong>Hinweis zum Tier</strong>
+        <span>{{ booking.pet.note }}</span>
+      </div>
+      <div v-if="booking.bookingNote">
+        <strong>Hinweis zum Aufenthalt</strong>
+        <span>{{ booking.bookingNote }}</span>
+      </div>
+      <div v-if="booking.pet.feedingPlan">
+        <strong>Fütterungsplan</strong>
+        <span>{{ booking.pet.feedingPlan }}</span>
+      </div>
+      <div v-if="booking.pet.medicationPlan">
+        <strong>Medikationsplan</strong>
+        <span>{{ booking.pet.medicationPlan }}</span>
+      </div>
+      <div v-if="booking.pet.allergyNote">
+        <strong>Allergien & Unverträglichkeiten</strong>
+        <span>{{ booking.pet.allergyNote }}</span>
+      </div>
+      <div v-if="booking.pet.vaccinationStatus">
+        <strong>Impfstatus</strong>
+        <span>{{ booking.pet.vaccinationStatus }}</span>
+      </div>
     </div>
     <dl>
       <div><dt>Tier</dt><dd>{{ booking.pet.name }} · {{ booking.pet.breed }}</dd></div>
       <div><dt>Abreise</dt><dd>{{ booking.departure }}</dd></div>
+      <div v-if="booking.customer.emergencyContact"><dt>Notfallkontakt</dt><dd><a :href="toTelephoneHref(booking.customer.emergencyContact.phone)">{{ booking.customer.emergencyContact.name }} · {{ booking.customer.emergencyContact.phone }}</a></dd></div>
+      <div v-if="booking.pet.veterinaryContact"><dt>Tierarztpraxis</dt><dd><a :href="toTelephoneHref(booking.pet.veterinaryContact.phone)">{{ booking.pet.veterinaryContact.practiceName }} · {{ booking.pet.veterinaryContact.phone }}</a></dd></div>
     </dl>
     <div class="modal-actions">
       <button class="secondary-button" @click="$emit('close')">Abbrechen</button>

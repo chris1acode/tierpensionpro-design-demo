@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { AlertTriangle, Save, ShieldCheck, Undo2, UserRound } from '@lucide/vue'
 import type { AccountUpdate } from '../domain'
 import { useSynchronizedDraft } from '../composables/useSynchronizedDraft'
+import { areAccountUpdatesEqual } from '../domain/account'
 import { formatCancellationDate } from '../presentation/dateFormat'
 import { usePensionStore } from '../usePensionStore'
 import CancelAccountModal from './CancelAccountModal.vue'
@@ -25,6 +26,8 @@ const { draft, resetDraft } = useSynchronizedDraft(
   }),
   () => { error.value = '' }
 )
+
+const hasUnsavedChanges = computed(() => !areAccountUpdatesEqual(draft.value, accountDraft()))
 
 function save() {
   error.value = ''
@@ -68,7 +71,7 @@ function confirmCancellation() {
       </section>
 
       <p v-if="error" class="form-error" role="alert">{{ error }}</p>
-      <div class="settings-actions"><button class="secondary-button" type="button" @click="discard">Änderungen verwerfen</button><button class="primary-button" type="submit"><Save :size="16" /> Konto speichern</button></div>
+      <div class="settings-actions"><button class="secondary-button" :disabled="!hasUnsavedChanges" type="button" @click="discard">Änderungen verwerfen</button><button class="primary-button" :disabled="!hasUnsavedChanges" type="submit"><Save :size="16" /> Konto speichern</button></div>
     </form>
 
     <section v-if="store.account.role === 'root' && !store.account.cancelledAt" class="panel settings-panel danger-zone">

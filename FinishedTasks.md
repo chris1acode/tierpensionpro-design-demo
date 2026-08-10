@@ -1,5 +1,244 @@
 # Finished Tasks
 
+## 2026-08-10 15:57 CEST — SessionId: cf2d3
+
+- [x] Komponenten, Package-Struktur und Entwurfsmuster aus Clean-Code-/Wartbarkeitssicht geprüft: Fachregeln liegen überwiegend in `domain/`, abgeleitete Daten in Selektoren und Store, wiederverwendbarer UI-Zustand in `composables/` und Darstellung in Vue-Komponenten. Der zentrale Store sowie größere Seitenkomponenten bleiben die wichtigsten künftigen Wartbarkeitsschwerpunkte.
+- [x] Einen kleinen Wartbarkeitsaspekt der Einstellungen verbessert: Die komponentenlokale Dirty-State-Vergleichsregel für Zimmerentwürfe aus `SettingsPage.vue` in die getestete Domain-Policy `areRoomConfigurationsEqual` ausgelagert. Zimmer-ID, Reihenfolge, Name, Kategorie und Kapazität werden damit zentral und ohne Vue-Abhängigkeit verglichen.
+- [x] Unveränderte sowie bei Name, Kategorie, Kapazität, Reihenfolge oder Anzahl veränderte Zimmerkonfigurationen mit Unit-Tests abgesichert. Verifiziert mit der vollständigen Unit-Suite (226 Tests), TypeScript-/Produktions-Build und `git diff --check`.
+
+## 2026-08-10 15:54 CEST — SessionId: b04dd
+
+- [x] Testbarkeit und Wartbarkeit geprüft: Fachlogik bleibt überwiegend in Domain-Modulen, Selektoren und Composables getrennt von der Vue-Darstellung; der zentrale Store und die größeren Seitenkomponenten sind weiterhin die wesentlichen künftigen Wartbarkeitsschwerpunkte.
+- [x] Frische V8-Unit-Testabdeckung ermittelt: 215 Tests bestehen; Statements 96,03 %, Branches 92,95 %, Functions 95,49 % und Lines 97,31 %. Die 80-%-Schwelle ist klar überschritten.
+- [x] Deshalb die vollständige Playwright-Suite zur Analyse von Seitenaufbau, Navigation, Dialogen, Formularen, Demodaten sowie Desktop-/Mobile-Layouts ausgeführt: 106 Szenarien ohne Fehlschlag; viewport-spezifische Fälle wurden erwartungsgemäß übersprungen. Kein neuer reproduzierbarer Aufbau- oder Interaktionsfehler festgestellt.
+- [x] TypeScript-/Produktions-Build und `git diff --check` sind fehlerfrei. Da kein Bug gefunden wurde, waren weder ein Code-Fix noch ein zusätzlicher Eintrag in `bugs.md` erforderlich.
+
+## 2026-08-10 15:51 CEST — SessionId: dcb2a
+
+- [x] Komponenten, Package-Struktur und Entwurfsmuster aus Clean-Code-/Wartbarkeitssicht geprüft: Fachregeln sind überwiegend in `domain/`, abgeleitete Daten im Store/Selektoren, wiederverwendbarer UI-Zustand in `composables/` und Darstellung in Vue-Komponenten getrennt. Der zentrale Store und die umfangreicheren Seitenkomponenten bleiben die wesentlichen künftigen Wartbarkeitsschwerpunkte.
+- [x] Einen kleinen Wartbarkeitsaspekt in den externen Anfragen verbessert: Die Zuordnungsregel einer Anfrage zu bestehender Kundschaft aus `RequestsPage.vue` in die getestete Domain-Policy `getCustomerRequestMatch` ausgelagert. E-Mail-, Telefonnummern- und Namensvergleich besitzen damit eine zentrale, priorisierte Regel; formatierte Telefonnummern werden einheitlich normalisiert.
+- [x] Die Priorität der Kontaktkanäle, den Namens-Fallback und nicht passende Anfragen mit Unit-Tests abgesichert. Verifiziert mit der vollständigen Unit-Suite (213 Tests), TypeScript-/Produktions-Build und `git diff --check`.
+
+## 2026-08-10 15:48 CEST — SessionId: 3f54e
+
+- [x] Komponenten, Package-Struktur und Entwurfsmuster aus Clean-Code-/Wartbarkeitssicht geprüft: Fachregeln sind überwiegend in `domain/`, abgeleitete Daten in Store/Selektoren, wiederverwendbarer UI-Zustand in `composables/` und Darstellung in Vue-Komponenten getrennt. Der zentrale Store und die umfangreicheren Seitenkomponenten bleiben die wesentlichen künftigen Wartbarkeitsschwerpunkte.
+- [x] Einen kleinen Wartbarkeitsaspekt in den Kontoeinstellungen verbessert: Die Gleichheitsregel für editierbare Kontodaten aus `AccountSettingsPage.vue` in die getestete Domain-Policy `areAccountUpdatesEqual` ausgelagert. Dirty-State-Prüfungen sind damit unabhängig von der Vue-Komponente, beziehen ausschließlich persistierbare Felder ein und bleiben bei künftigen Formularen konsistent.
+- [x] Unveränderte sowie je Feld veränderte Kontodaten mit Unit-Tests abgesichert. Verifiziert mit der vollständigen Unit-Suite (210 Tests), TypeScript-/Produktions-Build und `git diff --check`.
+
+## 2026-08-10 15:46 CEST — SessionId: 79573
+
+- [x] Testbarkeit und Wartbarkeit geprüft: Domain-Policies, Selektoren und Composables halten Fachlogik überwiegend vom Vue-Layer getrennt. Der zentrale Store sowie die umfangreicheren Seitenkomponenten bleiben die wichtigsten künftigen Wartbarkeitsschwerpunkte.
+- [x] Frische V8-Unit-Testabdeckung ermittelt: 200 Tests bestehen; Statements 96,08 %, Branches 92,68 %, Functions 95,34 % und Lines 97,20 %. Damit ist die 80-%-Schwelle klar überschritten.
+- [x] Daher Playwright zur Seitenanalyse verwendet. Der Check-in-Dialog stellt die aktuellen operativen Hinweise vollständig dar; ein veralteter E2E-Test erwartete jedoch den früheren Mock-Tierhinweis und schlug dadurch auf Desktop und Mobile fehl. Die Regression prüft jetzt Tierhinweis, Aufenthaltsnotiz und Medikationsplan; der Testfehler ist in `bugs.md` dokumentiert.
+- [x] Den betroffenen Playwright-Test auf Desktop und Mobile erfolgreich verifiziert; TypeScript-/Produktions-Build und `git diff --check` sind fehlerfrei.
+
+## 2026-08-10 15:44 CEST — SessionId: 666a1
+
+- [x] Komponenten-, Package- und Entwurfsmuster geprüft: Fachregeln sind überwiegend in `domain/`, abgeleitete Daten in Store/Selektoren, wiederverwendbarer UI-Zustand in `composables/` und Darstellung/Interaktion in Vue-Komponenten getrennt. Der zentrale Store sowie die umfangreicheren Seitenkomponenten bleiben die wichtigsten künftigen Wartbarkeitsschwerpunkte.
+- [x] Einen kleinen Wartbarkeitsaspekt in `CustomerAutocomplete.vue` verbessert: Die Komponente verwendet für die Kundensuche jetzt die bereits getesteten, gemeinsamen Suchhelfer `resolveSearchTerm` und `matchesSearchTerm`, statt ihre eigene Normalisierungs- und Vergleichslogik zu pflegen. Suche nach Name, E-Mail und Telefonnummer folgt damit derselben deutschen, groß-/kleinschreibungsunabhängigen Policy wie die Buchungssuche.
+- [x] Den E-Mail-Suchfall als Unit-Regressionstest abgesichert. Verifiziert mit der vollständigen Unit-Suite (200 Tests), TypeScript-/Produktions-Build und `git diff --check`.
+
+## 2026-08-10 15:44 CEST — SessionId: 60502
+
+- [x] `bugs.md` und `extensions.md` priorisiert geprüft: Beide Listen enthielten keine offenen Aufgaben.
+- [x] Einen kleinen Datenintegritätsaspekt der typisierten Mehrtier-Reservierungsentität ergänzt: Wird ein einzelner noch nicht gestarteter Aufenthalt separat auf ein anderes Zimmer, einen anderen Zeitraum, eine andere Uhrzeit oder einen anderen Hinweis umgeplant, wird er atomar aus der gemeinsamen `BookingReservation` gelöst. Die Sammelentität behält nur die weiterhin gemeinsam geplanten Tiere und kann dadurch keine veralteten Planungsdaten referenzieren.
+- [x] Mit einem Unit-Regressionstest für das Auflösen der Verknüpfung sowie der vollständigen Unit-Suite (200 Tests), TypeScript-/Produktions-Build und `git diff --check` verifiziert.
+
+## 2026-08-10 15:43 CEST — SessionId: 5114d
+
+- [x] Testbarkeit und Wartbarkeit geprüft: Fachregeln sind überwiegend in Domain-Modulen, Selektoren und Composables vom Vue-Layer getrennt; der zentrale Store und die umfangreicheren Seitenkomponenten bleiben die wichtigsten künftigen Wartbarkeitsschwerpunkte.
+- [x] Frische V8-Unit-Testabdeckung ermittelt: 198 Tests bestehen; Statements 96,14 %, Branches 93,35 %, Functions 95,31 % und Lines 97,30 %. Die 80-%-Schwelle ist klar überschritten.
+- [x] Deshalb die vollständige Playwright-Suite zur Analyse von Seitenaufbau, Navigation, Dialogen, Formularen, Demodaten sowie Desktop-/Mobile-Layouts ausgeführt: 104 Szenarien ohne Fehlschlag; der ausschließlich für kleine Viewports vorgesehene Desktop-Fall wurde erwartungsgemäß übersprungen. Kein neuer reproduzierbarer Aufbau- oder Interaktionsfehler festgestellt.
+- [x] TypeScript-/Produktions-Build und `git diff --check` sind fehlerfrei. Da kein Bug gefunden wurde, waren weder Code-Fix noch ein neuer Eintrag in `bugs.md` erforderlich.
+
+## 2026-08-10 15:41 CEST — SessionId: 1cf29
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft: Beide priorisierten Listen enthielten keine offenen Aufgaben.
+- [x] Eine Datenintegritätslücke beim Check-in behoben: Die typisierte Store-Operation akzeptiert bestätigte Aufenthalte jetzt ausschließlich am jeweiligen Betriebstag. Direkte Aufrufe können dadurch keine zukünftige Buchung am UI-Workflow vorbei in den Status „eingecheckt“ versetzen.
+- [x] Einen Unit-Regressionstest für die abgelehnte vorzeitige Anreise ergänzt.
+
+## 2026-08-10 15:39 CEST — SessionId: 38df8
+
+- [x] Komponenten-, Package- und Entwurfsmuster geprüft: Fachregeln sind in `domain/`, abgeleitete Daten im Store bzw. Selektoren, wiederverwendbare Zustandslogik in `composables/` und Darstellung in Vue-Komponenten strukturiert. Der zentrale Store und die umfangreicheren Seitenkomponenten bleiben die wichtigsten künftigen Wartbarkeitsschwerpunkte.
+- [x] Einen kleinen Presentation-Aspekt verbessert: Die Erzeugung von Telefon-Links ist jetzt in `src/presentation/phoneLink.ts` zentralisiert. Alle drei Verwendungen nutzen dieselbe bestehende Nummernnormalisierung; damit funktionieren auch formatierte Rufnummern mit Klammern, Bindestrichen oder Schrägstrichen einheitlich.
+- [x] Einen Unit-Regressionstest ergänzt. Verifiziert mit der vollständigen Unit-Suite (194 Tests), TypeScript-/Produktions-Build und `git diff --check`.
+
+## 2026-08-10 15:38 CEST — SessionId: b2dba
+
+- [x] Clean-Code- und Wartbarkeitsstand geprüft: Die Schichten `domain/`, Store/Selektoren, `presentation/`, Composables und Vue-Komponenten sind überwiegend nachvollziehbar getrennt. Der zentrale Store sowie die größeren Seitenkomponenten bleiben die wesentlichsten künftigen Wartbarkeitsschwerpunkte.
+- [x] Einen kleinen Robustheitsaspekt im wiederverwendbaren Store-Helfer `nextEntityId` verbessert: Nicht positive oder außerhalb des sicheren JavaScript-Zahlenbereichs liegende numerische ID-Suffixe werden nun wie fehlerhafte Daten ignoriert. Dadurch erzeugt der Helfer keine unpräzisen oder exponentiell formatierten Folge-IDs.
+- [x] Den Randfall mit `0` und einer unsicheren Ganzzahl per Unit-Test abgesichert.
+
+## 2026-08-10 15:37 CEST — SessionId: 3654c
+
+- [x] Testbarkeit und Wartbarkeit geprüft: Fachlogik ist überwiegend in Domain-Policies, Selektoren und Composables vom Vue-Layer getrennt; der zentrale Store und die umfangreicheren Seitenkomponenten bleiben die wichtigsten künftigen Wartbarkeitsschwerpunkte.
+- [x] Frische V8-Unit-Testabdeckung ermittelt: 190 Tests bestehen; Statements 95,97 %, Branches 93,04 %, Functions 95,16 % und Lines 97,19 %. Die 80-%-Schwelle ist klar überschritten.
+- [x] Daher die vollständige Playwright-Suite zur Analyse von Seitenaufbau, Navigation, Dialogen, Formularen, Demodaten und responsiven Desktop-/Mobile-Layouts ausgeführt: 104 Szenarien ohne Fehlschlag; der ausschließlich für kleine Viewports vorgesehene Desktop-Fall wurde erwartungsgemäß übersprungen. Kein neuer reproduzierbarer Aufbau- oder Interaktionsfehler festgestellt.
+- [x] TypeScript-/Produktions-Build und `git diff --check` sind fehlerfrei. Da kein Bug gefunden wurde, waren weder Code-Fix noch ein neuer Eintrag in `bugs.md` erforderlich.
+
+## 2026-08-10 15:34 CEST — SessionId: 4e930
+
+- [x] Testbarkeit und Wartbarkeit geprüft: Fachregeln liegen überwiegend in Domain-Modulen, abgeleitete Zugriffe in Selektoren und wiederverwendbare Entwurfslogik in Composables; Vue-Komponenten konzentrieren sich größtenteils auf Darstellung und Interaktion. Der zentrale Store sowie die umfangreicheren Seitenkomponenten bleiben die wichtigsten künftigen Wartbarkeitsschwerpunkte.
+- [x] Frische V8-Unit-Testabdeckung ermittelt: 183 Tests bestehen; Statements 95,96 %, Branches 93,60 %, Functions 95,04 % und Lines 97,10 %. Die 80-%-Schwelle ist klar überschritten.
+- [x] Deshalb die vollständige Playwright-Suite zur Analyse von Seitenaufbau, Navigation, Dialogen, Formularen, Demodaten und responsiven Desktop-/Mobile-Layouts ausgeführt: 104 Szenarien ohne Fehlschlag; der ausschließlich für kleine Viewports vorgesehene Desktop-Fall wurde erwartungsgemäß übersprungen. Kein neuer reproduzierbarer Aufbau- oder Interaktionsfehler festgestellt.
+- [x] TypeScript-/Produktions-Build und `git diff --check` sind fehlerfrei. Da kein Bug gefunden wurde, waren weder Code-Fix noch ein neuer Eintrag in `bugs.md` erforderlich.
+
+## 2026-08-10 15:34 CEST — SessionId: 4c99a
+
+- [x] Test- und Wartbarkeitsstand geprüft: Fachregeln sind überwiegend in Domain-Policies, Selektoren und Composables vom Vue-Layer getrennt; der zentrale Store bleibt wegen seiner Orchestrierungsaufgaben der wesentliche künftige Wartbarkeitsschwerpunkt.
+- [x] Frische V8-Unit-Testabdeckung ermittelt: 182 Tests bestehen; Statements 95,96 %, Branches 93,60 %, Functions 95,04 % und Lines 97,10 %. Die 80-%-Schwelle ist klar überschritten.
+- [x] Den gefundenen Testfehler behoben und in `bugs.md` dokumentiert: Eine abgelehnte Aktualisierung mit überlanger Buchungsnotiz muss die bestehende Notiz erhalten; der Regressionstest prüft jetzt diesen unveränderten Ausgangswert.
+- [x] Deshalb die vollständige Playwright-Suite zur Prüfung von Seitenaufbau, Navigation, Dialogen und responsiven Desktop-/Mobile-Layouts ausgeführt: 104 Szenarien ohne Fehlschlag; viewport-spezifische Überspringungen sind erwartungsgemäß. Produktions-Build und `git diff --check` sind ebenfalls fehlerfrei.
+
+## 2026-08-10 15:33 CEST — SessionId: 2d833
+
+- [x] Komponenten-, Package- und Entwurfsmuster geprüft: Fachregeln liegen überwiegend in `domain/`, abgeleitete Zugriffe im Store, wiederverwendbare UI-Logik in Composables und die Darstellung in Vue-Komponenten. Der zentrale Store und wachsende Seitenkomponenten bleiben die wichtigsten künftigen Wartbarkeitsschwerpunkte.
+- [x] Einen kleinen Presentation-Aspekt verbessert: Die zuvor lokale Übersetzung der Check-in/out-Verlaufstypen aus `CheckInOutPage.vue` in die zentrale, vollständig typisierte Policy `src/presentation/checkInOutEvent.ts` verschoben. CSV-Export und Verlauf verwenden damit dieselben Labels; die Seitenkomponente enthält keine Präsentationsregel mehr.
+- [x] Einen Unit-Regressionstest ergänzt. Verifiziert mit der vollständigen Unit-Suite (183 Tests), TypeScript-/Produktions-Build und `git diff --check`.
+
+## 2026-08-10 15:31 CEST — SessionId: b7d77
+
+- [x] Test- und Wartbarkeitsstand geprüft: Domain-Policies, Selektoren und Composables sind überwiegend von den Vue-Komponenten getrennt; der zentrale Store bleibt wegen seiner Orchestrierungsaufgaben der wichtigste künftige Wartbarkeitsschwerpunkt.
+- [x] Frische V8-Unit-Testabdeckung ermittelt: 178 Tests bestehen; Statements 95,92 %, Branches 93,58 %, Functions 95,01 % und Lines 97,07 %. Die 80-%-Schwelle ist klar überschritten.
+- [x] Deshalb die vollständige Playwright-Suite zur Prüfung von Seitenaufbau, Navigation, Dialogen und responsiven Desktop-/Mobile-Layouts ausgeführt: 102 Szenarien ohne Fehlschlag; viewport-spezifische Überspringungen sind erwartungsgemäß. Kein neuer reproduzierbarer Seitenaufbau- oder Interaktionsfehler festgestellt.
+- [x] `git diff --check` ist fehlerfrei. Der TypeScript-/Produktions-Build ist ausschließlich durch die bereits vorhandene, unversionierte Fremdänderung `src/domain/bookingNote.ts` blockiert (`TS2532`: möglicher `undefined`-Vergleich); diese Datei wurde bewusst nicht verändert.
+
+## 2026-08-10 15:30 CEST — SessionId: 59dea
+
+- [x] `bugs.md` und `extensions.md` priorisiert geprüft; beide Listen enthalten keine offenen Aufgaben.
+- [x] Einen kleinen Datenintegritätsfehler in der Mehrtier-Reservierung behoben: Wird ein einzelner `Booking`-Aufenthalt gelöscht, entfernt der Store dessen Tier-ID nun atomar aus der verknüpften `BookingReservation`. Nach dem Löschen des letzten Aufenthalts wird die leere Reservierungsentität ebenfalls entfernt.
+- [x] Einen Unit-Regressionstest für Teil- und Vollauflösung einer gemeinsamen Reservierung ergänzt. Verifiziert mit 57 erfolgreichen fokussierten Unit-Tests, TypeScript-/Produktions-Build und `git diff --check` für die geänderten Dateien.
+
+## 2026-08-10 15:29 CEST — SessionId: d0ce2
+
+- [x] Test- und Wartbarkeitsstand geprüft: Die Fachlogik ist überwiegend in Domain-Modulen, Selektoren und Composables gekapselt; Vue-Komponenten übernehmen größtenteils Darstellung und Interaktion. Der zentrale Store bleibt wegen seiner Orchestrierungsrolle der wichtigste künftige Wartbarkeitsschwerpunkt.
+- [x] Die V8-Unit-Testabdeckung ermittelt: 177 Tests bestehen; Statements 95,88 %, Branches 93,72 %, Functions 94,98 % und Lines 97,04 %. Die 80-%-Schwelle ist klar überschritten.
+- [x] Daher die vollständige Playwright-Suite zur Prüfung von Seitenaufbau, Navigation, Dialogen und responsiven Desktop-/Mobile-Layouts ausgeführt: 102 Szenarien ohne Fehlschlag; viewport-spezifische Überspringungen sind erwartungsgemäß. Kein neuer reproduzierbarer Seitenaufbau- oder Funktionsfehler festgestellt.
+- [x] TypeScript-Prüfung/Produktions-Build und `git diff --check` erfolgreich ausgeführt. Da kein Bug gefunden wurde, waren weder ein Code-Fix noch ein zusätzlicher Eintrag in `bugs.md` erforderlich.
+
+## 2026-08-10 15:28 CEST — SessionId: c6770
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft; beide enthalten aktuell keine offenen Einträge. Deshalb bewusst einen kleinen, bereits datenmodellgestützten CRUD-Aspekt vervollständigt.
+- [x] Bestätigte Aufenthalte können nun direkt aus der Buchungsliste bearbeitet werden. Der neue, zugängliche Link öffnet die bestehende Bearbeitung mit der konkreten `Booking`-Mock-Entität; Änderungen laufen weiterhin durch das typisierte `BookingUpdate` und die vorhandene Store-Validierung für Zeitraum, Zimmer und Kapazität.
+- [x] Die Aktionen der Buchungszeile sind für Desktop und schmale Ansichten in einem gemeinsamen responsiven Bereich gruppiert, ohne Check-out oder Löschen zu verdrängen.
+- [x] Mit TypeScript-/Produktions-Build, gezieltem Playwright-Regressionstest auf Desktop und Mobile sowie `git diff --check` verifiziert.
+
+## 2026-08-10 15:26 CEST — SessionId: 6ef0c
+
+- [x] Komponenten-, Package- und Entwurfsmuster geprüft: Reine Domain-Policies, Selektoren, Composables und Vue-Darstellung sind überwiegend nachvollziehbar getrennt. Der zentrale Store bleibt durch seine Orchestrierungsrolle der wichtigste künftige Wartbarkeitsschwerpunkt.
+- [x] Einen kleinen Robustheitsmangel in der wiederverwendbaren Composition `usePagination` behoben: Ungültige Seitengrößen wie `0` konnten zu inkonsistenter Seitenermittlung führen. Die Composition normalisiert die Seitengröße nun zentral auf mindestens einen Eintrag; Berechnung und Ausschnitt verwenden dieselbe interne Größe.
+- [x] Einen Unit-Test für die Fallback-Policy ergänzt und die Änderung mit Unit-Tests, TypeScript-/Produktions-Build sowie `git diff --check` verifiziert.
+
+## 2026-08-10 15:25 CEST — SessionId: ebf8d
+
+- [x] Testbarkeit und Wartbarkeit geprüft: Die Fachlogik ist überwiegend in Domain-Modulen, Selektoren und Composables isoliert; Vue-Komponenten konzentrieren sich auf Darstellung und Interaktion. Der zentrale Store bleibt durch seine Orchestrierungsrolle der wichtigste künftige Wartbarkeitsschwerpunkt.
+- [x] Die V8-Unit-Testabdeckung ermittelt: 176 Tests bestehen; Statements 95,87 %, Branches 93,72 %, Functions 94,98 % und Lines 97,03 %. Die 80-%-Schwelle ist klar überschritten.
+- [x] Deshalb die vollständige Playwright-Suite zur Prüfung von Aufbau, Interaktion und responsiven Desktop-/Mobile-Layouts ausgeführt: 96 Szenarien ohne Fehlschlag; der ausschließlich für kleine Viewports gedachte Fall wurde planmäßig übersprungen. Kein neuer reproduzierbarer Seitenaufbau- oder Funktionsfehler festgestellt.
+- [x] TypeScript-Prüfung/Produktions-Build und `git diff --check` erfolgreich ausgeführt. Da kein Bug gefunden wurde, waren kein Code-Fix und kein neuer Eintrag in `bugs.md` erforderlich.
+
+## 2026-08-10 15:23 CEST — SessionId: bf55c
+
+- [x] Testbarkeit und Wartbarkeit geprüft: Die Fachlogik ist überwiegend in Domain-Modulen, Selektoren und Composables isoliert; Vue-Komponenten konzentrieren sich auf Darstellung und Interaktion. Der zentrale Store bleibt durch seine Orchestrierungsrolle der wichtigste künftige Wartbarkeitsschwerpunkt.
+- [x] Die V8-Unit-Testabdeckung ermittelt: 176 Tests bestehen; Statements 95,87 %, Branches 93,72 %, Functions 94,98 % und Lines 97,03 %. Die 80-%-Schwelle ist klar überschritten.
+- [x] Deshalb die vollständige Playwright-Suite zur Prüfung von Aufbau, Interaktion und responsiven Desktop-/Mobile-Layouts ausgeführt: 96 Ausführungen ohne Fehlschlag; viewport-spezifische Szenarien wurden erwartungsgemäß übersprungen. Kein neuer reproduzierbarer Seitenaufbau- oder Funktionsfehler festgestellt.
+- [x] TypeScript-Prüfung/Produktions-Build und `git diff --check` erfolgreich ausgeführt. Da kein Bug gefunden wurde, waren kein Code-Fix und kein neuer Eintrag in `bugs.md` erforderlich.
+
+## 2026-08-10 15:22 CEST — SessionId: 62ccc
+
+- [x] Komponenten-, Package- und Entwurfsmuster geprüft: Die Trennung von Domain-Policies, Selektoren/Store, Composables und Vue-Darstellung ist insgesamt nachvollziehbar. Der zentrale Store bleibt aufgrund seiner Orchestrierungsaufgaben der wichtigste künftige Wartbarkeitsschwerpunkt.
+- [x] Eine doppelte Basislogik im Kundenverzeichnis entfernt: `CustomersPage.vue` verwendet jetzt die bereits getestete Composition `usePagination` für Seitenzahl, Begrenzung, sichtbaren Ausschnitt und Rücksetzen bei einer Suche. Die kundenspezifische Auswahl sowie die Navigation mit Auslassungspunkten bleiben bewusst in der Komponente.
+- [x] Mit 176 erfolgreichen Unit-Tests, TypeScript-/Produktions-Build und `git diff --check` verifiziert.
+
+## 2026-08-10 15:22 CEST — SessionId: 0e905
+
+- [x] Komponenten-, Package- und Entwurfsmuster geprüft: Die Trennung in reine Domain-Policies, Store-Selektoren, Composables und Vue-Komponenten ist insgesamt gut nachvollziehbar. Der zentrale Store bleibt wegen seiner Orchestrierungsaufgaben der wichtigste künftige Wartbarkeitsschwerpunkt.
+- [x] Einen kleinen Wartbarkeitsaspekt in `OccupancyPage.vue` verbessert: Die redundanten lokalen Wrapper für Wochentags- und Tagesformatierung entfernt. Die Seite verwendet die bereits getesteten Presentation-Formatter `formatShortWeekday` und `formatDayAndMonth` nun direkt, sodass keine zweite, funktionslose API-Schicht gepflegt werden muss.
+- [x] Mit 176 erfolgreichen Unit-Tests, TypeScript-/Produktions-Build und `git diff --check` verifiziert.
+
+## 2026-08-10 15:20 CEST — SessionId: cdcc0
+
+- [x] Testbarkeit und Wartbarkeit geprüft: Fachregeln sind weiterhin überwiegend in Domain-Modulen, Selektoren und Composables getrennt von den Vue-Komponenten. Der zentrale Store bleibt wegen seiner Orchestrierungsaufgaben der wichtigste Beobachtungspunkt für künftige Wartbarkeit.
+- [x] Die aktuelle V8-Unit-Testabdeckung ermittelt: 176 Tests bestehen; Statements 95,86 %, Branches 93,91 %, Functions 94,96 % und Lines 97,02 %. Die 80-%-Schwelle ist deutlich überschritten.
+- [x] Deshalb die vollständige Playwright-Suite zur Prüfung von Seitenaufbau, Interaktionen und responsiven Desktop-/Mobile-Layouts ausgeführt: 94 Ausführungen ohne Fehlschlag; viewport-spezifische Szenarien wurden erwartungsgemäß übersprungen. Kein neuer reproduzierbarer Bug festgestellt.
+- [x] TypeScript-Prüfung, Produktions-Build und `git diff --check` erfolgreich ausgeführt. Da kein Bug gefunden wurde, waren weder ein Code-Fix noch ein neuer Eintrag in `bugs.md` erforderlich.
+
+## 2026-08-10 15:19 CEST — SessionId: 8ec8e
+
+- [x] Testbarkeit und Wartbarkeit geprüft: Die Fachregeln liegen überwiegend in Domain-Modulen, Selektoren und Composables; Vue-Komponenten konzentrieren sich weitgehend auf Darstellung und Interaktion. Der zentrale Store bleibt wegen seiner Orchestrierungsaufgaben der wichtigste künftige Wartbarkeitsschwerpunkt.
+- [x] Die Unit-Testabdeckung mit V8 ermittelt: 176 Tests bestehen; Statements 95,85 %, Branches 94,11 %, Functions 94,96 % und Lines 97,01 %. Die 80-%-Schwelle ist damit deutlich überschritten.
+- [x] Daher die vollständige Playwright-Suite auf Desktop und Mobile als Aufbau-, Interaktions- und responsive Layout-Prüfung ausgeführt: 94 Ausführungen erfolgreich; lediglich die bewusst viewport-spezifischen Szenarien wurden erwartungsgemäß übersprungen. Kein neuer reproduzierbarer Seitenaufbau- oder Funktionsfehler festgestellt.
+- [x] TypeScript-Prüfung und Produktions-Build erfolgreich ausgeführt. Da kein Bug gefunden wurde, waren weder ein Code-Fix noch ein zusätzlicher Eintrag in `bugs.md` erforderlich.
+
+## 2026-08-10 15:18 CEST — SessionId: dab8a
+
+- [x] `bugs.md` zuerst geprüft: Alle dokumentierten Punkte waren erledigt. Die bereits begonnene, priorisierte Cross-Referenz aus dem Kundenprofil zur Buchungsanlage auf den Randfall aktiver Tieraufenthalte geprüft und abgesichert.
+- [x] Die vorgewählte Kund:innen-Mock-Entität bleibt bei einem Deep-Link zur Buchungsanlage sichtbar, auch wenn ihre Tiere durch die bestehende zentrale Reservierungs-Policy aktuell keine neue Buchung zulassen. Doppelbuchungen bleiben dadurch fachlich verhindert, während die Zuordnung nachvollziehbar erhalten bleibt.
+- [x] Den Desktop-/Mobile-Playwright-Regressionstest (2 bestanden), TypeScript-/Produktions-Build und `git diff --check` erfolgreich ausgeführt.
+
+## 2026-08-10 15:14 CEST — SessionId: 60505
+
+- [x] Test- und Wartbarkeitsstand geprüft: Die frische V8-Abdeckung liegt bei 95,89 % Statements, 94,39 % Branches, 95,18 % Functions und 97,12 % Lines (172 erfolgreiche Unit-Tests) und übersteigt damit die 80-%-Schwelle deutlich.
+- [x] Gemäß Prüfvorgabe die vollständige Playwright-Suite auf Desktop und Mobile ausgeführt. Alle 90 Ausführungen waren erfolgreich; viewport-gebundene Fälle wurden planmäßig übersprungen. Geprüft wurden dabei unter anderem Navigations-, Dialog-, Fokus-, Buchungs-, Belegungs-, Anfrage-, Export- und responsive Layout-Flüsse.
+- [x] Aufbau und Wartbarkeit bewertet: Fachregeln liegen überwiegend in Domain-Policies und Selektoren, während die Vue-Komponenten Darstellung und Interaktion übernehmen. Der zentrale Store bleibt wegen seiner Orchestrierungsaufgaben der wichtigste künftige Wartbarkeitsschwerpunkt.
+- [x] Produktions-Build inklusive TypeScript-Prüfung sowie `git diff --check` erfolgreich ausgeführt. Kein neuer reproduzierbarer Bug festgestellt; deshalb waren weder Code-Fix noch Eintrag in `bugs.md` erforderlich.
+
+## 2026-08-10 15:14 CEST — SessionId: 8d3fa
+
+- [x] `bugs.md` zuerst geprüft: Alle dokumentierten Bugs waren bereits erledigt. Anschließend den ersten offenen Erweiterungspunkt umgesetzt und in `extensions.md` abgehakt: Anstehende Anreisen verlinken direkt zur jeweiligen Buchung und öffnen deren Bearbeitungsmodus.
+- [x] Das neue typisierte Modell `BookingUpdate` und die Store-Operation `updateBooking` aktualisieren ausschließlich noch nicht eingecheckte Aufenthalte. Kundschaft, Tier und Status bleiben referenzstabil; Zimmer, Tierart, Schließzeiten, Aufenthaltszeitraum und Kapazität werden fachlich geprüft. Eine Überbuchung verlangt weiterhin die explizite Bestätigung.
+- [x] Der Bearbeitungsentwurf bezieht Zimmerverfügbarkeit aus den bestehenden Mock-Entitäten und zählt die aktuell bearbeitete Buchung nicht gegen ihre eigene Kapazität. Ein Desktop-/Mobile-Playwright-Test sichert Navigation, Vorbefüllung und Speichern ab.
+- [x] Verifiziert mit 172 Unit-Tests, TypeScript-/Produktions-Build, gezieltem Playwright-Regressionstest (Desktop und Mobile) sowie `git diff --check`.
+
+## 2026-08-10 15:12 CEST — SessionId: d0aa0
+
+- [x] Clean-Code- und Wartbarkeitsstand geprüft: Die Schichten Domain, Store/Selektoren, Presentation-Policies und Vue-Komponenten sind im Kern nachvollziehbar getrennt. Der zentrale Store und die wachsende Zahl ähnlicher Dialoge bleiben die wichtigsten künftigen Beobachtungspunkte.
+- [x] Die zuvor lokale Euro-/Cent-Formatierung des Check-out-Dialogs in die getestete Presentation-Policy `src/presentation/currencyFormat.ts` ausgelagert. Dadurch besitzt die Preisdarstellung eine zentrale Locale- und Präzisionsregel und der Dialog bleibt auf Darstellung und Interaktion beschränkt.
+- [x] Unit-Tests für Null-, positive und negative Cent-Beträge ergänzt.
+- [x] Verifiziert mit der vollständigen Unit-Suite (170 Tests), TypeScript-/Produktions-Build und `git diff --check`.
+
+## 2026-08-10 15:11 CEST — SessionId: c45f8
+
+- [x] Den aktuellen Test- und Wartbarkeitsstand geprüft: Frische V8-Abdeckung von 95,77 % Statements, 94,14 % Branches, 95,07 % Functions und 97,03 % Lines bei 168 erfolgreichen Unit-Tests; damit war der Playwright-Prüfpfad gemäß 80-%-Schwelle erforderlich.
+- [x] Die vollständige Playwright-Suite auf Desktop und Mobile erfolgreich ausgeführt (102 Szenarien; viewport-spezifische Fälle planmäßig übersprungen). Sie prüft unter anderem Navigation, Dialog- und Fokusverhalten, Formulare, Buchungszeitachse, Demodaten, Kundenverzeichnis, Belegung und responsive Überlagerungen.
+- [x] Aufbau und Wartbarkeit bewertet: Fachregeln, Store-Orchestrierung und Darstellung sind nachvollziehbar getrennt; der zentrale Store bleibt der wesentliche künftige Wartbarkeitsschwerpunkt. Produktions-Build einschließlich TypeScript-Prüfung und Whitespace-Prüfung sind fehlerfrei. Kein neuer reproduzierbarer Bug festgestellt, deshalb kein Code-Fix und kein zusätzlicher Eintrag in `bugs.md`.
+
+## 2026-08-10 15:10 CEST — SessionId: ddce6
+
+- [x] Test- und Wartbarkeitsstand des Clickdummys geprüft: Die aktuelle V8-Abdeckung beträgt 95,77 % Statements, 94,14 % Branches, 95,07 % Functions und 97,03 % Lines bei 168 erfolgreichen Unit-Tests. Die 80-%-Schwelle ist damit überschritten; deshalb wurde der Playwright-Prüfpfad verwendet.
+- [x] Die vollständige Playwright-Suite auf Desktop und Mobile ausgeführt: 100 Ausführungen liefen ohne Fehlschlag; nur viewport-gebundene Szenarien wurden planmäßig übersprungen. Abgedeckt sind Navigation, Dialog- und Fokusverhalten, Buchungen, Anfragen, Belegung, Kund:innenverzeichnis sowie responsive Layouts.
+- [x] Aufbau und Wartbarkeit bewertet: Domain-Policies, Selektoren, zentraler Store und Vue-Komponenten sind nachvollziehbar getrennt; der zentrale Store bleibt aufgrund seiner Orchestrierungsaufgaben der wesentlichste künftige Wartbarkeitsschwerpunkt. TypeScript-/Produktions-Build und Whitespace-Prüfung sind fehlerfrei. Kein neuer reproduzierbarer Bug festgestellt, daher kein Eintrag in `bugs.md` und kein Code-Fix erforderlich.
+
+## 2026-08-10 15:09 CEST — SessionId: bf0bc
+
+- [x] Die raumorientierte Buchungs-Zeitachse mit durchgehenden, kollisionsfrei angeordneten Aufenthaltsbalken zusätzlich umgesetzt und geprüft. Sie leitet ihre Daten ausschließlich aus den typisierten `BookingView`- und `Room`-Mock-Entitäten ab und erhält bei nicht auflösbarer Zimmerreferenz den Slot „Ohne Zimmer“.
+- [x] Fachliche Projektion, Statusfilter und Wochenwechsel mit 168 Unit-Tests, TypeScript-/Produktions-Build sowie einem Playwright-Regressionstest auf Desktop und Mobile verifiziert.
+
+## 2026-08-10 15:10 CEST — SessionId: 58212
+
+- [x] `bugs.md` zuerst geprüft; alle dort erfassten Fehler sind bereits erledigt.
+- [x] Den offenen großen Erweiterungspunkt zur Buchungsansicht umgesetzt und in `extensions.md` als erledigt markiert: Der bisherige Monatskalender ist durch eine Zimmer-Zeitachse mit sieben einzelnen Tagen ersetzt.
+- [x] Das typisierte Modell `BookingTimelineRow`/`BookingTimelineBar` leitet durchgehende Buchungsbalken aus den vorhandenen `BookingView`- und `Room`-Mock-Entitäten ab, schneidet Aufenthalte am sichtbaren Zeitraum korrekt zu und ordnet überlappende Buchungen konfliktfrei in separate Zeilen ein. Nicht mehr auflösbare Zimmerreferenzen bleiben im Slot „Ohne Zimmer“ sichtbar.
+- [x] Die Ansicht zeigt links Zimmer, rechts Zeitraum und in jedem Balken Kund:innen- sowie Tiername; Wochenwechsel und Statusfilter wirken direkt auf dieselbe Datenbasis.
+- [x] Verifiziert mit den Unit-Tests für Zeitachsenprojektion, TypeScript-/Produktions-Build und dem gezielten Playwright-Test auf Desktop und Mobile (2 bestanden).
+
+## 2026-08-10 15:07 CEST — SessionId: 0f561
+
+- [x] `bugs.md` zuerst geprüft; dort waren alle dokumentierten Punkte bereits erledigt. Danach den ersten offenen Erweiterungspunkt aus `extensions.md` umgesetzt und als erledigt markiert.
+- [x] Die globale Demodaten-Steuerung ist nun bewusst blau statt im regulären Apricot-/Petrol-Theme gestaltet. Rahmen, Statuspunkt, Schatten und ein sichtbarer Tastaturfokus kennzeichnen den sicheren Demomodus klar, ohne das Verhalten oder die bestehenden typisierten Mock-Entitäten zu verändern.
+- [x] Einen Playwright-Regressionstest für die eindeutige blaue Kennzeichnung auf Desktop und Mobile ergänzt. Verifiziert mit gezieltem E2E-Lauf (2/2), TypeScript-Prüfung, Produktions-Build und `git diff --check`.
+
+## 2026-08-10 15:07 CEST — SessionId: fe5f1
+
+- [x] Test- und Wartbarkeitsstand des Clickdummys geprüft: Die aktuelle V8-Abdeckung beträgt 95,62 % Statements, 94,65 % Branches, 94,87 % Functions und 96,93 % Lines bei 166 erfolgreichen Unit-Tests. Die 80-%-Schwelle ist damit überschritten; deshalb wurde der Playwright-Prüfpfad verwendet.
+- [x] Die vollständige Playwright-Suite auf Desktop und Mobile ausgeführt: 98 Ausführungen liefen ohne Fehlschlag; viewport-spezifische Fälle wurden planmäßig übersprungen. Die Prüfung deckt Navigation, Dialog- und Fokusverhalten, Buchungen, Anfragen, Belegung, Kund:innenverzeichnis sowie responsive Layouts ab.
+- [x] Aufbau und Wartbarkeit bewertet: Domain-Policies, Selektoren, zentraler Store und Vue-Komponenten sind weiterhin klar genug getrennt; der Store bleibt wegen seiner Orchestrierungsrolle der wesentliche künftige Wartbarkeitsschwerpunkt. TypeScript-/Produktions-Build und Whitespace-Prüfung sind fehlerfrei. Kein neuer reproduzierbarer Bug festgestellt, daher kein Eintrag in `bugs.md` und kein Code-Fix erforderlich.
+
+## 2026-08-10 15:02 CEST — SessionId: 66d56
+
+- [x] Komponenten-, Package- und Entwurfsmuster geprüft: Die Trennung von Vue-Komponenten, zentralem Store, reinen Domain-Policies und Selektoren ist insgesamt nachvollziehbar. Der zentrale Store ist mit seinen Orchestrierungsaufgaben der größte Wartbarkeitsschwerpunkt.
+- [x] Einen kleinen Wiederholungsbereich im Demo-Reset verbessert: Die neun gleichartigen Array-Mutationen sind in die getestete Store-Hilfsfunktion `replaceArrayContents` ausgelagert. Sie ersetzt die Inhalte, ohne die Referenz der reaktiven Vue-Collections zu ändern.
+- [x] Zwei Unit-Tests für Referenzerhalt, vollständiges Ersetzen und Leeren ergänzt. Verifiziert mit 166 erfolgreichen Unit-Tests, TypeScript-/Produktions-Build und `git diff --check`.
+
 ## 2026-08-10 14:09 CEST — SessionId: fdfb2
 
 - [x] Test- und Wartbarkeitsstand geprüft: Die V8-Abdeckung beträgt 95,62 % Statements, 94,65 % Branches, 94,85 % Functions und 96,93 % Lines bei 164 erfolgreichen Unit-Tests. Die 80-%-Schwelle ist damit überschritten, daher wurde der Playwright-Prüfpfad verwendet.
@@ -934,3 +1173,246 @@
 - [x] Die gefilterte Buchungslisten-Ansicht verwendet weiterhin die vorhandenen typisierten `BookingView`-Mock-Entitäten und zeigt daraus höchstens zehn Einträge pro Seite. Der Kalender und CSV-Export bleiben bewusst auf dem vollständigen gefilterten Datenbestand, damit keine Daten durch die Darstellung verloren gehen.
 - [x] Eine zugängliche Seitensteuerung mit aktuellem Seitenstand sowie deaktivierten Randaktionen ergänzt. Suche, Statusfilter und eine gezielte Buchungsreferenz setzen den Seitenstand zuverlässig zurück; nach Datenänderungen wird eine nicht mehr vorhandene Seite abgefangen.
 - [x] Desktop- und Mobile-Playwright-Regressionstest für Seitengröße, Navigation und Such-Reset ergänzt. Verifiziert mit 162 Unit-Tests, TypeScript-Prüfung/Produktions-Build und beiden Browserausführungen.
+
+## 2026-08-10 15:32 CEST — SessionId: 42196
+
+- [x] Komponenten, Package-Struktur und Entwurfsmuster aus Clean-Code-/Wartbarkeitssicht geprüft: Die Schichten `domain/`, `store/`, `composables/`, `presentation/` und Vue-Komponenten sind überwiegend sinnvoll getrennt. Der zentrale Store bleibt aufgrund seiner vielen Orchestrierungsaufgaben der wichtigste künftige Aufteilungskandidat.
+- [x] Einen kleinen Lifecycle-Mangel in der wiederverwendbaren `CustomerAutocomplete`-Komponente behoben: Der verzögerte Blur-Abschluss verwaltet seinen Timer nun explizit, verwirft überholte Timer beim erneuten Öffnen und räumt ihn beim Unmount auf. Dadurch kann keine ausstehende UI-Mutation nach dem Entfernen der Komponente erfolgen.
+
+## 2026-08-10 15:04 CEST — SessionId: b259f
+
+- [x] `bugs.md` zuerst geprüft und den ersten offenen Fehler umgesetzt sowie als erledigt markiert: Primärbuttons waren zu dunkel.
+- [x] Die zentrale Primäraktion verwendet jetzt eine helle Apricot-Fläche, eine klar erkennbare Hover-Variante und kontrastreiche dunkle Beschriftung. Dadurch wirken alle bestehenden Primäraktionen ruhiger, ohne einzelne Komponenten unterschiedlich zu behandeln.
+- [x] TypeScript-Prüfung und Produktions-Build erfolgreich ausgeführt.
+
+## 2026-08-10 15:06 CEST — SessionId: 11c9d
+
+- [x] `bugs.md` zuerst geprüft: Der einzige offene Punkt zu Tier-Badges war im gemeinsamen Arbeitsstand bereits abgeschlossen. Anschließend den ersten offenen Erweiterungspunkt aus `extensions.md` umgesetzt und dort als erledigt markiert.
+- [x] Die Seitennavigation in „Kunden & Tiere“ auf eine kompakte Darstellung umgestellt: Bei mehr als zehn Seiten bleiben nur ein sinnvoller Ausschnitt, die erste und letzte Seite sowie eindeutige Auslassungen sichtbar. Zusätzliche Aktionen springen zugänglich direkt zur ersten beziehungsweise letzten Seite.
+- [x] Die Darstellung bleibt vollständig aus den bestehenden typisierten Kund:innen-Mock-Entitäten und der gefilterten Ergebnisliste abgeleitet; Suche und bestehende Seitenauswahl funktionieren unverändert weiter.
+- [x] Mit einem Desktop-/Mobile-Playwright-Regressionstest für Auslassung, kompakte Anzahl direkter Seiten und Erste-/Letzte-Seite-Navigation abgesichert. Erfolgreich verifiziert mit 166 Unit-Tests, TypeScript-Prüfung, Produktions-Build und `git diff --check`.
+
+## 2026-08-10 15:10 CEST — SessionId: fbc1f
+
+- [x] `bugs.md` zuerst geprüft: Alle dokumentierten Fehler sind bereits erledigt.
+- [x] Den ersten offenen Erweiterungspunkt aus `extensions.md` umgesetzt und als erledigt markiert: Die personalisierte Meldung „Guten Morgen, Robin“ wurde im Dashboard durch die neutrale Überschrift „Tagesübersicht“ ersetzt.
+- [x] Das Account-Mock-Datenmodell bleibt unverändert bestehen, da es weiterhin von Konto-Einstellungen, Avatar und Rollenanzeige verwendet wird.
+
+## 2026-08-10 15:40 CEST — SessionId: 6857c
+
+- [x] Den Clickdummy aus Test- und Wartbarkeitssicht geprüft: Fachregeln sind überwiegend in Domain-Modulen, Selektoren und Composables isoliert; die Vue-Komponenten konzentrieren sich auf Darstellung und Interaktion. Der zentrale Store und die umfangreicheren Seitenkomponenten bleiben die wichtigsten künftigen Wartbarkeitsschwerpunkte.
+- [x] Frische V8-Abdeckung ermittelt: 194 von 194 Unit-Tests bestehen. Statements 96,06 %, Branches 93,26 %, Functions 95,22 % und Lines 97,25 %; die 80-%-Schwelle ist damit deutlich überschritten.
+- [x] Deshalb die vollständige Playwright-Suite zur Prüfung von Seitenaufbau, Navigation, Dialogen, Formularen, Demodaten und responsiven Desktop-/Mobile-Layouts ausgeführt: 104 Szenarien ohne Fehlschlag, mit einem erwarteten viewport-spezifischen Überspringer. Kein neuer reproduzierbarer Aufbau- oder Interaktionsfehler gefunden; daher kein Code-Fix und kein zusätzlicher Eintrag in `bugs.md` erforderlich.
+- [x] TypeScript-Prüfung/Produktions-Build und `git diff --check` erfolgreich ausgeführt.
+- [x] Mit einem Desktop-/Mobile-Playwright-Regressionstest, TypeScript-Prüfung, Produktions-Build und `git diff --check` verifiziert.
+## 2026-08-10 15:12 CEST — SessionId: 526c6
+
+- [x] `bugs.md` zuerst geprüft; alle dort dokumentierten Punkte sind bereits erledigt.
+- [x] Den ersten offenen Erweiterungspunkt aus `extensions.md` umgesetzt und dort markiert: Die globale Suche inklusive Cmd/Ctrl+K-Shortcut und dashboardweiter Filterung wurde entfernt.
+- [x] Die Suche bleibt lokal und fachseitig: Kunden & Tiere, Buchungen sowie Check-in/out filtern ausschließlich über ihre eigenen Suchfelder; die gemeinsame Such-Policy verarbeitet deshalb nur noch den lokalen Begriff.
+- [x] Einen Desktop-/Mobile-Playwright-Regressionstest ergänzt, der die fehlende globale Suche sowie die weiterhin funktionierende lokale Kund:innen-Suche prüft. Verifiziert mit 168 Unit-Tests, TypeScript-Prüfung, Produktions-Build und dem gezielten Browser-Test.
+
+## 2026-08-10 15:15 CEST — SessionId: 32277
+
+- [x] `bugs.md` zuerst geprüft: Alle dort dokumentierten Fehler sind bereits erledigt.
+- [x] Den nächsten offenen Erweiterungspunkt „Buchung, Abholung Uhrzeit als optional ergänzen“ umgesetzt und in `extensions.md` als erledigt markiert.
+- [x] Das echte Buchungs-/Reservierungsdatenmodell um `pickupTime` ergänzt: Die Zeit bleibt optional, wird bei direkter und gemeinsamer Reservierung sowie bei Bearbeitungen zentral als `HH:mm` validiert und pro Tieraufenthalt gespeichert.
+- [x] Abholzeiten sind bei neuen Buchungen, in der Belegungs-Reservierung und beim Bearbeiten erfassbar; Buchungsliste, Check-in/out-Abreisen, Check-out-Dialog und CSV-Export zeigen sie nachvollziehbar an. Fehlt eine Vereinbarung, wird in der Abreiseansicht eindeutig „Nicht vereinbart“ angezeigt.
+- [x] Mit zusätzlichen Unit-Tests für die optionale Zeit-Policy und die Store-Persistierung abgesichert; alle 176 Unit-Tests, TypeScript-Prüfung, Produktions-Build und `git diff --check` erfolgreich ausgeführt.
+
+## 2026-08-10 15:15 CEST — SessionId: 8b603
+
+- [x] Komponenten-, Package- und Entwurfsmuster geprüft: Die Trennung in Vue-Komponenten, Compositions, Domain-Policies und Store-Selektoren ist insgesamt klar und wartbar. Als kleiner Wiederholungsbereich blieb jedoch die Seitennavigationslogik in den Listen für Buchungen und Check-in/out bestehen.
+- [x] Die generische, getestete UI-Composition `src/composables/usePagination.ts` ergänzt. Sie bündelt Seitenanzahl, sichtbaren Ausschnitt, Grenzprüfung, Seitenwechsel, Reset und die automatische Korrektur nach einer kürzer werdenden Liste.
+- [x] `BookingsPage.vue` und `CheckInOutPage.vue` verwenden nun diese gemeinsame Paging-Policy. Die Buchungssuche setzt weiterhin auf Seite eins zurück; beide Ansichten können keine ungültige leere Seite mehr anzeigen.
+- [x] Zwei fokussierte Unit-Tests für Seitenauswahl und Korrektur nach Datenänderungen ergänzt. Verifiziert mit der vollständigen Unit-Suite (174 Tests), TypeScript-/Produktions-Build und `git diff --check`.
+
+## 2026-08-10 15:18 CEST — SessionId: f28cf
+
+- [x] `bugs.md` zuerst geprüft: Alle beschriebenen Fehler waren bereits erledigt. Anschließend den ersten offenen Erweiterungspunkt aus `extensions.md` umgesetzt und dort als erledigt markiert: Kundenprofile verlinken direkt zu „Jetzt Buchung anlegen“.
+- [x] Die Cross-Referenz übergibt die stabile ID der bestehenden Kund:innen-Mock-Entität an die Buchungsseite. Das Formular öffnet sich direkt und übernimmt die Person als Auswahl, statt bloß einen Namen vorzutäuschen.
+- [x] Die bestehende zentrale Reservierungsregel bleibt erhalten: Bei aktuell oder künftig reservierten Tieren lässt sich keine Doppelbuchung erzeugen; das Kundenprofil ist für eine spätere Planung dennoch eindeutig verknüpft.
+- [x] Mit einem Playwright-Regressionstest auf Desktop und Mobile sowie TypeScript-Prüfung/Produktions-Build und `git diff --check` verifiziert.
+
+## 2026-08-10 15:16 CEST — SessionId: 283e5
+
+- [x] Testbarkeit und Wartbarkeit geprüft: Fachlogik ist weiterhin überwiegend in Domain-Modulen, Store-Selektoren und Composables gekapselt; die Vue-Komponenten bleiben auf Darstellung und Interaktion ausgerichtet.
+- [x] Die vollständige Unit-Testabdeckung ermittelt: 176 Tests bestehen. V8 meldet 95,85 % Statements, 94,11 % Branches, 94,96 % Functions und 97,01 % Lines; die 80-%-Schwelle ist damit überschritten.
+- [x] Daher die vollständige Playwright-Suite für Desktop und Mobile als Seitenaufbau- und Interaktionsprüfung ausgeführt (92 Szenarien; viewport-spezifische Tests werden erwartungsgemäß übersprungen). Zusätzlich alle acht Hauptansichten bei 1280 px und 390 px auf horizontalen Überlauf und JavaScript-Seitenfehler geprüft; beides ohne Befund.
+- [x] Kein neuer reproduzierbarer Aufbau- oder Funktionsfehler gefunden; `bugs.md` erforderte keinen neuen Eintrag. TypeScript-Prüfung, Produktions-Build und `git diff --check` erfolgreich ausgeführt.
+
+## 2026-08-10 15:19 CEST — SessionId: 7c56f
+
+- [x] `bugs.md` zuerst geprüft; alle dokumentierten Fehler waren bereits erledigt. Danach den ersten offenen Erweiterungspunkt aus `extensions.md` umgesetzt und dort markiert: Abgerechnete Buchungen behalten ihren Preis nach dem Check-out.
+- [x] Das Buchungsdatenmodell speichert beim Check-out einen unveränderlichen `checkoutPrice`-Snapshot mit Tagespreis, berechneten Betreuungstagen und Gesamtbetrag. Spätere Änderungen der Preisliste verändern abgeschlossene Aufenthalte damit nicht.
+- [x] Der gespeicherte Rechnungsbetrag ist in der Buchungsliste und im Buchungs-CSV sichtbar; die bestehende Checkout-Preisberechnung bleibt die gemeinsame fachliche Grundlage.
+- [x] Mit Store-Regressionstest für Snapshot, Preislistenänderung und Demodaten-Reset sowie TypeScript-Prüfung, Produktions-Build und `git diff --check` verifiziert (56 fokussierte Unit-Tests bestanden).
+
+## 2026-08-10 15:21 CEST — SessionId: 3d2ad
+
+- [x] `bugs.md` zuerst geprüft: Alle dort beschriebenen Punkte waren bereits erledigt.
+- [x] Die offenen, zusammenhängenden Check-in/out-Erweiterungen umgesetzt und in `extensions.md` markiert: „Geplante Anreisen“, „Geplante Abreisen“ und der neue Bereich „Jetzt eingecheckt“ strukturieren die Arbeitsvorgänge eindeutig.
+- [x] Der neue Bereich verwendet die vorhandenen typisierten Buchungs-Mock-Entitäten mit Status `checked-in`, ist unabhängig von der Tagesauswahl und ermöglicht über den bestehenden Bestätigungsdialog jederzeit einen Check-out.
+- [x] Das Dashboard zeigt nun Anreisen, Abreisen und Tiere im Haus als getrennte Kennzahlen; jede führt mit einem stabilen View-Parameter direkt zur passenden Arbeitsansicht. Der redundante Zimmerstatus-Dialog wurde aus dem Dashboard entfernt.
+- [x] Mit 176 Unit-Tests, TypeScript-Prüfung/Produktions-Build, `git diff --check` sowie sechs gezielten Desktop-/Mobile-Playwright-Szenarien verifiziert.
+
+## 2026-08-10 15:24 CEST — SessionId: 7afbf
+
+- [x] Den aktuellen Clickdummy hinsichtlich Testbarkeit und Wartbarkeit geprüft. Die Fachlogik ist weiterhin weitgehend in Domain-Policies, Store-Selektoren und Composables gekapselt; die Vue-Komponenten konzentrieren sich auf Darstellung und Interaktion.
+- [x] Die vollständige Unit-Testabdeckung ermittelt: 176 von 176 Tests bestehen. V8 meldet 95,87 % Statements, 93,72 % Branches, 94,98 % Functions und 97,03 % Lines; die 80-%-Schwelle ist damit überschritten.
+- [x] Deshalb die vollständige Playwright-Suite mit 96 Desktop-/Mobile-Szenarien erfolgreich ausgeführt. Zusätzlich alle neun Hauptrouten einschließlich 404 bei 1280 px und 390 px auf HTTP-Status, nicht abgefangene JavaScript-/Konsolenfehler und horizontalen Überlauf geprüft (18 Kombinationen, ohne Befund).
+- [x] Kein reproduzierbarer Fehler im Seitenaufbau gefunden; `bugs.md` erforderte daher keinen neuen Eintrag.
+
+## 2026-08-10 15:24 CEST — SessionId: 16379
+
+- [x] `bugs.md` zuerst geprüft; alle dokumentierten Fehler sind bereits erledigt.
+- [x] Die noch offenen Erweiterungspunkte in `extensions.md` abgeschlossen und markiert: Das Demodaten-Steuerelement ist bewusst blau und damit außerhalb des Produkt-Themes klar erkennbar.
+- [x] Beim Ablehnen einer Anfrage informiert der zugängliche Dialog nun vorab darüber, dass die anfragende Person per E-Mail über die Stornierung benachrichtigt wird. Die Mock-Entität `BookingRequestNotification` speichert Kanal, Empfänger:in, geplanten Status und Zeitstempel; der Vorgang bleibt im Anfrageverlauf sichtbar.
+- [x] Die vorhandenen Unit- und Playwright-Regressionstests prüfen sowohl die Persistierung der Benachrichtigungs-Mock-Entität als auch den Hinweis im Dialog und Verlauf.
+
+## 2026-08-10 15:26 CEST — SessionId: 97574
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft; beide Dokumente enthalten keine offenen Punkte.
+- [x] Einen kleinen Interaktionsaspekt der Buchungsübersicht ergänzt: Eingecheckte Aufenthalte können direkt aus ihrer Buchungszeile über den bestehenden Bestätigungsdialog ausgecheckt werden.
+- [x] Der Ablauf verwendet die vorhandenen typisierten `Booking`-, `StayPrice`- und `CheckInOutEvent`-Mock-Entitäten. Er speichert daher weiterhin den unveränderlichen Rechnungs-Snapshot, gibt das Zimmer frei und protokolliert die Abreise in der Historie, statt nur den UI-Status zu verändern.
+- [x] Mit 176 Unit-Tests, TypeScript-/Produktions-Build, `git diff --check` sowie einem gezielten Playwright-Regressionstest auf Desktop und Mobil (2/2) verifiziert.
+
+## 2026-08-10 15:26 CEST — SessionId: 0dc8d
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft: Alle dokumentierten Fehler und Erweiterungen sind bereits als erledigt markiert.
+- [x] Einen kleinen zusätzlichen Interaktionsaspekt auf der Konto-Seite umgesetzt: „Konto speichern“ und „Änderungen verwerfen“ sind nur aktiv, wenn der synchronisierte lokale Entwurf von der gespeicherten Account-Mock-Entität abweicht. Nach dem Verwerfen und nach einer erfolgreichen Speicherung deaktivieren sich beide Aktionen wieder.
+- [x] Mit 58 fokussierten Unit-Tests, TypeScript-Prüfung/Produktions-Build, einem neuen Desktop-Playwright-Regressionstest sowie `git diff --check` für die bearbeiteten Dateien verifiziert.
+
+## 2026-08-10 15:28 CEST — SessionId: d814a
+
+- [x] Den aktuellen Clickdummy aus Test- und Wartbarkeitssicht geprüft: Fachregeln sind weiterhin überwiegend in Domain-Modulen, Store-Selektoren und Composables getrennt von den darstellenden Vue-Komponenten gekapselt.
+- [x] Die vollständige Unit-Testabdeckung ermittelt: 177 von 177 Tests bestehen. V8 meldet 95,88 % Statements, 93,72 % Branches, 94,98 % Functions und 97,04 % Lines; die 80-%-Schwelle ist deutlich überschritten.
+- [x] Daher die vollständige Playwright-Suite für Desktop und Mobile als Prüfung von Seitenaufbau und Kerninteraktionen ausgeführt (102 Szenarien, mit erwarteten viewport-spezifischen Überspringern). Es wurden keine reproduzierbaren Aufbau- oder Funktionsfehler festgestellt.
+- [x] Den Produktions-Build einschließlich TypeScript-Prüfung sowie `git diff --check` erfolgreich ausgeführt. Da kein neuer Bug vorlag, war kein Eintrag in `bugs.md` erforderlich.
+## 2026-08-10 15:31 CEST — SessionId: ec4b7
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft: Beide Dokumente enthielten keine offenen Punkte.
+- [x] Einen kleinen Detailaspekt ergänzt und in `extensions.md` erledigt markiert: Buchungen haben jetzt optionale operative Hinweise.
+- [x] Der Hinweis wird als normalisiertes, auf 300 Zeichen begrenztes Feld auf den typisierten Buchungs-/Reservierungs-Mock-Entitäten gespeichert; er ist bei Anlage und Bearbeitung erfassbar und in der Buchungsübersicht sichtbar.
+- [x] Die neue Domain-Policy und Store-Persistierung mit Unit-Tests abgesichert; 60 fokussierte Tests, TypeScript-/Produktions-Build und `git diff --check` erfolgreich ausgeführt.
+
+## 2026-08-10 15:34 CEST — SessionId: 1d6e3
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft: Beide Dokumente enthalten ausschließlich bereits erledigte Punkte.
+- [x] Einen kleinen operativen Detailaspekt des Check-ins umgesetzt: Gespeicherte Buchungshinweise werden vor der Bestätigung direkt neben den bestehenden tierbezogenen Hinweisen angezeigt und klar voneinander unterschieden.
+- [x] Der Demonstrationsfall verwendet den bestehenden typisierten `Booking.bookingNote`-Wert der Mock-Entität, sodass kein reiner UI-Zustand entsteht.
+- [x] Mit dem fokussierten Booking-Note-Unit-Test, TypeScript-/Produktions-Build, einem Desktop-/Mobile-Playwright-Regressionstest (2/2) sowie `git diff --check` verifiziert.
+
+## 2026-08-10 15:36 CEST — SessionId: 1825b
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft: Beide Dokumente enthielten ausschließlich bereits erledigte Punkte.
+- [x] Einen kleinen operativen Detailaspekt ergänzt: Kund:innen können jetzt einen Notfallkontakt hinterlegen oder bearbeiten. Die typisierte Mock-Entität wird zentral validiert, normalisiert und über die Store-Operation persistent gehalten; der Demo-Reset stellt den ursprünglichen Zustand zuverlässig wieder her.
+- [x] Der Notfallkontakt ist im Kundenprofil, im Kunden-&-Tiere-CSV sowie beim Check-in sichtbar und per Telefonlink direkt erreichbar. Ein Demo-Profil enthält einen realistischen Beispieldatensatz.
+- [x] Mit 70 fokussierten Unit-Tests, TypeScript-Prüfung/Produktions-Build und `git diff --check` verifiziert.
+
+## 2026-08-10 15:35 CEST — SessionId: 4513e
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft: Beide Dokumente enthalten ausschließlich bereits erledigte Punkte. Der als E-Mail-Match beschriebene Anfrageablauf besaß allerdings noch keine Kund:innen-E-Mail im Datenmodell.
+- [x] Die validierte, normalisierte und eindeutige E-Mail-Adresse ist nun Teil jeder `Customer`-Mock-Entität. Sie wird bei Neuanlage geprüft, im Profil, Export und der Autovervollständigung verwendet sowie beim Annehmen einer Anfrage als neue Kundschaft aus der Anfrage übernommen.
+- [x] Die Anfragezuordnung erkennt tatsächliche E-Mail-Treffer vor Telefon- und Namenstreffern; die Demo-Anfrage von Emilia Fischer deckt diesen Fall ab und erläutert ihn in der Oberfläche.
+- [x] Mit 185 Unit-Tests, TypeScript-/Produktions-Build, dem gezielten Playwright-Regressionstest auf Desktop und Mobile (2/2) sowie `git diff --check` verifiziert.
+
+## 2026-08-10 15:36 CEST — SessionId: 264f6
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft: Beide Dokumente enthalten ausschließlich erledigte Punkte.
+- [x] Einen kleinen Interaktionsaspekt im bestehenden Notfallkontakt-Datenmodell ergänzt: Hinterlegte Kontakte können nach einer expliziten Bestätigung wieder entfernt werden.
+- [x] Die Entfernung erfolgt über die zentrale Store-Operation `removeCustomerEmergencyContact`, löscht ausschließlich die optionale Mock-Entität und bestätigt den Vorgang über die vorhandene Toast-Infrastruktur.
+- [x] Mit 61 fokussierten Unit-Tests, TypeScript-/Produktions-Build und `git diff --check` verifiziert.
+## 2026-08-10 15:37 CEST — SessionId: 20d23
+
+- [x] Den Clickdummy aus Test- und Wartbarkeitssicht geprüft: Die Fachlogik bleibt überwiegend in Domain-Modulen, Store-Selektoren und Composables gekapselt; die Vue-Komponenten konzentrieren sich auf Darstellung und Interaktion.
+- [x] Die vollständige Unit-Testabdeckung ermittelt: 190 von 190 Tests bestehen. V8 meldet 95,97 % Statements, 93,04 % Branches, 95,16 % Functions und 97,19 % Lines; die 80-%-Schwelle ist deutlich überschritten.
+- [x] Deshalb die Playwright-Suite für Desktop und Mobile als Seitenaufbau- und Interaktionsprüfung ausgeführt (104 Szenarien, mit erwarteten viewport-spezifischen Überspringern). Kein reproduzierbarer Aufbau- oder Funktionsfehler gefunden; `bugs.md` benötigte keinen neuen Eintrag.
+- [x] TypeScript-Prüfung, Produktions-Build und `git diff --check` erfolgreich ausgeführt.
+
+## 2026-08-10 15:38 CEST — SessionId: cd608
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft: Beide Dokumente enthalten ausschließlich bereits erledigte Punkte.
+- [x] Einen kleinen, bereits vorhandenen Datenmodell-Aspekt gehärtet: Optionale Tierhinweise werden zentral normalisiert und auf 300 Zeichen begrenzt. Damit bleiben die beim Check-in verwendeten Hinweise aus den `Pet`-Mock-Entitäten operativ lesbar und können nicht durch unbeschränkte Eingaben ausufern.
+- [x] Die Eingabefelder zum Anlegen und Bearbeiten eines Tierprofils zeigen die Grenze an und verhindern längere Eingaben direkt; Store- und Domain-Validierung sichern dieselbe Regel unabhängig von der Oberfläche ab.
+- [x] Mit 68 fokussierten Unit-Tests, TypeScript-Prüfung/Produktions-Build und `git diff --check` verifiziert.
+
+## 2026-08-10 15:38 CEST — SessionId: 2281d
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft: Beide Dokumente enthalten ausschließlich bereits erledigte Punkte.
+- [x] Einen kleinen Stammdatenaspekt ergänzt: Bestehende Tierprofile können jetzt direkt im Kundenprofil bearbeitet werden.
+- [x] Die Änderung nutzt die zentrale, typisierte `PetUpdate`-Mock-Entität und normalisiert Name, Rasse sowie optionalen Hinweis. Besitzer:in und Tierart bleiben absichtlich stabil, damit bestehende Buchungs- und Zimmerreferenzen fachlich konsistent bleiben.
+- [x] Mit 67 fokussierten Unit-Tests, TypeScript-Prüfung/Produktions-Build und `git diff --check` für die bearbeiteten Dateien verifiziert.
+
+## 2026-08-10 15:40 CEST — SessionId: 876f0
+
+- [x] Den aktuellen Clickdummy aus Test- und Wartbarkeitssicht geprüft: Fachlogik liegt weiterhin überwiegend in testbaren Domain-Modulen, Store-Selektoren und Composables; die Vue-Komponenten konzentrieren sich auf Darstellung und Interaktion.
+- [x] Die vollständige Unit-Testabdeckung ermittelt: 194 von 194 Tests bestehen. V8 meldet 96,06 % Statements, 93,26 % Branches, 95,22 % Functions und 97,25 % Lines; die 80-%-Schwelle ist deutlich überschritten.
+- [x] Daher die Playwright-Suite für Desktop und Mobile zur Prüfung von Seitenaufbau, Responsive-Verhalten und Kerninteraktionen ausgeführt (104 Szenarien, einschließlich erwarteter viewport-spezifischer Überspringer). Es wurde kein reproduzierbarer Aufbau- oder Funktionsfehler gefunden.
+- [x] TypeScript-Prüfung, Produktions-Build und `git diff --check` erfolgreich ausgeführt. Da kein neuer Bug vorlag, war kein Eintrag in `bugs.md` erforderlich.
+
+## 2026-08-10 15:42 CEST — SessionId: 27952
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft: Beide Dokumente enthielten ausschließlich bereits erledigte Punkte.
+- [x] Die Buchungszeitachse um eine „Heute“-Aktion ergänzt. Sie springt zum bereits im Store modellierten Demo-Betriebstag zurück, ist dort deaktiviert und bleibt auch auf kleinen Bildschirmen kompakt bedienbar.
+- [x] Einen dabei reproduzierten Filterfehler behoben und in `bugs.md` als erledigt markiert: Nach dem Öffnen eines Zeitachsen-Balkens begrenzt dessen Detailfokus nur noch die Listenansicht. In der Zeitachse greifen Suche und Statusfilter wieder auf alle Buchungen.
+- [x] Mit 198 Unit-Tests, TypeScript-/Produktions-Build, gezieltem Playwright-Regressionstest auf Desktop und Mobile (2/2) sowie `git diff --check` verifiziert.
+## 2026-08-10 15:44 CEST — SessionId: ee16f
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft: Beide Backlogs enthielten ausschließlich bereits erledigte Punkte.
+- [x] Einen kleinen operativen Stammdatenaspekt ergänzt und als erledigte Erweiterung dokumentiert: Tierprofile besitzen nun einen optionalen Medikationsplan.
+- [x] Der Medikationsplan ist als typisiertes Feld der `Pet`-Mock-Entität zentral normalisiert und auf 300 Zeichen begrenzt. Er kann beim Anlegen und Bearbeiten gespeichert werden, erscheint im CSV-Export und ist beim Check-in als klar gekennzeichnete Handlungsinformation sichtbar.
+- [x] Mit 71 fokussierten Domain-/Store-Tests, TypeScript-Prüfung, Produktions-Build und `git diff --check` verifiziert.
+
+## 2026-08-10 15:48 CEST — SessionId: e587a
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft: Beide Backlogs enthielten ausschließlich erledigte Punkte.
+- [x] Einen kleinen operativen Stammdatenaspekt ergänzt: Tierprofile besitzen nun einen optionalen Fütterungsplan.
+- [x] Der Fütterungsplan ist als typisiertes Feld der `Pet`-Mock-Entität zentral normalisiert und auf 300 Zeichen begrenzt. Er kann beim Anlegen und Bearbeiten gespeichert werden, erscheint im Kunden-&-Tiere-Export und ist beim Check-in als klar gekennzeichnete Handlungsinformation sichtbar.
+- [x] Mit 74 fokussierten Domain-/Store-Tests, TypeScript-Prüfung, Produktions-Build und `git diff --check` verifiziert.
+## 2026-08-10 15:45 CEST — SessionId: ba9d1
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft: Beide Backlogs enthielten ausschließlich bereits erledigte Punkte.
+- [x] Einen kleinen, datenmodellgestützten Interaktionsaspekt in den Einstellungen umgesetzt: „Einstellungen speichern“ ist nur noch bei einer Änderung der persistierten `PensionSettingsUpdate`-Entität aktiv; „Änderungen verwerfen“ zusätzlich bei ungespeicherten Zimmer-Stammdaten.
+- [x] Die Gleichheitsregel behandelt die Tagespreis-Entitäten explizit, sodass Preisänderungen nicht als reiner UI-Zustand verloren gehen. Unit- und Playwright-Regressionstests für gleiche und geänderte Einstellungsdaten ergänzt.
+
+## 2026-08-10 15:54 CEST — SessionId: 98aee
+
+- [x] Den Clickdummy aus Test- und Wartbarkeitssicht geprüft: Fachlogik bleibt überwiegend in Domain-Modulen, Store-Selektoren und Composables gekapselt; Komponenten konzentrieren sich auf Darstellung und Interaktion.
+- [x] Die Unit-Testabdeckung erneut ermittelt: 215 von 215 Tests bestehen. V8 meldet 96,03 % Statements, 92,95 % Branches, 95,49 % Functions und 97,31 % Lines; die 80-%-Schwelle ist deutlich überschritten.
+- [x] Daher die Playwright-Prüfung für Desktop und Mobile ausgeführt und zwei reproduzierbare Seitenaufbaufehler behoben: überlange Reservierungsdialoge sind im Overlay scrollbar, und die mobile Kund:innen-Paginierung bleibt innerhalb der Kartenbreite bedienbar.
+- [x] Die Playwright-Tests an die inzwischen vorgesehenen Abläufe angepasst: Mobile Navigation wird über den Drawer bedient, Überbuchungsoptionen werden explizit als solche geprüft, und der neue Aufenthalt wird vor der Listenprüfung gesucht.
+- [x] Mit gezielten Desktop-/Mobile-Playwright-Regressionstests, vollständiger Unit-Suite, TypeScript-/Produktions-Build und `git diff --check` verifiziert. Die behobenen Fehler sind in `bugs.md` mit dieser Session-ID dokumentiert.
+
+## 2026-08-10 15:49 CEST — SessionId: 5654c
+
+- [x] Den aktuellen Clickdummy aus Test- und Wartbarkeitssicht geprüft: Fachlogik ist überwiegend in Domain-Modulen, Store-Selektoren und Composables gekapselt; Vue-Komponenten bleiben weitgehend auf Darstellung und Interaktion beschränkt.
+- [x] Die vollständige Unit-Testabdeckung erneut ermittelt: 210 von 210 Tests bestehen. V8 meldet 96,15 % Statements, 93,01 % Branches, 95,42 % Functions und 97,25 % Lines; die 80-%-Schwelle ist klar überschritten.
+- [x] Daher die Playwright-Suite zur Analyse von Seitenaufbau, Responsivität und Kerninteraktionen auf Desktop und Mobile ausgeführt: 106 Szenarien bestanden (einschließlich erwarteter viewport-spezifischer Überspringer). Es wurde kein reproduzierbarer Aufbau- oder Funktionsfehler gefunden; `bugs.md` benötigt keinen neuen Eintrag.
+- [x] TypeScript-Prüfung, Produktions-Build und `git diff --check` erfolgreich ausgeführt.
+## 2026-08-10 15:50 CEST — SessionId: 68e71
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft: Beide Backlogs enthielten ausschließlich bereits erledigte Punkte.
+- [x] Einen kleinen operativen Stammdatenaspekt ergänzt: Tierprofile besitzen nun optionale Allergie- und Unverträglichkeitsinformationen.
+- [x] Das Feld ist als typisierte `Pet`-Mock-Entität zentral normalisiert und auf 300 Zeichen begrenzt. Es kann bei Anlage und Bearbeitung gespeichert werden, erscheint im Kunden-&-Tiere-Export und ist beim Check-in als klare Handlungsinformation sichtbar.
+- [x] Mit 75 fokussierten Domain-/Store-Tests, TypeScript-Prüfung, Produktions-Build und `git diff --check` verifiziert.
+
+## 2026-08-10 15:53 CEST — SessionId: 379bc
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft: Beide Backlogs enthielten ausschließlich erledigte Punkte.
+- [x] Einen kleinen operativen Stammdatenaspekt ergänzt und in `extensions.md` als erledigt dokumentiert: Tierprofile besitzen nun einen optionalen Impfstatus.
+- [x] Der Impfstatus ist als typisiertes, zentral normalisiertes und auf 300 Zeichen begrenztes Feld der `Pet`-Mock-Entität umgesetzt. Er ist bei Anlage und Bearbeitung erfassbar, erscheint im Kunden-&-Tiere-Export und beim Check-in; ein realistisch dokumentierter Demodatensatz ist vorhanden.
+- [x] Mit 76 fokussierten Domain-/Store-Tests, TypeScript-Prüfung, Produktions-Build und `git diff --check` verifiziert.
+
+## 2026-08-10 15:56 CEST — SessionId: ba902
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft: Beide Backlogs enthielten ausschließlich bereits erledigte Punkte.
+- [x] Einen kleinen datenmodellgestützten Interaktionsaspekt ergänzt und in `extensions.md` als erledigt dokumentiert: Tierarztkontakte einzelner Tierprofile können nach einer ausdrücklichen Bestätigung entfernt werden.
+- [x] Die neue zentrale Store-Operation entfernt ausschließlich den optionalen `veterinaryContact` der bestehenden `Pet`-Mock-Entität; Tier-Stammdaten und Buchungsreferenzen bleiben unverändert. Die Oberfläche zeigt den Telefonlink und die Entfernung klar getrennt an.
+- [x] Mit 67 fokussierten Store-Tests, TypeScript-Prüfung/Produktions-Build und `git diff --check` verifiziert.
+## 2026-08-10 15:56 CEST — SessionId: 22457
+
+- [x] `bugs.md` und `extensions.md` zuerst geprüft: Beide priorisierten Backlogs enthielten ausschließlich bereits erledigte Punkte.
+- [x] Einen kleinen operativen Stammdatenaspekt ergänzt und in `extensions.md` als erledigt dokumentiert: Tierprofile besitzen nun einen optionalen, typisierten Tierarztkontakt aus Praxisname und Telefonnummer.
+- [x] Die Kontaktdaten werden zentral normalisiert und validiert, können im Kundenprofil angelegt, bearbeitet oder entfernt werden und erscheinen im CSV-Export sowie beim Check-in als direkt anwählbare Telefonnummer. Ein realistischer Demodatensatz ist vorhanden.
+- [x] Mit 80 fokussierten Unit-Tests, TypeScript-Prüfung/Produktions-Build und `git diff --check` verifiziert.

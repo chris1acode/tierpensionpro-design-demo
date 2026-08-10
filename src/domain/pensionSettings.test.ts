@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { PensionSettingsUpdate } from '../domain'
-import { isValidPensionSettingsUpdate } from './pensionSettings'
+import { arePensionSettingsEqual, isValidPensionSettingsUpdate } from './pensionSettings'
 
 const validSettings: PensionSettingsUpdate = {
   businessName: 'Tierpension Pro',
@@ -44,5 +44,22 @@ describe('isValidPensionSettingsUpdate', () => {
     ['a fractional cent amount', [{ id: 'rate-dog', species: 'dog', amountCents: 3500.5 }, { id: 'rate-cat', species: 'cat', amountCents: 2400 }] as PensionSettingsUpdate['dailyPetRates']]
   ])('rejects %s in the daily price list', (_case, dailyPetRates) => {
     expect(isValidPensionSettingsUpdate({ ...validSettings, dailyPetRates })).toBe(false)
+  })
+})
+
+describe('arePensionSettingsEqual', () => {
+  it('recognizes an unchanged editable settings model', () => {
+    expect(arePensionSettingsEqual(validSettings, {
+      ...validSettings,
+      dailyPetRates: validSettings.dailyPetRates.map((rate) => ({ ...rate }))
+    })).toBe(true)
+  })
+
+  it.each([
+    ['business name', { businessName: 'Tierpension am See' }],
+    ['request setting', { requestsEnabled: false }],
+    ['daily rate', { dailyPetRates: [{ ...validSettings.dailyPetRates[0], amountCents: 3600 }, validSettings.dailyPetRates[1]] }]
+  ])('recognizes a changed %s', (_case, change) => {
+    expect(arePensionSettingsEqual(validSettings, { ...validSettings, ...change })).toBe(false)
   })
 })

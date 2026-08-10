@@ -1,7 +1,7 @@
 const SEARCH_LOCALE = 'de'
 
-export function resolveSearchTerm(localQuery: string, globalQuery = ''): string {
-  return (localQuery || globalQuery).trim().toLocaleLowerCase(SEARCH_LOCALE)
+export function resolveSearchTerm(query: string): string {
+  return query.trim().toLocaleLowerCase(SEARCH_LOCALE)
 }
 
 export function matchesSearchTerm(searchTerm: string, values: readonly string[]): boolean {

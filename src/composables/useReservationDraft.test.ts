@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import type { BookingView, Customer, NewBookingReservation, Pet, RoomView } from '../domain'
 import { useReservationDraft } from './useReservationDraft'
 
-const customers: Customer[] = [{ id: 'customer-1', firstName: 'Erika', lastName: 'Muster', phone: '01234' }]
+const customers: Customer[] = [{ id: 'customer-1', firstName: 'Erika', lastName: 'Muster', email: 'erika@example.de', phone: '01234' }]
 const pets: Pet[] = [{
   id: 'pet-1', customerId: 'customer-1', name: 'Balu', species: 'dog', breed: 'Mischling', initials: 'B', color: '#fff'
 }]

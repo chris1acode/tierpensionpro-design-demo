@@ -17,7 +17,8 @@ const createDraft = (): NewBookingReservation => ({
   roomId: '',
   arrivalDate: props.startDate,
   arrival: '09:00',
-  departure: addDaysToIsoDate(props.startDate, 1)
+  departure: addDaysToIsoDate(props.startDate, 1),
+  pickupTime: ''
 })
 const {
   draft, availableCustomers, customerPets, roomAvailability,
@@ -62,6 +63,7 @@ function submit(): void {
         <label>Anreise<input v-model="draft.arrivalDate" aria-label="Anreise" type="date" required /></label>
         <label>Uhrzeit<input v-model="draft.arrival" aria-label="Uhrzeit" type="time" required /></label>
         <label>Abreise<input v-model="draft.departure" aria-label="Abreise" type="date" :min="draft.arrivalDate" required /></label>
+        <label>Abholzeit <small>optional</small><input v-model="draft.pickupTime" aria-label="Abholzeit" type="time" /></label>
       </div>
       <p class="occupancy-availability-hint" :class="{ unavailable: draft.petIds.length && !roomAvailability.length }" aria-live="polite">{{ availabilityHint }}</p>
       <label>Zimmer
