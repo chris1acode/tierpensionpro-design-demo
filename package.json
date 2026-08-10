@@ -1,0 +1,28 @@
+{
+  "name": "tierpensionpro-clickdummy-v2",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@lucide/vue": "latest",
+    "@vitejs/plugin-vue": "latest",
+    "vite": "^7.1.1",
+    "vue": "^3.5.18",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/node": "latest",
+    "@vitest/coverage-v8": "^4.1.10",
+    "typescript": "^5.9.2",
+    "vitest": "latest",
+    "vue-tsc": "^3.0.5"
+  }
+}
