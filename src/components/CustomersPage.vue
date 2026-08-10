@@ -124,7 +124,7 @@ function exportCustomers() {
           <p v-if="customerFormError" class="form-error">Bitte vollständige Namen und eine gültige, noch nicht verwendete Telefonnummer angeben.</p>
           <button class="primary-button" type="submit">Kundenprofil speichern</button>
         </form>
-        <label class="directory-search"><Search :size="17" /><input v-model="localQuery" placeholder="Name, Tier oder Rasse suchen …" /></label>
+        <label class="directory-search"><Search :size="17" /><input v-model="localQuery" placeholder="Kundenname oder Tiername suchen …" /></label>
         <div v-if="filteredCustomers.length" class="customer-list">
           <button v-for="customer in pagedCustomers" :key="customer.id" :class="{ active: selectedCustomer?.id === customer.id }" @click="selectCustomer(customer.id)">
             <span class="customer-avatar">{{ customer.firstName[0] }}{{ customer.lastName[0] }}</span>

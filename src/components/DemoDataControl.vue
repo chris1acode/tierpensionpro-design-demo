@@ -7,6 +7,7 @@ const store = usePensionStore()
 const open = ref(false)
 const trigger = ref<HTMLButtonElement | null>(null)
 const closeButton = ref<HTMLButtonElement | null>(null)
+const demoMenu = ref<HTMLDivElement | null>(null)
 
 async function openMenu() {
   open.value = true
@@ -30,13 +31,27 @@ function closeWithEscape(event: KeyboardEvent) {
   closeMenu(true)
 }
 
-onMounted(() => window.addEventListener('keydown', closeWithEscape))
-onBeforeUnmount(() => window.removeEventListener('keydown', closeWithEscape))
+function handleClickOutside(event: MouseEvent) {
+  if (!open.value) return
+  const target = event.target as Node
+  if (demoMenu.value && !demoMenu.value.contains(target) && !trigger.value?.contains(target)) {
+    closeMenu(true)
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', closeWithEscape)
+  window.addEventListener('click', handleClickOutside)
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', closeWithEscape)
+  window.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <template>
   <aside class="demo-control" aria-label="Demodaten-Steuerung">
-    <div v-if="open" class="demo-menu">
+    <div v-if="open" ref="demoMenu" class="demo-menu">
       <header>
         <span class="demo-menu-icon"><Database :size="18" /></span>
         <div><strong>{{ store.demoEnvironment.label }}</strong><small>{{ store.demoEnvironment.scenario }}</small></div>

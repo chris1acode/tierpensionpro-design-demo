@@ -534,7 +534,7 @@ test('pages through the complete customer mock data', async ({ page }) => {
   await expect(page.getByRole('button', { name: '2', exact: true })).toHaveAttribute('aria-current', 'page')
   await expect(page.locator('.customer-list button')).toHaveCount(5)
 
-  await page.getByPlaceholder('Name, Tier oder Rasse suchen …').fill('Minou')
+  await page.getByPlaceholder('Kundenname oder Tiername suchen …').fill('Minou')
   await expect(page.getByText('1 Treffer', { exact: true })).toBeVisible()
   await expect(page.locator('.customer-list')).toContainText('Clara Vogel')
   await expect(page.getByRole('navigation', { name: 'Seiten im Kundenverzeichnis' })).toHaveCount(0)
