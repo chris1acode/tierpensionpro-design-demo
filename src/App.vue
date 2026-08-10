@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import {
-  ArrowRight, CalendarDays, Check, Dog, LogOut, Menu, PawPrint, X
+  ArrowRight, CalendarDays, Check, ChevronLeft, ChevronRight, Dog, LogOut, Menu, PawPrint, X
 } from '@lucide/vue'
 import AccountSettingsPage from './components/AccountSettingsPage.vue'
 import CheckInModal from './components/CheckInModal.vue'
@@ -24,6 +24,7 @@ import { usePensionStore } from './usePensionStore'
 const store = usePensionStore()
 const route = useRoute()
 const mobileNavOpen = ref(false)
+const sidebarCollapsed = ref(localStorage.getItem('sidebarCollapsed') === 'true')
 const selectedBooking = ref<BookingView | null>(null)
 const selectedDeparture = ref<DepartureView | null>(null)
 const scheduleView = ref<'arrivals' | 'departures'>('arrivals')
@@ -94,6 +95,10 @@ function keepFocusInMobileNavigation(event: KeyboardEvent) {
   }
 }
 
+watch(sidebarCollapsed, (collapsed) => {
+  localStorage.setItem('sidebarCollapsed', String(collapsed))
+})
+
 onMounted(() => {
   window.addEventListener('keydown', closeMobileNavigationWithEscape)
   window.addEventListener('keydown', keepFocusInMobileNavigation)
@@ -106,18 +111,23 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="app-shell">
-    <aside ref="mobileNavigation" class="sidebar" :class="{ open: mobileNavOpen }" :role="mobileNavOpen ? 'dialog' : undefined" :aria-modal="mobileNavOpen ? 'true' : undefined" aria-label="Seitennavigation">
+    <aside ref="mobileNavigation" class="sidebar" :class="{ open: mobileNavOpen, collapsed: sidebarCollapsed }" :role="mobileNavOpen ? 'dialog' : undefined" :aria-modal="mobileNavOpen ? 'true' : undefined" aria-label="Seitennavigation">
       <RouterLink class="brand" to="/" @click="closeMobileNavigation()"><span class="brand-mark"><PawPrint :size="21" /></span><span>Tierpension <span>Pro</span></span></RouterLink>
       <button ref="mobileNavClose" class="close-nav icon-button" aria-label="Navigation schließen" @click="closeMobileNavigation(true)"><X /></button>
       <nav aria-label="Hauptnavigation">
-        <RouterLink v-for="item in visibleNavigationItems" :key="item.name" :to="item.path" @click="closeMobileNavigation()">
+        <RouterLink v-for="item in visibleNavigationItems" :key="item.name" :to="item.path" :title="sidebarCollapsed ? item.title : undefined" @click="closeMobileNavigation()">
           <component :is="item.icon" :size="19" /><span>{{ item.title }}</span>
         </RouterLink>
       </nav>
-      <RouterLink class="sidebar-profile" to="/konto" aria-label="Zu den Kontoeinstellungen" @click="closeMobileNavigation()">
+      <RouterLink class="sidebar-profile" to="/konto" :aria-label="sidebarCollapsed ? 'Zu den Kontoeinstellungen' : undefined" :title="sidebarCollapsed ? 'Kontoeinstellungen' : undefined" @click="closeMobileNavigation()">
         <div class="avatar">{{ accountInitials(store.account) }}</div>
         <div><strong>{{ store.account.firstName }} {{ store.account.lastName }}</strong><small>{{ store.account.role === 'root' ? 'Inhaber' : 'Mitarbeiter' }}</small></div>
       </RouterLink>
+      <button class="sidebar-toggle-link" :title="sidebarCollapsed ? 'Navigation ausklappen' : 'Navigation einklappen'" @click="sidebarCollapsed = !sidebarCollapsed">
+        <ChevronRight v-if="sidebarCollapsed" :size="16" />
+        <ChevronLeft v-else :size="16" />
+        <span>{{ sidebarCollapsed ? 'Ausklappen' : 'Einklappen' }}</span>
+      </button>
     </aside>
 
     <div v-if="mobileNavOpen" class="scrim" @click="closeMobileNavigation(true)" />
