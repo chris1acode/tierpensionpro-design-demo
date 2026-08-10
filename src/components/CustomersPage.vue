@@ -21,6 +21,7 @@ const customerFormError = ref(false)
 const newCustomer = ref({ firstName: '', lastName: '', email: '', phone: '' })
 const customerEditOpen = ref(false)
 const customerEditError = ref(false)
+const customerRemovalOpen = ref(false)
 const editedCustomer = ref<CustomerUpdate>({ firstName: '', lastName: '', email: '', phone: '' })
 const newPet = ref({ name: '', species: 'dog' as PetSpecies, breed: '', note: '', feedingPlan: '', medicationPlan: '', allergyNote: '', vaccinationStatus: '', veterinaryPracticeName: '', veterinaryPhone: '' })
 const editingPetId = ref<string | null>(null)
@@ -103,6 +104,7 @@ function selectCustomer(customerId: string) {
   veterinaryContactRemovalId.value = null
   customerEditOpen.value = false
   customerEditError.value = false
+  customerRemovalOpen.value = false
 }
 
 function openCustomerEdit() {
@@ -116,6 +118,15 @@ function openCustomerEdit() {
 function closeCustomerEdit() {
   customerEditOpen.value = false
   customerEditError.value = false
+}
+
+function removeCustomer() {
+  if (!selectedCustomer.value) return
+  if (store.removeCustomer(selectedCustomer.value.id)) {
+    selectedCustomerId.value = filteredCustomers.value[0]?.id ?? null
+    detailsOpen.value = false
+    customerRemovalOpen.value = false
+  }
 }
 
 function submitCustomerEdit() {
@@ -280,8 +291,15 @@ function exportCustomers() {
         <header class="customer-profile-header">
           <span class="customer-avatar large">{{ selectedCustomer.firstName[0] }}{{ selectedCustomer.lastName[0] }}</span>
           <div><p class="eyebrow">Kundenprofil</p><h2>{{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }}</h2><a :href="`mailto:${selectedCustomer.email}`"><Mail :size="14" /> {{ selectedCustomer.email }}</a><a :href="toTelephoneHref(selectedCustomer.phone)"><Phone :size="14" /> {{ selectedCustomer.phone }}</a></div>
-          <button v-if="!customerEditOpen" class="text-button" type="button" @click="openCustomerEdit"><Pencil :size="15" /> Kontaktdaten bearbeiten</button>
+          <div class="emergency-contact-actions">
+            <button v-if="!customerEditOpen" class="text-button" type="button" @click="openCustomerEdit"><Pencil :size="15" /> Kontaktdaten bearbeiten</button>
+            <button v-if="!selectedCustomer.pets.length && !selectedCustomer.bookings.length" class="text-button danger-text-button" type="button" @click="customerRemovalOpen = true"><Trash2 :size="15" /> Entfernen</button>
+          </div>
         </header>
+        <div v-if="customerRemovalOpen" class="emergency-contact-removal" role="alert">
+          <p><strong>{{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }} entfernen?</strong> Das Profil enthält keine Tiere und keine Aufenthalte.</p>
+          <div><button class="secondary-button" type="button" @click="customerRemovalOpen = false">Behalten</button><button class="danger-button" type="button" @click="removeCustomer">Jetzt entfernen</button></div>
+        </div>
         <form v-if="customerEditOpen" class="customer-create-form customer-edit-form" @submit.prevent="submitCustomerEdit">
           <label>Vorname *<input v-model="editedCustomer.firstName" autocomplete="given-name" /></label>
           <label>Nachname *<input v-model="editedCustomer.lastName" autocomplete="family-name" /></label>

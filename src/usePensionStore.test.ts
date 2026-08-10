@@ -118,6 +118,18 @@ describe('PensionStore', () => {
     expect(store.customers).toHaveLength(101)
   })
 
+  it('removes only customer profiles without animals or booking references', () => {
+    const store = createPensionStore()
+    expect(store.createCustomer({ firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.de', phone: '+49 151 2345678' })).toBe(true)
+
+    expect(store.removeCustomer('c-101')).toBe(true)
+    expect(store.customers.some((customer) => customer.id === 'c-101')).toBe(false)
+    expect(store.announcement.value).toBe('Ada Lovelace wurde aus dem Kundenverzeichnis entfernt.')
+    expect(store.removeCustomer('c-1')).toBe(false)
+    expect(store.removeCustomer('missing')).toBe(false)
+    expect(store.customerViews.value.find((customer) => customer.id === 'c-1')?.pets).toHaveLength(1)
+  })
+
   it('updates customer contact data without losing the emergency contact or booking links', () => {
     const store = createPensionStore()
 

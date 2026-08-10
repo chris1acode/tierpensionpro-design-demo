@@ -439,6 +439,19 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     return true
   }
 
+  /**
+   * Customer records may be removed only while they do not own any animal
+   * profiles. This keeps all booking and check-in/out references intact.
+   */
+  function removeCustomer(customerId: string): boolean {
+    const customerIndex = customers.findIndex((item) => item.id === customerId)
+    if (customerIndex < 0 || pets.some((pet) => pet.customerId === customerId)) return false
+
+    const [customer] = customers.splice(customerIndex, 1)
+    showToast(`${customer.firstName} ${customer.lastName} wurde aus dem Kundenverzeichnis entfernt.`)
+    return true
+  }
+
   function updateCustomer(customerId: string, input: CustomerUpdate): boolean {
     const customer = customers.find((item) => item.id === customerId)
     if (!customer) return false
@@ -706,6 +719,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     canDeleteBooking,
     deleteBooking,
     createCustomer,
+    removeCustomer,
     updateCustomer,
     updateCustomerEmergencyContact,
     removeCustomerEmergencyContact,
