@@ -49,11 +49,11 @@ test('waits for two characters before showing customer suggestions in a new book
   const customerSearch = page.getByRole('combobox', { name: 'Kund:in' })
   const suggestions = page.getByRole('listbox', { name: 'Kund:in-Vorschläge' })
   await customerSearch.focus()
-  await expect(suggestions).toContainText('2 Zeichen eingeben, um Kundschaft zu suchen.')
+  await expect(suggestions).toContainText('2 Zeichen eingeben, um Kunden zu suchen.')
   await expect(suggestions.getByRole('option')).toHaveCount(0)
 
   await customerSearch.fill('L')
-  await expect(suggestions).toContainText('2 Zeichen eingeben, um Kundschaft zu suchen.')
+  await expect(suggestions).toContainText('2 Zeichen eingeben, um Kunden zu suchen.')
   await expect(suggestions.getByRole('option')).toHaveCount(0)
 
   await customerSearch.fill('Le')
@@ -741,9 +741,9 @@ test('shows the room-selection prompt for pending requests', async ({ page }) =>
   const hannahRequest = page.locator('.request-card').filter({ hasText: 'Hannah Wolf' })
   await expect(hannahRequest.getByLabel('Verfügbarkeit: frei')).toContainText('Zeitraum frei')
 
-  const customerSelect = page.getByLabel('Kundschaft für Anfrage von Hannah Wolf')
+  const customerSelect = page.getByLabel('Kunde für Anfrage von Hannah Wolf')
   await expect(customerSelect).toHaveValue('')
-  await expect(customerSelect.locator('option:checked')).toHaveText('Kundschaft wählen')
+  await expect(customerSelect.locator('option:checked')).toHaveText('Kunde zuordnen')
 
   const roomSelect = page.getByLabel('Zimmer für Anfrage von Hannah Wolf')
   await expect(roomSelect).toHaveValue('')
@@ -777,10 +777,10 @@ test('groups request details separately from the decision controls', async ({ pa
 test('requires an explicit customer choice when accepting a request and highlights a matching contact', async ({ page }) => {
   await page.goto('/anfragen')
 
-  const emiliaRequest = page.getByLabel('Kundschaft für Anfrage von Emilia Fischer').locator('xpath=ancestor::article')
-  const customerSelect = emiliaRequest.getByLabel('Kundschaft für Anfrage von Emilia Fischer')
-  await expect(emiliaRequest).toContainText('Passende Kundschaft: Emilia Fischer · gleiche E-Mail-Adresse. Mit der Auswahl wird die Anfrage dieser Kundschaft zugeordnet.')
-  await expect(customerSelect.locator('optgroup')).toHaveAttribute('label', 'Passende bestehende Kundschaft')
+  const emiliaRequest = page.getByLabel('Kunde für Anfrage von Emilia Fischer').locator('xpath=ancestor::article')
+  const customerSelect = emiliaRequest.getByLabel('Kunde für Anfrage von Emilia Fischer')
+  await expect(emiliaRequest).toContainText('Passender Kunde: Emilia Fischer · gleiche E-Mail-Adresse. Mit der Auswahl wird die Anfrage diesem Kunden zugeordnet.')
+  await expect(customerSelect.locator('optgroup')).toHaveAttribute('label', 'Passende bestehende Kunden')
   await expect(customerSelect.locator('option[value="c-8"]')).toHaveCount(1)
   await expect(customerSelect.locator('option[value="c-1"]')).toHaveCount(0)
 

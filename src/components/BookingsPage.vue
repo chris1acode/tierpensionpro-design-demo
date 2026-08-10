@@ -208,7 +208,7 @@ function openBookingFromTimeline(bookingId: string) {
     </section>
 
     <section v-if="bookingBeingEdited" class="panel booking-form-panel edit-booking-panel">
-      <header><div><h2>Buchung bearbeiten</h2><p>{{ bookingBeingEdited.customer.firstName }} {{ bookingBeingEdited.customer.lastName }} · {{ bookingBeingEdited.pet.name }}. Kundschaft und Tier bleiben dieser Buchung zugeordnet.</p></div><button class="text-button" type="button" @click="bookingBeingEdited = null"><X :size="15" /> Schließen</button></header>
+      <header><div><h2>Buchung bearbeiten</h2><p>{{ bookingBeingEdited.customer.firstName }} {{ bookingBeingEdited.customer.lastName }} · {{ bookingBeingEdited.pet.name }}. Kunde und Tier bleiben dieser Buchung zugeordnet.</p></div><button class="text-button" type="button" @click="bookingBeingEdited = null"><X :size="15" /> Schließen</button></header>
       <form class="booking-form edit-booking-form" @submit.prevent="submitEdit">
         <label>Zimmer<select v-model="editDraft.roomId" required><option value="" disabled>Zimmer auswählen</option><option v-for="availability in editRoomAvailability" :key="availability.room.id" :value="availability.room.id">{{ availability.room.name }} · {{ availability.room.capacity }} {{ availability.room.capacity === 1 ? 'Platz' : 'Plätze' }}{{ availability.wouldOverbook ? ' · Überbuchung' : '' }}</option></select></label>
         <label>Anreisedatum<input v-model="editDraft.arrivalDate" type="date" required /></label>

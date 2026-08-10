@@ -118,8 +118,8 @@ onBeforeUnmount(() => {
       <li v-for="(customer, index) in matches" :id="`${listId}-${index}`" :key="customer.id" role="option" :aria-selected="customer.id === model" :class="{ active: index === activeIndex }">
         <button type="button" @mousedown.prevent @click="select(customer)"><strong>{{ customer.firstName }} {{ customer.lastName }}</strong><span>{{ customer.email }} · {{ customer.phone }}</span></button>
       </li>
-      <li v-if="!queryIsLongEnough" class="customer-autocomplete-empty" role="status">{{ minimumQueryLength }} Zeichen eingeben, um Kundschaft zu suchen.</li>
-      <li v-else-if="!matches.length" class="customer-autocomplete-empty" role="status">Keine Kundschaft gefunden.</li>
+      <li v-if="!queryIsLongEnough" class="customer-autocomplete-empty" role="status">{{ minimumQueryLength }} Zeichen eingeben, um Kunden zu suchen.</li>
+      <li v-else-if="!matches.length" class="customer-autocomplete-empty" role="status">Keine Kunden gefunden.</li>
     </ul>
   </div>
 </template>
