@@ -110,8 +110,8 @@ function exportHistory() {
           <div class="pet-info"><strong>{{ booking.customer.firstName }} {{ booking.customer.lastName }}</strong><span>{{ booking.pet.name }} · {{ booking.pet.breed }}</span></div>
           <div class="operation-room"><small>Zimmer</small><strong>{{ booking.room.name }}</strong></div>
           <div class="operation-time"><small>{{ activeView === 'arrivals' ? 'Ankunft' : 'Abholung' }}</small><strong>{{ activeView === 'arrivals' ? `${booking.arrival} Uhr` : selectedDateLabel }}</strong></div>
-          <button v-if="activeView === 'arrivals'" class="primary-button" @click="emit('checkIn', booking)"><ArrowDownToLine :size="16" /> Einchecken</button>
-          <button v-else class="primary-button" @click="emit('checkOut', booking as DepartureView)"><ArrowUpFromLine :size="16" /> Auschecken</button>
+          <button v-if="activeView === 'arrivals'" class="link-button" @click="emit('checkIn', booking)"><ArrowDownToLine :size="16" /> Einchecken</button>
+          <button v-else class="link-button" @click="emit('checkOut', booking as DepartureView)"><ArrowUpFromLine :size="16" /> Auschecken</button>
         </article>
       </div>
       <div v-else class="empty-state"><span><Search v-if="searchTerm" /><Check v-else /></span><strong>{{ searchTerm ? 'Keine passenden Vorgänge.' : 'Alles erledigt.' }}</strong><p>{{ searchTerm ? 'Versuche einen anderen Suchbegriff.' : 'In diesem Bereich sind keine Vorgänge mehr offen.' }}</p></div>

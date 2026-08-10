@@ -173,7 +173,7 @@ onBeforeUnmount(() => {
                 <span class="arrival-note-slot">
                   <span v-if="booking.pet.note" class="note-badge">Hinweis</span>
                 </span>
-                <button class="primary-button" @click="selectedBooking = booking">Einchecken</button>
+                <button class="link-button" @click="selectedBooking = booking">Einchecken</button>
               </article>
             </div>
             <div v-else-if="scheduleView === 'departures' && filteredDepartures.length" class="arrival-list">
@@ -181,7 +181,7 @@ onBeforeUnmount(() => {
                 <div class="pet-avatar" :style="{ background: departure.pet.color }">{{ departure.pet.initials }}</div>
                 <div class="pet-info"><strong>{{ departure.customer.firstName }} {{ departure.customer.lastName }}</strong><span>{{ departure.pet.name }} · {{ departure.pet.breed }}</span></div>
                 <div class="arrival-meta"><strong>Abreise heute</strong><span>{{ departure.room.name }}</span></div>
-                <button class="primary-button" @click="selectedDeparture = departure"><LogOut :size="16" /> Auschecken</button>
+                <button class="link-button" @click="selectedDeparture = departure"><LogOut :size="16" /> Auschecken</button>
               </article>
             </div>
             <div v-else class="empty-state">
@@ -208,7 +208,7 @@ onBeforeUnmount(() => {
               </div>
             </div>
             <div class="occupancy-actions">
-              <RouterLink class="primary-button" to="/belegung">Belegung planen <ArrowRight :size="16" /></RouterLink>
+              <RouterLink class="accent-button" to="/belegung">Belegung planen <ArrowRight :size="16" /></RouterLink>
               <button class="outline-button" @click="roomDialogOpen = true">Zimmerstatus verwalten</button>
             </div>
           </aside>
