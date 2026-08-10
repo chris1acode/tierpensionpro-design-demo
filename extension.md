@@ -1,10 +1,10 @@
-[ ] Umbau "Kund:in anlegen" von Inline-Formular auf Modal in CustomersPage.vue (inkl. Bearbeiten via Modal)
-[ ] Umbau "Tier anlegen" von Inline-Formular auf Modal in CustomersPage.vue (inkl. Bearbeiten via Modal)
+[x] Umbau "Kund:in anlegen" von Inline-Formular auf Modal in CustomersPage.vue (inkl. Bearbeiten via Modal)
+[x] Umbau "Tier anlegen" von Inline-Formular auf Modal in CustomersPage.vue (inkl. Bearbeiten via Modal)
 [ ] Umbau "Notfallkontakt hinterlegen". Die Funktion kann weg.
 [ ] Umbau "Neue Buchung" von Inline-Formular auf Modal in BookingsPage.vue (inkl. Bearbeiten via Modal)
 [ ] Umbau "Schließzeit anlegen" von Inline-Formular auf Modal in OccupancyPage.vue (inkl. Bearbeiten via Modal)
 [ ] Umbau Offene Anfragen. Kein Inline Formular mehr. Zuordnung über Modal.
-[ ] Zimmer Einstellungen sieht visuell kacke aus. Geht das nicht übersichtlicher
+[ ] Zimmer Einstellungen sieht visuell kacke aus. Geht das nicht übersichtlicher? Außerdem Modal verwenden für Create und Edit.
 [ ] Schriftarten in AccountSettingsPage.vue prüfen und vergrößern
 [ ] Schriftarten in BookingsPage.vue prüfen und vergrößern
 [ ] Schriftarten in CheckInOutPage.vue prüfen und vergrößern
@@ -13,3 +13,10 @@
 [ ] Schriftarten in RequestsPage.vue prüfen und vergrößern
 [ ] Schriftarten in SettingsPage.vue prüfen und vergrößern
 [ ] Besonderes Futter als Checkbox bei Tieren ermöglichen
+[ ] Verwende das richtige logo.svg
+[ ] Logo ist bei zusammengeklapptem Men gequetscht. Fixe das!
+[ ] Tier kachel bei Kunden & Tiere soll volle Breite der Card haben
+[ ] Kunden & Tiere Kundenprofil. Die Aktionen sind viel zu sehr verstreut. Pack die zusammen nach oben.
+[ ] Kunden & Tiere Kunde anlegen als Hauptaktion nach oben und primary
+[ ] src/components/BookingsPage.vue: "Kund:in" -> "Kunde" (Labels, Fehlermeldungen, Spaltenüberschriften), src/components/OccupancyReservationModal.vue: "Kund:in" -> "Kunde", src/components/CustomerFormModal.vue: "Kund:in anlegen" -> "Kunden anlegen", src/components/CheckInOutPage.vue: "Kund:in" -> "Kunde"
+[ ] src/components/RequestsPage.vue: "Kund:in" -> "Kunde", src/components/CustomerAutocomplete.vue: "Kund:in suchen" -> "Kunden suchen", src/components/CustomersPage.vue: "Kund:innen", "Kund:in anlegen" -> "Kunden", "Kunden anlegen", e2e/dashboard-search.spec.ts: Alle Vorkommen von "Kund:in" und "Kund:innen" in Tests anpassen , docs/documentation.md und andere Dokumente prüfen

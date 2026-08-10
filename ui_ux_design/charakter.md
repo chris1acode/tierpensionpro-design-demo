@@ -10,3 +10,4 @@
 * Vermittle Fuersorge, ohne verspielt oder kindlich zu wirken.
 * Schaffe Identitaet durch Konsistenz, nicht durch viele einzelne Gags.
 * Jedes charaktervolle Detail muss auch eine funktionale oder emotionale Aufgabe erfuellen.
+* Verwende eine klare, direkte Sprache und verzichte vollstaendig auf Gender-Schreibweisen (wie z.B. Kund:in, Mitarbeiter*in). Nutze stattdessen neutrale Begriffe oder die generische Form.

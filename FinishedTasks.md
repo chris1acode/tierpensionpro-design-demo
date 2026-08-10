@@ -1,5 +1,13 @@
 # Finished Tasks
 
+## Session c357b — 2026-08-10
+- extension.md: "Tier anlegen" von Inline-Formular auf Modal umgebaut (inkl. Bearbeiten). Neue Komponente `src/components/PetFormModal.vue` (basiert auf `BaseModal`, analog zu `CustomerFormModal.vue`; Tierart-Auswahl nur im `create`-Modus, da Tierart bei Bearbeitung stabil bleibt) ersetzt die bisherigen Inline-Formulare und zugehörigen State/Funktionen (`petFormOpen`, `petFormError`, `newPet`, `editingPetId`, `petEditError`, `editedPet`, `submitPet`, `submitPetEdit`, `closePetForm`, `openPetEdit`/`closePetEdit`) in `src/components/CustomersPage.vue`. Verwaist gewordene CSS-Regeln `.pet-create-form`/`.pet-edit-form`/`.pet-edit-actions` in `src/styles.css` entfernt und durch `.pet-form-modal`/`.pet-form` ersetzt.
+- Verifiziert mit `vue-tsc --noEmit`, `npm run build`, `npm run test` (227 Tests) sowie einem Playwright-Skript gegen den Dev-Server: Anlegen-Modal öffnen/speichern (neues Tier erscheint in der Kachel-Liste), Bearbeiten-Modal mit vorbefüllten Werten (Name/Rasse), Speichern aktualisiert die Kachel — keine Konsolenfehler.
+
+## Session 47e9f — 2026-08-10
+- extension.md: "Kund:in anlegen" von Inline-Formular auf Modal umgebaut (inkl. Bearbeiten). Neue Komponente `src/components/CustomerFormModal.vue` (basiert auf `BaseModal`, ein Formular für Anlegen und Bearbeiten je nach `mode`-Prop) ersetzt die bisherigen Inline-Formulare und zugehörigen State/Funktionen (`customerFormOpen`, `customerEditOpen`, `newCustomer`, `editedCustomer`, `submitCustomer`, `submitCustomerEdit`, …) in `src/components/CustomersPage.vue`. Formularstile in `src/styles.css` (`.customer-create-form`, neue Klasse `.customer-form-modal`) auf vertikales Modal-Layout umgestellt.
+- Verifiziert mit `vue-tsc --noEmit`, `npm run test` (227 Tests) sowie einem Playwright-Skript gegen den Dev-Server: Anlegen-Modal öffnen/speichern, Bearbeiten-Modal mit vorbefüllten Werten, Schließen per Escape — keine Konsolenfehler.
+
 ## Session 02936 — 2026-08-10
 - bugs.md: Dashboard-Kennzahlenkarten – Pfeil-Icon (metric-arrow) war bei umbrochenem Text auf mittleren Screens (~1024px) vertikal mittig positioniert und überlappte den umbrochenen Fließtext. Jetzt fest oben ausgerichtet (`src/styles.css`, `.metric-arrow`), sodass er bei jeder Zeilenzahl neben dem Titel bleibt.
 - bugs.md: "Anzahl Kunden"-Badge in der Kopfzeile von Kunden & Tiere entfernt (`src/components/CustomersPage.vue`), inkl. Entfernen des nun ungenutzten `Users`-Icon-Imports.

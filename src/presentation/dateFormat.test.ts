@@ -1,10 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { formatCancellationDate, formatDayAndMonth, formatEventTimestamp, formatShortWeekday } from './dateFormat'
+import { formatCancellationDate, formatDayAndMonth, formatEventTimestamp, formatLongWeekdayDate, formatShortWeekday } from './dateFormat'
 
 describe('date presentation', () => {
   it('formats ISO calendar dates without a timezone-related day shift', () => {
     expect(formatShortWeekday('2026-08-09')).toBe('So')
     expect(formatDayAndMonth('2026-08-09')).toBe('09.08.')
+  })
+
+  it('formats the full weekday date used in the dashboard heading', () => {
+    expect(formatLongWeekdayDate('2026-08-09')).toBe('Sonntag, 9. August')
+    expect(formatLongWeekdayDate('2026-08-10')).toBe('Montag, 10. August')
   })
 
   it('formats event timestamps and cancellation dates for German users', () => {

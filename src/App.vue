@@ -17,6 +17,7 @@ import SettingsPage from './components/SettingsPage.vue'
 import ToastRegion from './components/ToastRegion.vue'
 import type { BookingView, DepartureView } from './domain'
 import { accountInitials } from './domain/account'
+import { formatLongWeekdayDate } from './presentation/dateFormat'
 import { calculateStayPrice } from './domain/stayPrice'
 import { navigationItems } from './navigation'
 import { usePensionStore } from './usePensionStore'
@@ -140,7 +141,7 @@ onBeforeUnmount(() => {
 
       <main v-if="route.name === 'dashboard'">
         <div class="page-heading">
-          <div><p class="eyebrow">Sonntag, 9. August</p><h1>Tagesübersicht</h1><p>Hier ist der Überblick für den heutigen Pensionstag.</p></div>
+          <div><p class="eyebrow">{{ formatLongWeekdayDate(store.businessDate.value) }}</p><h1>Tagesübersicht</h1><p>Hier ist der Überblick für den heutigen Pensionstag.</p></div>
         </div>
 
         <section v-if="visibleNavigationItems.some(item => item.name === 'requests')" class="metrics" aria-label="Tageskennzahlen">

@@ -1,4 +1,5 @@
 const shortWeekdayFormatter = new Intl.DateTimeFormat('de-DE', { weekday: 'short' })
+const longWeekdayDateFormatter = new Intl.DateTimeFormat('de-DE', { weekday: 'long', day: 'numeric', month: 'long' })
 const dayMonthFormatter = new Intl.DateTimeFormat('de-DE', { day: '2-digit', month: '2-digit' })
 const eventTimestampFormatter = new Intl.DateTimeFormat('de-DE', {
   dateStyle: 'medium',
@@ -18,6 +19,10 @@ export function formatShortWeekday(date: string): string {
 
 export function formatDayAndMonth(date: string): string {
   return dayMonthFormatter.format(asLocalCalendarDate(date))
+}
+
+export function formatLongWeekdayDate(date: string): string {
+  return longWeekdayDateFormatter.format(asLocalCalendarDate(date))
 }
 
 export function formatEventTimestamp(timestamp: string): string {
