@@ -587,15 +587,14 @@ Mobile:
 * Floating Action Button
 * oder feste untere Aktionsleiste
 
-Oeffne kleine Erstellvorgaenge in einem Dialog oder Side Panel.
-
-Oeffne komplexe Erstellvorgaenge als eigene Route.
+Oeffne Erstellungs- und Bearbeitungsvorgaenge grundsaetzlich in einem Dialog (Modal).
 
 Kriterium:
 
-* bis etwa vier einfache Felder: Dialog
-* mittlerer Umfang: Side Panel
-* komplex oder mehrstufig: eigene View
+* Standardfall: Dialog (`v-dialog`)
+* Extrem komplex oder mehrstufig: eigene View (Route)
+
+Vermeide Side Panels oder Inline-Formulare fuer Erstellen- und Bearbeiten-Operationen, um eine konsistente Benutzerführung zu gewaehrleisten.
 
 ---
 
@@ -974,6 +973,7 @@ Nutze Vue-Router-Navigation-Guards fuer solche Faelle. Navigation Guards koennen
 
 Nutze `v-dialog` fuer:
 
+* Erstellungs- und Bearbeitungsvorgaenge (Standard)
 * kurze Entscheidungen
 * Bestaetigungen
 * kleine Formulare
@@ -1023,11 +1023,10 @@ Nutze ein Side Panel fuer kontextbezogene Arbeit ohne Verlust der Hauptansicht.
 Geeignet fuer:
 
 * Details
-* schnelle Bearbeitung
 * Filter
 * Aktivitaet
 * Kommentare
-* Einstellungen eines einzelnen Objekts
+* Einstellungen eines einzelnen Objekts (ohne Bearbeitungs-Formular)
 
 Nicht geeignet fuer:
 
