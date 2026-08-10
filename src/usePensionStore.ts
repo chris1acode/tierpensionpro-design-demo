@@ -1,10 +1,9 @@
 import { computed, reactive, ref } from 'vue'
-import type { AccountUpdate, Booking, BookingRequest, BookingReservation, BookingUpdate, CheckInOutEvent, Customer, CustomerUpdate, EmergencyContact, NewBooking, NewBookingReservation, NewCustomer, NewPet, NewPensionClosure, OccupancyRangeDays, PensionSettingsUpdate, PetUpdate, RoomInput, RoomOperationalStatus, ToastNotification } from './domain'
+import type { AccountUpdate, Booking, BookingRequest, BookingReservation, BookingUpdate, CheckInOutEvent, Customer, CustomerUpdate, NewBooking, NewBookingReservation, NewCustomer, NewPet, NewPensionClosure, OccupancyRangeDays, PensionSettingsUpdate, PetUpdate, RoomInput, RoomOperationalStatus, ToastNotification } from './domain'
 import { isValidAccountUpdate } from './domain/account'
 import { isValidBookingNote, normalizeBookingNote } from './domain/bookingNote'
 import { addDaysToIsoDate, buildDateRange, enumerateStayDates, fromLocalIsoDate, isValidBookingPeriod, isValidIsoDate, isValidOptionalTime, toLocalIsoDate } from './domain/bookingPeriod'
 import { createCustomerProfile, updateCustomerProfile } from './domain/customerProfile'
-import { normalizeEmergencyContact } from './domain/emergencyContact'
 import { createPetProfile, updatePetProfile } from './domain/petProfile'
 import { isValidPensionSettingsUpdate } from './domain/pensionSettings'
 import { isValidRoomInput } from './domain/roomConfiguration'
@@ -470,25 +469,6 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     return true
   }
 
-  function updateCustomerEmergencyContact(customerId: string, input: EmergencyContact): boolean {
-    const customer = customers.find((item) => item.id === customerId)
-    const emergencyContact = normalizeEmergencyContact(input)
-    if (!customer || !emergencyContact) return false
-
-    customer.emergencyContact = emergencyContact
-    showToast(`Der Notfallkontakt für ${customer.firstName} ${customer.lastName} wurde gespeichert.`)
-    return true
-  }
-
-  function removeCustomerEmergencyContact(customerId: string): boolean {
-    const customer = customers.find((item) => item.id === customerId)
-    if (!customer?.emergencyContact) return false
-
-    delete customer.emergencyContact
-    showToast(`Der Notfallkontakt für ${customer.firstName} ${customer.lastName} wurde entfernt.`)
-    return true
-  }
-
   function checkOut(bookingId: string): boolean {
     const booking = bookings.find((item) => item.id === bookingId)
     const pet = booking && pets.find((item) => item.id === booking.petId)
@@ -721,8 +701,6 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     createCustomer,
     removeCustomer,
     updateCustomer,
-    updateCustomerEmergencyContact,
-    removeCustomerEmergencyContact,
     createPet,
     updatePet,
     removePetVeterinaryContact,

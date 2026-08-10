@@ -52,7 +52,6 @@ defineEmits<{
     <dl>
       <div><dt>Tier</dt><dd>{{ booking.pet.name }} · {{ booking.pet.breed }}</dd></div>
       <div><dt>Abreise</dt><dd>{{ booking.departure }}</dd></div>
-      <div v-if="booking.customer.emergencyContact"><dt>Notfallkontakt</dt><dd><a :href="toTelephoneHref(booking.customer.emergencyContact.phone)">{{ booking.customer.emergencyContact.name }} · {{ booking.customer.emergencyContact.phone }}</a></dd></div>
       <div v-if="booking.pet.veterinaryContact"><dt>Tierarztpraxis</dt><dd><a :href="toTelephoneHref(booking.pet.veterinaryContact.phone)">{{ booking.pet.veterinaryContact.practiceName }} · {{ booking.pet.veterinaryContact.phone }}</a></dd></div>
     </dl>
     <div class="modal-actions">

@@ -130,15 +130,14 @@ describe('PensionStore', () => {
     expect(store.customerViews.value.find((customer) => customer.id === 'c-1')?.pets).toHaveLength(1)
   })
 
-  it('updates customer contact data without losing the emergency contact or booking links', () => {
+  it('updates customer contact data without losing booking links', () => {
     const store = createPensionStore()
 
     expect(store.updateCustomer('c-1', {
       firstName: '  Sophie ', lastName: ' Berger ', email: ' SOPHIE.BERGER@EXAMPLE.DE ', phone: ' 0176 445 21 92 '
     })).toBe(true)
     expect(store.customers.find((customer) => customer.id === 'c-1')).toMatchObject({
-      id: 'c-1', firstName: 'Sophie', lastName: 'Berger', email: 'sophie.berger@example.de', phone: '0176 445 21 92',
-      emergencyContact: { name: 'Tobias Berger', phone: '0176 445 21 91' }
+      id: 'c-1', firstName: 'Sophie', lastName: 'Berger', email: 'sophie.berger@example.de', phone: '0176 445 21 92'
     })
     expect(store.bookingViews.value.find((booking) => booking.id === 'b-1')?.customer.firstName).toBe('Sophie')
     expect(store.announcement.value).toBe('Sophie Berger wurde im Kundenprofil aktualisiert.')
@@ -149,37 +148,6 @@ describe('PensionStore', () => {
     expect(store.updateCustomer('missing', {
       firstName: 'Sophie', lastName: 'Berger', email: 'sophie.berger@example.de', phone: '0176 445 21 92'
     })).toBe(false)
-  })
-
-  it('stores a validated emergency contact on the customer and restores it with the demo reset', () => {
-    const store = createPensionStore()
-
-    expect(store.updateCustomerEmergencyContact('c-2', { name: '  Mara Klein ', phone: ' 0172 339 80 02 ' })).toBe(true)
-    expect(store.customers.find((customer) => customer.id === 'c-2')?.emergencyContact).toEqual({
-      name: 'Mara Klein', phone: '0172 339 80 02'
-    })
-    expect(store.updateCustomerEmergencyContact('c-2', { name: '', phone: '0172 339 80 02' })).toBe(false)
-    expect(store.updateCustomerEmergencyContact('missing', { name: 'Mara Klein', phone: '0172 339 80 02' })).toBe(false)
-
-    store.resetDemo()
-    expect(store.customers.find((customer) => customer.id === 'c-2')?.emergencyContact).toBeUndefined()
-    expect(store.customers.find((customer) => customer.id === 'c-1')?.emergencyContact).toEqual({
-      name: 'Tobias Berger', phone: '0176 445 21 91'
-    })
-  })
-
-  it('removes an existing emergency contact without changing other customer data', () => {
-    const store = createPensionStore()
-    const customer = store.customers.find((item) => item.id === 'c-1')!
-
-    expect(store.removeCustomerEmergencyContact('c-1')).toBe(true)
-    expect(customer).toMatchObject({
-      id: 'c-1', firstName: 'Sofia', lastName: 'Berger', email: 'sofia.berger@example.de', phone: '0176 445 21 90'
-    })
-    expect(customer.emergencyContact).toBeUndefined()
-    expect(store.announcement.value).toBe('Der Notfallkontakt für Sofia Berger wurde entfernt.')
-    expect(store.removeCustomerEmergencyContact('c-1')).toBe(false)
-    expect(store.removeCustomerEmergencyContact('missing')).toBe(false)
   })
 
   it('keeps confirmations as dismissible, structured toast notifications', () => {

@@ -24,7 +24,7 @@ export const initialPensionSettings: PensionSettings = {
 }
 
 const coreCustomers: Customer[] = [
-  { id: 'c-1', firstName: 'Sofia', lastName: 'Berger', email: 'sofia.berger@example.de', phone: '0176 445 21 90', emergencyContact: { name: 'Tobias Berger', phone: '0176 445 21 91' } },
+  { id: 'c-1', firstName: 'Sofia', lastName: 'Berger', email: 'sofia.berger@example.de', phone: '0176 445 21 90' },
   { id: 'c-2', firstName: 'Jonas', lastName: 'Klein', email: 'jonas.klein@example.de', phone: '0151 820 44 13' },
   { id: 'c-3', firstName: 'Mara', lastName: 'Hoffmann', email: 'mara.hoffmann@example.de', phone: '0172 339 80 02' },
   { id: 'c-4', firstName: 'Nina', lastName: 'Schulz', email: 'nina.schulz@example.de', phone: '0160 791 62 18' },

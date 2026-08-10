@@ -9,21 +9,13 @@ export interface Customer {
   /** Primary contact channel, also used to identify existing requesters. */
   email: string
   phone: string
-  /** Optional alternative contact for urgent questions during a stay. */
-  emergencyContact?: EmergencyContact
 }
 
 export type NewCustomer = Omit<Customer, 'id'>
 
-/** Editable contact data of an existing customer. The ID and optional emergency
- * contact remain stable because bookings and operational contact details refer to
- * the same customer record. */
+/** Editable contact data of an existing customer. The ID remains stable because
+ * bookings and operational contact details refer to the same customer record. */
 export type CustomerUpdate = Pick<Customer, 'firstName' | 'lastName' | 'email' | 'phone'>
-
-export interface EmergencyContact {
-  name: string
-  phone: string
-}
 
 export interface Pet {
   id: string

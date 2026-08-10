@@ -30,15 +30,13 @@ describe('createCustomerProfile', () => {
 })
 
 describe('updateCustomerProfile', () => {
-  it('keeps identity and emergency contact while normalizing changed contact data', () => {
+  it('keeps identity while normalizing changed contact data', () => {
     expect(updateCustomerProfile({
-      id: 'c-1', firstName: 'Sofia', lastName: 'Berger', email: 'sofia@example.de', phone: '0176 445 21 90',
-      emergencyContact: { name: 'Tobias Berger', phone: '0176 445 21 91' }
+      id: 'c-1', firstName: 'Sofia', lastName: 'Berger', email: 'sofia@example.de', phone: '0176 445 21 90'
     }, {
       firstName: '  Sophie ', lastName: ' Berger ', email: ' SOPHIE@EXAMPLE.DE ', phone: ' 0176 445 21 92 '
     }, [], [])).toEqual({
-      id: 'c-1', firstName: 'Sophie', lastName: 'Berger', email: 'sophie@example.de', phone: '0176 445 21 92',
-      emergencyContact: { name: 'Tobias Berger', phone: '0176 445 21 91' }
+      id: 'c-1', firstName: 'Sophie', lastName: 'Berger', email: 'sophie@example.de', phone: '0176 445 21 92'
     })
   })
 

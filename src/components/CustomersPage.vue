@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { ArrowLeft, Cat, Dog, Download, Mail, Pencil, Phone, Plus, Search, ShieldAlert, Stethoscope, Trash2, X } from '@lucide/vue'
-import type { CustomerView, EmergencyContact } from '../domain'
+import { ArrowLeft, Cat, Dog, Download, Mail, Pencil, Phone, Plus, Search, Stethoscope, Trash2 } from '@lucide/vue'
+import type { CustomerView } from '../domain'
 import { bookingStatusLabels } from '../presentation/bookingStatus'
 import { toTelephoneHref } from '../presentation/phoneLink'
 import { usePagination } from '../composables/usePagination'
@@ -21,10 +21,6 @@ const customerModalMode = ref<'create' | 'edit' | null>(null)
 const customerRemovalOpen = ref(false)
 const petRemovalId = ref<string | null>(null)
 const veterinaryContactRemovalId = ref<string | null>(null)
-const emergencyContactOpen = ref(false)
-const emergencyContactError = ref(false)
-const emergencyContact = ref<EmergencyContact>({ name: '', phone: '' })
-const emergencyContactRemovalOpen = ref(false)
 const pageSize = 5
 const isCompactPagination = ref(false)
 const compactPaginationQuery = typeof window === 'undefined' ? null : window.matchMedia('(max-width: 680px)')
@@ -90,9 +86,6 @@ function selectPage(page: number) {
 function selectCustomer(customerId: string) {
   selectedCustomerId.value = customerId
   detailsOpen.value = true
-  emergencyContactOpen.value = false
-  emergencyContactError.value = false
-  emergencyContactRemovalOpen.value = false
   veterinaryContactRemovalId.value = null
   customerRemovalOpen.value = false
 }
@@ -115,29 +108,6 @@ function onCustomerSaved(customerId: string) {
   currentPage.value = Math.floor(sortedIndex / pageSize) + 1
   selectedCustomerId.value = customerId
   detailsOpen.value = true
-}
-
-function openEmergencyContactForm() {
-  if (!selectedCustomer.value) return
-  emergencyContact.value = selectedCustomer.value.emergencyContact
-    ? { ...selectedCustomer.value.emergencyContact }
-    : { name: '', phone: '' }
-  emergencyContactError.value = false
-  emergencyContactOpen.value = true
-}
-
-function submitEmergencyContact() {
-  if (!selectedCustomer.value) return
-  const saved = store.updateCustomerEmergencyContact(selectedCustomer.value.id, emergencyContact.value)
-  emergencyContactError.value = !saved
-  if (saved) emergencyContactOpen.value = false
-}
-
-function removeEmergencyContact() {
-  if (!selectedCustomer.value) return
-  if (store.removeCustomerEmergencyContact(selectedCustomer.value.id)) {
-    emergencyContactRemovalOpen.value = false
-  }
 }
 
 function openPetCreate() {
@@ -170,13 +140,13 @@ function removeVeterinaryContact(petId: string) {
 function exportCustomers() {
   downloadCsv({
     fileName: 'kunden-und-tiere.csv',
-    columns: ['Kund:in', 'E-Mail', 'Telefon', 'Notfallkontakt', 'Tier', 'Tierart', 'Rasse', 'Hinweis', 'Fütterungsplan', 'Medikationsplan', 'Allergien & Unverträglichkeiten', 'Impfstatus', 'Tierarztpraxis', 'Tierarzttelefon'],
+    columns: ['Kund:in', 'E-Mail', 'Telefon', 'Tier', 'Tierart', 'Rasse', 'Hinweis', 'Fütterungsplan', 'Medikationsplan', 'Allergien & Unverträglichkeiten', 'Impfstatus', 'Tierarztpraxis', 'Tierarzttelefon'],
     rows: filteredCustomers.value.flatMap((customer) => customer.pets.length
       ? customer.pets.map((pet) => [
-        `${customer.firstName} ${customer.lastName}`, customer.email, customer.phone, customer.emergencyContact ? `${customer.emergencyContact.name} (${customer.emergencyContact.phone})` : '', pet.name,
+        `${customer.firstName} ${customer.lastName}`, customer.email, customer.phone, pet.name,
         pet.species === 'dog' ? 'Hund' : 'Katze', pet.breed, pet.note, pet.feedingPlan, pet.medicationPlan, pet.allergyNote, pet.vaccinationStatus, pet.veterinaryContact?.practiceName, pet.veterinaryContact?.phone
       ])
-      : [[`${customer.firstName} ${customer.lastName}`, customer.email, customer.phone, customer.emergencyContact ? `${customer.emergencyContact.name} (${customer.emergencyContact.phone})` : '', '', '', '', '', '', '', '', '', '', '']])
+      : [[`${customer.firstName} ${customer.lastName}`, customer.email, customer.phone, '', '', '', '', '', '', '', '', '']])
   })
 }
 
@@ -228,21 +198,6 @@ function exportCustomers() {
         <div v-if="customerRemovalOpen" class="emergency-contact-removal" role="alert">
           <p><strong>{{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }} entfernen?</strong> Das Profil enthält keine Tiere und keine Aufenthalte.</p>
           <div><button class="secondary-button" type="button" @click="customerRemovalOpen = false">Behalten</button><button class="danger-button" type="button" @click="removeCustomer">Jetzt entfernen</button></div>
-        </div>
-        <div class="detail-section emergency-contact-section">
-          <div class="section-title"><div><h3><ShieldAlert :size="15" /> Notfallkontakt</h3><p>Alternative Ansprechperson während eines Aufenthalts</p></div><div class="emergency-contact-actions"><button v-if="selectedCustomer.emergencyContact" class="text-button danger-text-button" type="button" @click="emergencyContactRemovalOpen = true">Entfernen</button><button class="text-button" type="button" @click="emergencyContactOpen ? emergencyContactOpen = false : openEmergencyContactForm()"><X v-if="emergencyContactOpen" :size="15" /><Plus v-else-if="!selectedCustomer.emergencyContact" :size="15" /> {{ emergencyContactOpen ? 'Abbrechen' : selectedCustomer.emergencyContact ? 'Bearbeiten' : 'Hinterlegen' }}</button></div></div>
-          <form v-if="emergencyContactOpen" class="emergency-contact-form" @submit.prevent="submitEmergencyContact">
-            <label>Name *<input v-model="emergencyContact.name" autocomplete="name" /></label>
-            <label>Telefon *<input v-model="emergencyContact.phone" autocomplete="tel" inputmode="tel" /></label>
-            <p v-if="emergencyContactError" class="form-error">Bitte Name und gültige Telefonnummer angeben.</p>
-            <button class="primary-button" type="submit">Notfallkontakt speichern</button>
-          </form>
-          <div v-else-if="emergencyContactRemovalOpen && selectedCustomer.emergencyContact" class="emergency-contact-removal" role="alert">
-            <p>Notfallkontakt von {{ selectedCustomer.firstName }} entfernen?</p>
-            <div><button class="secondary-button" type="button" @click="emergencyContactRemovalOpen = false">Behalten</button><button class="danger-button" type="button" @click="removeEmergencyContact">Jetzt entfernen</button></div>
-          </div>
-          <a v-else-if="selectedCustomer.emergencyContact" class="emergency-contact-value" :href="toTelephoneHref(selectedCustomer.emergencyContact.phone)"><Phone :size="15" /><span><strong>{{ selectedCustomer.emergencyContact.name }}</strong><small>{{ selectedCustomer.emergencyContact.phone }}</small></span></a>
-          <p v-else class="empty-contact">Noch kein Notfallkontakt hinterlegt.</p>
         </div>
         <div class="detail-section">
           <div class="section-title"><div><h3>Tiere</h3><p>{{ selectedCustomer.pets.length }} hinterlegte Tierprofile</p></div><button class="text-button" type="button" @click="openPetCreate"><Plus :size="15" /> Tier anlegen</button></div>

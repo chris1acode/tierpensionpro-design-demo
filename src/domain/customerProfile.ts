@@ -1,7 +1,6 @@
 import type { BookingRequest, Customer, CustomerUpdate, NewCustomer } from '../domain'
 import { isValidEmail } from './email'
 import { isPhoneNumberAvailable, isValidPhoneNumber, normalizePhoneNumber } from './customerPhone'
-import { normalizeEmergencyContact } from './emergencyContact'
 
 export type CustomerRequestMatch = 'email' | 'phone' | 'name'
 
@@ -21,10 +20,7 @@ export function createCustomerProfile(
     return undefined
   }
 
-  const emergencyContact = input.emergencyContact && normalizeEmergencyContact(input.emergencyContact)
-  if (input.emergencyContact && !emergencyContact) return undefined
-
-  return { id, firstName, lastName, email, phone, ...(emergencyContact ? { emergencyContact } : {}) }
+  return { id, firstName, lastName, email, phone }
 }
 
 /** Normalizes editable contact fields while preserving the stable customer identity. */
