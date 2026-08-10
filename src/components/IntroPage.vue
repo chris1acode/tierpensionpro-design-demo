@@ -16,10 +16,10 @@ import LogoIcon from './LogoIcon.vue'
         <h2>Ein erster Blick auf Tierpension Pro</h2>
         <p>
           Wir entwickeln eine digitale Lösung, um den Alltag in Tierpensionen einfacher zu gestalten. 
-          Sehen Sie sich die Design-Demo in Ruhe an und geben Sie uns Feedback: Was wirkt sinnvoll? Was würden Sie anders machen?
+          Ihr Feedback aus der Praxis wäre sehr wertvoll. Schauen Sie sich die Demo an! Was wirkt sinnvoll? Was würden Sie anders machen?
         </p>
         <p class="hint">
-          <strong>Hinweis:</strong> Für das beste Erlebnis testen Sie die Demo bitte im <strong>Desktop-Browser</strong>.
+          <strong>Hinweis:</strong> Für das beste Erlebnis testen Sie die Demo bitte im <strong>Desktop-Browser</strong>. Für mobile Nutzung ist später eine App geplant.
         </p>
       </div>
 
