@@ -79,7 +79,7 @@ function keepFocusInMobileNavigation(event: KeyboardEvent) {
 
   const focusableElements = Array.from(mobileNavigation.value.querySelectorAll<HTMLElement>(
     'a[href], button:not(:disabled), [tabindex]:not([tabindex="-1"])'
-  )).filter((element) => !element.hasAttribute('hidden'))
+  )).filter((element) => !element.hasAttribute('hidden') && element.offsetParent !== null)
   const firstElement = focusableElements[0]
   const lastElement = focusableElements.at(-1)
   if (!firstElement || !lastElement) return
@@ -117,10 +117,10 @@ onBeforeUnmount(() => {
       <button ref="mobileNavClose" class="close-nav icon-button" aria-label="Navigation schließen" @click="closeMobileNavigation(true)"><X /></button>
       <nav aria-label="Hauptnavigation">
         <RouterLink v-for="item in visibleNavigationItems" :key="item.name" :to="item.path" :title="sidebarCollapsed ? item.title : undefined" @click="closeMobileNavigation()">
-          <component :is="item.icon" :size="19" /><span>{{ item.title }}</span><span v-if="item.name === 'requests' && store.pendingRequests.value.length" class="nav-badge">{{ store.pendingRequests.value.length }}</span>
+          <component :is="item.icon" :size="19" /><span>{{ item.title }}</span><span v-if="item.name === 'requests' && store.pendingRequests.value.length" class="nav-badge" aria-hidden="true">{{ store.pendingRequests.value.length }}</span>
         </RouterLink>
       </nav>
-      <RouterLink class="sidebar-profile" to="/konto" :aria-label="sidebarCollapsed ? 'Zu den Kontoeinstellungen' : undefined" :title="sidebarCollapsed ? 'Kontoeinstellungen' : undefined" @click="closeMobileNavigation()">
+      <RouterLink class="sidebar-profile" to="/konto" aria-label="Zu den Kontoeinstellungen" :title="sidebarCollapsed ? 'Kontoeinstellungen' : undefined" @click="closeMobileNavigation()">
         <div class="avatar">{{ accountInitials(store.account) }}</div>
         <div><strong>{{ store.account.firstName }} {{ store.account.lastName }}</strong><small>{{ store.account.role === 'root' ? 'Inhaber' : 'Mitarbeiter' }}</small></div>
       </RouterLink>

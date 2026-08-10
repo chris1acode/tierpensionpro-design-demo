@@ -49,6 +49,10 @@ watch([searchTerm, status, focusedBookingId], () => {
   resetPage()
 })
 
+watch(focusedBookingId, (bookingId) => {
+  if (bookingId) view.value = 'list'
+}, { immediate: true })
+
 watch(editBookingId, (bookingId) => {
   const booking = store.bookingViews.value.find((item) => item.id === bookingId)
   if (!booking || booking.status !== 'confirmed') return
