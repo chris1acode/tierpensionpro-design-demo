@@ -2,7 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import {
-  ArrowRight, CalendarDays, Check, ChevronLeft, ChevronRight, Dog, Inbox, LogOut, Menu, PawPrint, X
+  ArrowRight, CalendarDays, Check, ChevronLeft, ChevronRight, Dog, Inbox, LogOut, Menu, X
 } from '@lucide/vue'
 import AccountSettingsPage from './components/AccountSettingsPage.vue'
 import CheckInModal from './components/CheckInModal.vue'
@@ -11,6 +11,8 @@ import BookingsPage from './components/BookingsPage.vue'
 import CheckoutModal from './components/CheckoutModal.vue'
 import CustomersPage from './components/CustomersPage.vue'
 import DemoDataControl from './components/DemoDataControl.vue'
+import IntroPage from './components/IntroPage.vue'
+import LogoIcon from './components/LogoIcon.vue'
 import OccupancyPage from './components/OccupancyPage.vue'
 import RequestsPage from './components/RequestsPage.vue'
 import SettingsPage from './components/SettingsPage.vue'
@@ -111,9 +113,15 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="app-shell">
+  <IntroPage v-if="route.name === 'intro'" />
+  <div v-else class="app-shell">
     <aside ref="mobileNavigation" class="sidebar" :class="{ open: mobileNavOpen, collapsed: sidebarCollapsed }" :role="mobileNavOpen ? 'dialog' : undefined" :aria-modal="mobileNavOpen ? 'true' : undefined" aria-label="Seitennavigation">
-      <RouterLink class="brand" to="/" @click="closeMobileNavigation()"><span class="brand-mark"><PawPrint :size="21" /></span><span>Tierpension <span>Pro</span></span></RouterLink>
+      <RouterLink class="brand" to="/" @click="closeMobileNavigation()">
+        <span class="brand-mark">
+          <LogoIcon :size="24" color="white" />
+        </span>
+        <span>Tierpension <span>Pro</span></span>
+      </RouterLink>
       <button ref="mobileNavClose" class="close-nav icon-button" aria-label="Navigation schließen" @click="closeMobileNavigation(true)"><X /></button>
       <nav aria-label="Hauptnavigation">
         <RouterLink v-for="item in visibleNavigationItems" :key="item.name" :to="item.path" :title="sidebarCollapsed ? item.title : undefined" @click="closeMobileNavigation()">
@@ -205,9 +213,12 @@ onBeforeUnmount(() => {
       <RequestsPage v-else-if="route.name === 'requests'" />
       <SettingsPage v-else-if="route.name === 'settings'" />
       <AccountSettingsPage v-else-if="route.name === 'account'" />
-      <main v-else class="route-page">
+      <main v-else-if="route.name !== 'intro'" class="route-page">
         <div class="route-page-card">
-          <span class="route-page-icon"><PawPrint v-if="route.name === 'not-found'" /><component :is="navigationItems.find((item) => item.name === route.name)?.icon ?? CalendarDays" v-else /></span>
+          <span class="route-page-icon">
+            <LogoIcon v-if="route.name === 'not-found'" :size="32" />
+            <component :is="navigationItems.find((item) => item.name === route.name)?.icon ?? CalendarDays" v-else />
+          </span>
           <p class="eyebrow">{{ route.name === 'not-found' ? 'Fehler 404' : 'Tierpension Pro' }}</p>
           <h1>{{ currentPage.title }}</h1>
           <p>{{ currentPage.description }}</p>
@@ -233,6 +244,5 @@ onBeforeUnmount(() => {
       @close="selectedDeparture = null"
       @confirm="confirmCheckout(selectedDeparture)"
     />
-
   </div>
 </template>

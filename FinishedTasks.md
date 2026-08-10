@@ -22,3 +22,10 @@
 - bugs.md: "Anzahl Kunden"-Badge in der Kopfzeile von Kunden & Tiere entfernt (`src/components/CustomersPage.vue`), inkl. Entfernen des nun ungenutzten `Users`-Icon-Imports.
 - bugs.md: Dashboard-Belegungskarte – Button "Belegung planen" entfernt; Panel-Titel ist jetzt "Belegung ansehen" und selbst ein Link auf `/belegung` (`src/App.vue`, neue CSS-Klasse `.panel-title-link` in `src/styles.css`, ungenutzte `.occupancy-actions`-Regel entfernt).
 - Alle Änderungen mit `vue-tsc --noEmit` und `npm run test` (227 Tests) verifiziert; Layout-Fixes zusätzlich per Playwright-Screenshot bei 1024px und 1440px Breite geprüft.
+
+## Session a1b2c — 2026-08-10
+- extension.md: Das Logo wurde nur als orange Fläche angezeigt, da die `logo.svg` Datei fehlerhaft exportiert war (fehlende Details und extrem viele Pfadpunkte).
+- Neue, optimierte `public/assets/logo.svg` erstellt, die Pfoten-Elemente, Hausform, Dachlinie, Tür und Fenster enthält.
+- Logo-Einbindung in `src/App.vue` und `src/components/IntroPage.vue` angepasst: `style="color: white"` hinzugefügt, damit das Logo weiß auf dem orangen `brand-mark` Hintergrund erscheint.
+- Die korrigierte `logo.svg` wurde auch nach `ui_ux_design/assets/logo.svg` kopiert, um die Design-Assets synchron zu halten.
+- `LogoIcon.vue` Komponente erstellt und in `App.vue` sowie `IntroPage.vue` integriert. Das Logo in der `IntroPage.vue` hat nun keine Drehung mehr und verwendet die Primärfarbe direkt.

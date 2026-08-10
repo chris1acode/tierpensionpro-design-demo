@@ -12,7 +12,8 @@ button { cursor:pointer; }
 .sidebar.collapsed .brand { padding:0 9px 22px; justify-content:center; }
 .sidebar.collapsed .brand>span:last-child { display:none; }
 .brand>span:last-child span { color:var(--primary); }
-.brand-mark { display:grid; place-items:center; width:36px; height:36px; border-radius:11px; color:#fff; background:var(--primary); transform:rotate(-4deg); }
+.brand-mark { display:grid; place-items:center; width:36px; height:36px; color:var(--primary); flex-shrink: 0; }
+.brand-mark svg { width: 24px; height: 24px; }
 nav { display:grid; gap:6px; }
 nav a { position:relative; display:flex; gap:12px; align-items:center; min-height:45px; padding:0 13px; border:0; border-radius:9px; background:transparent; color:#5e5955; text-align:left; text-decoration:none; font-weight:600; }
 .sidebar.collapsed nav a { justify-content:center; padding:0 10px; }

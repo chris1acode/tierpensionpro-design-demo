@@ -15,8 +15,10 @@
 [ ] Schriftarten in RequestsPage.vue prüfen und vergrößern
 [ ] Schriftarten in SettingsPage.vue prüfen und vergrößern
 [ ] Besonderes Futter als Checkbox bei Tieren ermöglichen
-[ ] Verwende das richtige logo.svg
-[ ] Logo ist bei zusammengeklapptem Men gequetscht. Fixe das!
+[x] Logo ist bei zusammengeklapptem Men gequetscht. Fixe das! (Zusätzlich richtiges logo.svg verwendet)
+[x] Logo wird nur als orange Fläche angezeigt. Fixe das! (Details wie Dachlinie, Tür und Fenster in SVG ergänzt)
+[x] Logo ist falsch. Die drehung muss weg. Das äußere element muss weg. Das Logo SVG soll selbst die primärfarbe haben.
+[x] Mach das logo zur komponente und verwende es auch korrekt im intro
 [ ] Tier kachel bei Kunden & Tiere soll volle Breite der Card haben
 [ ] Kunden & Tiere Kundenprofil. Die Aktionen sind viel zu sehr verstreut. Pack die zusammen nach oben.
 [ ] Kunden & Tiere Kunde anlegen als Hauptaktion nach oben und primary
