@@ -91,18 +91,12 @@ Nicht tun:
 
 ## 5. Farben
 
-* Verwende eine neutrale Grundpalette.
-* Definiere eine primaere Markenfarbe.
-* Definiere eine zusaetzliche Akzentfarbe nur bei echtem Bedarf.
-* Definiere semantische Farben fuer:
-  * Erfolg
-  * Warnung
-  * Fehler
-  * Information
-* Verwende die Markenfarbe gezielt fuer Aktionen, Auswahl, Fokus und Fortschritt.
-* Verwende leicht getoente Flaechen statt ausschliesslich reinem Weiss oder Schwarz.
+* Verwende eine neutrale Grundpalette, die durch warme Töne eine freundliche Atmosphäre schafft.
+* Nutze eine primäre Markenfarbe gezielt für Aktionen, Auswahl, Fokus und Fortschritt.
+* Setze semantische Statusfarben (Erfolg, Warnung, Fehler, Info) ausschließlich funktional ein.
+* Die konkrete Ausgestaltung und die Hex-Werte der Farbpalette sind im zentralen **Farbkonzept** (`docs/color-concept.md`) definiert.
 * Stelle ausreichenden Kontrast zwischen Text, Controls und Hintergruenden sicher.
-* Passe Farben fuer Light Mode und Dark Mode separat an.
+* Kommuniziere Statusänderungen nie allein durch Farbe (immer ergänzt durch Icons, Text oder Form).
 
 Nicht tun:
 

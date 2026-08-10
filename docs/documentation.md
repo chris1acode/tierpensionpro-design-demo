@@ -53,7 +53,7 @@ Der operative Kern für den täglichen Empfang und die Verabschiedung der Tiere.
 ### 5. Belegungsplanung & Kapazität
 Dieses Modul verhindert Überbuchungen und visualisiert die Auslastung der Pension.
 
-- **Belegungsampel**: Farbliche Kennzeichnung der Auslastung (Normal, Erhöht, Knapp, Voll/Ausgebucht, Überbucht).
+- **Auslastungsanzeige**: Farbliche Visualisierung der Kapazitäten gemäß Farbkonzept (von "Frei" bis "Überbucht").
 - **Zimmer- & Kapazitätsverwaltung**: Konfiguration von Zimmern mit spezifischen Kapazitäten und Tierart-Kompatibilität.
 - **Schließzeiten**: Hinterlegung von Zeiträumen, in denen Plätze blockiert sind.
 - **Überbuchungsschutz**: Warnmeldungen bei Kapazitätsüberschreitung, wobei Überbuchungen durch explizite Bestätigung möglich bleiben.

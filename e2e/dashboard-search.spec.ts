@@ -39,7 +39,7 @@ test('keeps the booking customer suggestions above the booking panel instead of 
   const suggestions = page.getByRole('listbox', { name: 'Kund:in-Vorschläge' })
   await expect(suggestions).toBeVisible()
   await expect(suggestions.getByRole('option', { name: /Lea Albrecht/ })).toBeVisible()
-  await expect(page.locator('.booking-form-panel')).toHaveCSS('overflow-y', 'visible')
+  await expect(page.locator('.booking-form-modal')).toHaveCSS('overflow-y', 'visible')
 })
 
 test('waits for two characters before showing customer suggestions in a new booking', async ({ page }) => {
@@ -560,7 +560,7 @@ test('starts a booking from a customer profile with that customer preselected', 
   await page.getByRole('link', { name: 'Jetzt Buchung anlegen' }).click()
 
   await expect(page).toHaveURL(/\/buchungen\?customerId=c-1$/)
-  const form = page.locator('.booking-form')
+  const form = page.getByRole('dialog')
   await expect(form).toBeVisible()
   await expect(form.getByRole('combobox', { name: 'Kund:in' })).toHaveValue('Sofia Berger')
   await expect(form.getByRole('group', { name: 'Tiere' })).not.toContainText('Zuerst Kund:in wählen')
@@ -632,13 +632,13 @@ test('opens and updates a planned arrival from check-in/out', async ({ page }) =
     .getByRole('link', { name: 'Buchung bearbeiten' }).click()
   await expect(page).toHaveURL(/\/buchungen\?bookingId=b-1&edit=true/)
 
-  const form = page.locator('.edit-booking-form')
-  await expect(page.locator('.edit-booking-panel')).toContainText('Sofia Berger · Balu')
-  await expect(form.getByLabel('Ankunftszeit')).toHaveValue('08:30')
-  await form.getByLabel('Ankunftszeit').fill('10:30')
-  await form.getByRole('button', { name: 'Änderungen speichern' }).click()
+  const dialog = page.getByRole('dialog')
+  await expect(dialog).toContainText('Sofia Berger · Balu')
+  await expect(dialog.getByLabel('Ankunftszeit')).toHaveValue('08:30')
+  await dialog.getByLabel('Ankunftszeit').fill('10:30')
+  await dialog.getByRole('button', { name: 'Änderungen speichern' }).click()
 
-  await expect(form).toHaveCount(0)
+  await expect(dialog).toHaveCount(0)
   await expect(page.locator('#booking-b-1')).toContainText('10:30 Uhr')
 })
 
@@ -649,7 +649,7 @@ test('opens a planned booking for editing directly from the booking list', async
   await booking.getByRole('link', { name: 'Buchung für Balu bearbeiten' }).click()
 
   await expect(page).toHaveURL(/\/buchungen\?bookingId=b-1&edit=true/)
-  await expect(page.locator('.edit-booking-panel')).toContainText('Sofia Berger · Balu')
+  await expect(page.getByRole('dialog')).toContainText('Sofia Berger · Balu')
 })
 
 test('selects the operational day for check-in and check-out tasks', async ({ page }) => {
@@ -698,7 +698,7 @@ test('creates a booking through its customer and pet relationship', async ({ pag
   await page.goto('/buchungen')
   await page.getByRole('button', { name: 'Neue Buchung' }).click()
 
-  const form = page.locator('.booking-form')
+  const form = page.getByRole('dialog')
   await expect(form.getByRole('group', { name: 'Tiere' })).toContainText('Zuerst Kund:in wählen')
 
   await form.getByRole('combobox', { name: 'Kund:in' }).fill('Lea')
@@ -723,7 +723,7 @@ test('marks rooms without free capacity as an explicit overbooking for the selec
   await page.goto('/buchungen')
   await page.getByRole('button', { name: 'Neue Buchung' }).click()
 
-  const form = page.locator('.booking-form')
+  const form = page.getByRole('dialog')
   await form.getByRole('combobox', { name: 'Kund:in' }).fill('Tobias')
   await form.getByRole('option', { name: /Tobias Bauer/ }).click()
   await form.getByRole('checkbox', { name: 'Simba · Maine Coon' }).check()

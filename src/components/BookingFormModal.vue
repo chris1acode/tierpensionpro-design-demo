@@ -112,7 +112,7 @@ function submit() {
   }
 
   if (!store.createBookingReservation(draft.value)) {
-    error.value = 'Bitte prüfe Kunde, Tiere, Zimmer und den vollständigen Aufenthaltszeitraum.'
+    error.value = 'Bitte prüfe Kund:in, Tiere, Zimmer und den vollständigen Aufenthaltszeitraum.'
     return
   }
   emit('close')
@@ -124,13 +124,13 @@ function submit() {
     <p class="eyebrow">Aufenthaltsplanung</p>
     <h2 id="booking-form-heading">{{ mode === 'edit' ? 'Buchung bearbeiten' : 'Neue Buchung' }}</h2>
     <p v-if="mode === 'edit' && booking">{{ booking.customer.firstName }} {{ booking.customer.lastName }} · {{ booking.pet.name }}. Kunde und Tier bleiben dieser Buchung zugeordnet.</p>
-    <p v-else>Wähle zuerst den Kunden und anschließend ein oder mehrere verfügbare zugehörige Tiere.</p>
+    <p v-else>Wähle zuerst die Kundin oder den Kunden und anschließend ein oder mehrere verfügbare zugehörige Tiere.</p>
 
     <form v-if="mode === 'create'" class="occupancy-reservation-form" @submit.prevent="submit">
-      <label>Kunde
-        <CustomerAutocomplete v-model="draft.customerId" input-id="booking-form-customer" label="Kunde" :customers="bookingCustomerChoices" :min-query-length="2" @selected="selectCustomer" @cleared="selectCustomer" />
+      <label>Kund:in
+        <CustomerAutocomplete v-model="draft.customerId" input-id="booking-form-customer" label="Kund:in" :customers="bookingCustomerChoices" :min-query-length="2" @selected="selectCustomer" @cleared="selectCustomer" />
       </label>
-      <fieldset class="pet-selection" :disabled="!draft.customerId"><legend>Tiere</legend><p>{{ draft.customerId ? 'Mehrere Tiere können gemeinsam reserviert werden.' : 'Zuerst Kunde wählen' }}</p><label v-for="pet in customerPets" :key="pet.id" class="pet-choice"><input v-model="draft.petIds" type="checkbox" :value="pet.id" @change="selectPets" /><span>{{ pet.name }} · {{ pet.breed }}</span></label></fieldset>
+      <fieldset class="pet-selection" :disabled="!draft.customerId"><legend>Tiere</legend><p>{{ draft.customerId ? 'Mehrere Tiere können gemeinsam reserviert werden.' : 'Zuerst Kund:in wählen' }}</p><label v-for="pet in customerPets" :key="pet.id" class="pet-choice"><input v-model="draft.petIds" type="checkbox" :value="pet.id" @change="selectPets" /><span>{{ pet.name }} · {{ pet.breed }}</span></label></fieldset>
       <div class="occupancy-reservation-period">
         <label>Anreise<input v-model="draft.arrivalDate" aria-label="Anreisedatum" type="date" required /></label>
         <label>Uhrzeit<input v-model="draft.arrival" aria-label="Ankunftszeit" type="time" required /></label>

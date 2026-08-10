@@ -66,92 +66,32 @@ Semantische Farben werden ausschliesslich fuer Status und Rueckmeldung genutzt.
 
 ### 3.1 Markenfarben
 
-```css
---primary: #DF6420;
---primary-hover: #B94B12;
---primary-active: #9F3F0D;
---primary-soft: #FBE8DD;
---primary-subtle: #FFF5EF;
---on-primary: #21160F;
-```
+Diese Farben definieren die visuelle Identitaet. Die konkreten Hex-Werte sind im `color-concept.md` hinterlegt.
 
-Verwendung:
+- **Primary**: Die Haupt-Markenfarbe (Orange). Verwendung: Logo, markante Akzente, aktive Navigation, Fokus auf Marke.
+- **Secondary**: Die ruhige Gegenfarbe (Petrol). Verwendung: Sekundaere Buttons, Links, Navigationselemente, Informationsbereiche.
 
-- `primary`: Logo, markante Akzente, aktive Navigation, Fokus auf Marke
-- `primary-hover`: Hover fuer primaere Buttons
-- `primary-active`: gedrueckter Button oder aktiver Zustand
-- `primary-soft`: Badge-Hintergruende, ausgewaehlte Flaechen, dezente Markierung
-- `primary-subtle`: Hero-Flaechen, sehr leichte Markenflaechen
-- `on-primary`: Text und Icons auf helleren Orangeflaechen
+Verwende fuer Text auf farbigen Hintergruenden immer die entsprechenden `on-primary` oder `on-secondary` Varianten, um den Kontrast sicherzustellen.
 
-Verwende weissen Text auf Orange nur, wenn der Kontrast fuer Groesse und Gewicht ausreicht. Fuer kleine Button-Texte ist dunkler Text zu bevorzugen oder ein dunklerer Orange-Ton zu verwenden.
+### 3.2 Semantische Farben
 
-### 3.2 Sekundaerfarbe
+Statusfarben werden ausschliesslich fuer funktionale Rueckmeldungen genutzt. Sie muessen immer durch Text oder Icons ergaenzt werden.
 
-```css
---secondary: #2F5D62;
---secondary-hover: #244A4E;
---secondary-active: #1C3C40;
---secondary-soft: #E4EFF0;
---on-secondary: #FFFFFF;
-```
+- **Success**: Bestaetigte Buchungen, erledigte Aufgaben, erfolgreicher Check-in.
+- **Warning**: Bald faellige Aufgaben, fehlende Dokumente, hohe Auslastung.
+- **Error**: Medizinische Risiken, fehlgeschlagene Aktionen, kritische Pflichtangaben.
+- **Info**: Neutrale Hinweise, Systeminformationen, Hintergrundprozesse.
 
-Verwendung:
+Die genauen Abstufungen (z.B. Soft-Varianten fuer Hintergruende) werden im Farbkonzept definiert.
 
-- sekundare Buttons
-- Links
-- Navigationselemente
-- Informationsbereiche
-- alternative Diagrammserie
-- ruhige Hervorhebungen
+### 3.3 Neutrale Farben
 
-Petrol darf nicht mit Orange um Aufmerksamkeit konkurrieren. Orange bleibt die primaere Markenfarbe.
+Verwende warme Neutrale statt kuehler Grauwerte, um eine freundliche Atmosphaere zu schaffen.
 
-### 3.3 Semantische Farben
-
-```css
---success: #3F7A5C;
---success-soft: #E7F2EB;
-
---warning: #C58A24;
---warning-soft: #FAF0D9;
-
---error: #B94A48;
---error-soft: #F8E5E4;
-
---info: #46718A;
---info-soft: #E6EFF4;
-```
-
-Verwendung:
-
-- Erfolg: bestaetigte Buchungen, erledigte Aufgaben, erfolgreicher Check-in
-- Warnung: bald faellige Aufgaben, fehlende Dokumente, hohe Auslastung
-- Fehler: medizinische Risiken, fehlgeschlagene Aktionen, kritische Pflichtangaben
-- Information: neutrale Hinweise, Systeminformationen, Hintergrundprozesse
-
-Status darf nie nur durch Farbe vermittelt werden. Verwende immer zusaetzlich Text, Icon oder Form.
-
-### 3.4 Neutrale Farben
-
-```css
---background: #F7F6F3;
---surface: #FFFFFF;
---surface-muted: #F1EFEB;
---surface-elevated: #FFFFFF;
---overlay: rgba(36, 33, 31, 0.48);
-
---text-primary: #24211F;
---text-secondary: #6D6762;
---text-muted: #918A84;
---text-disabled: #AAA39C;
-
---border: #DED9D3;
---border-strong: #C8C1BA;
---divider: #E8E4DF;
-```
-
-Verwende warme Neutrale statt kuehler Grauwerte. Die Anwendung soll freundlich und ruhig wirken.
+- **Background**: Haupthintergrund der Anwendung.
+- **Surface**: Ebenen fuer Karten, Tabellen und Formulare.
+- **Text**: Abstufungen fuer Haupttext, Sekundaertext und Metadaten.
+- **Border/Divider**: Subtile Abgrenzung von Elementen.
 
 ---
 
@@ -190,69 +130,38 @@ Definiere diese Oberflaechenebenen:
 
 ### Canvas
 
-```css
-background: #F7F6F3;
-```
+Die unterste Ebene der Anwendung.
 
 Verwendung:
-
-- gesamte App
+- Gesamte App
 - Seitenhintergrund
-- ruhige freie Flaechen
 
 ### Surface
 
-```css
-background: #FFFFFF;
-border: 1px solid #DED9D3;
-```
+Die Standard-Ebene fuer Inhalte.
 
 Verwendung:
-
 - Tabellen
 - Karten
 - Formulare
-- Inhaltsmodule
 
 ### Muted Surface
 
-```css
-background: #F1EFEB;
-```
+Subtile Abgrenzung fuer untergeordnete Bereiche.
 
 Verwendung:
-
 - Filterbereiche
 - Sekundarbereiche
 - Gruppen
-- inaktive oder vorbereitende Inhalte
 
-### Elevated Surface
+### Elevated Surface / Modal
 
-```css
-background: #FFFFFF;
-box-shadow: 0 8px 24px rgba(36, 33, 31, 0.10);
-```
+Ebenen mit Schatten zur Darstellung von Hierarchie und Fokus.
 
 Verwendung:
-
 - Side Panels
 - Dropdowns
-- Popovers
-- schwebende Toolbars
-
-### Modal
-
-```css
-background: #FFFFFF;
-box-shadow: 0 20px 60px rgba(36, 33, 31, 0.18);
-```
-
-Verwendung:
-
 - Dialoge
-- Command Palette
-- fokussierte Workflows
 
 Vermeide starke Schatten. Nutze Border und Flaechenkontrast als primaere Mittel zur Abgrenzung.
 
