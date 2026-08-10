@@ -80,7 +80,7 @@ function exportRequests(scope: 'pending' | 'history') {
 <template>
   <main class="requests-page">
     <div class="page-heading">
-      <div><p class="eyebrow">Externe Anfragen</p><h1>Anfragen</h1><p>Buchungsanfragen prüfen, Kundschaft bewusst zuordnen und anschließend als Reservierung übernehmen.</p></div>
+      <div><p class="eyebrow">Externe Anfragen</p><h1>Anfragen</h1><p>Buchungsanfragen prüfen, Kunde zuordnen und anschließend als Reservierung übernehmen.</p></div>
       <span class="page-count"><Inbox :size="17" /> {{ store.pendingRequests.value.length }} offen</span>
     </div>
 
