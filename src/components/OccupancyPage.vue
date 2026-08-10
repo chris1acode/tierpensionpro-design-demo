@@ -77,7 +77,23 @@ function closureLabel(startDate: string, endDate: string): string {
   <main class="occupancy-page">
     <div class="page-heading">
       <div><p class="eyebrow">Kapazitätsplanung</p><h1>Belegung</h1><p>Zimmerbelegung als kompakte Tages-Spaltenansicht.</p></div>
-      <button class="primary-button occupancy-reservation-button" @click="reservationOpen = true"><CalendarPlus :size="17" /> Reservierung anlegen</button>
+    </div>
+
+    <div class="occupancy-controls">
+      <div class="occupancy-date-nav" role="group" aria-label="Startdatum">
+        <button type="button" aria-label="Eine Woche zurück" @click="store.shiftOccupancyStartDate(-7)">
+          <ChevronLeft :size="16" />
+        </button>
+        <label class="occupancy-start-date">
+          <span>Start</span>
+          <input type="date" :value="store.occupancyStartDate.value" @change="onStartDateChange" />
+        </label>
+        <button type="button" aria-label="Eine Woche vor" @click="store.shiftOccupancyStartDate(7)">
+          <ChevronRight :size="16" />
+        </button>
+        <button type="button" class="occupancy-today" :disabled="store.occupancyStartDate.value === todayIso" @click="store.jumpOccupancyToToday()">Heute</button>
+      </div>
+
       <div class="range-filters" aria-label="Zeitraum">
         <button
           v-for="option in rangeOptions"
@@ -86,20 +102,8 @@ function closureLabel(startDate: string, endDate: string): string {
           @click="store.setOccupancyRangeDays(option.value)"
         >{{ option.label }}</button>
       </div>
-    </div>
 
-    <div class="occupancy-date-nav" role="group" aria-label="Startdatum">
-      <button type="button" aria-label="Eine Woche zurück" @click="store.shiftOccupancyStartDate(-7)">
-        <ChevronLeft :size="16" />
-      </button>
-      <label class="occupancy-start-date">
-        <span>Start</span>
-        <input type="date" :value="store.occupancyStartDate.value" @change="onStartDateChange" />
-      </label>
-      <button type="button" aria-label="Eine Woche vor" @click="store.shiftOccupancyStartDate(7)">
-        <ChevronRight :size="16" />
-      </button>
-      <button type="button" class="occupancy-today" :disabled="store.occupancyStartDate.value === todayIso" @click="store.jumpOccupancyToToday()">Heute</button>
+      <button class="primary-button occupancy-reservation-button" @click="reservationOpen = true"><CalendarPlus :size="17" /> Reservierung anlegen</button>
     </div>
 
     <section class="panel occupancy-panel-wide">

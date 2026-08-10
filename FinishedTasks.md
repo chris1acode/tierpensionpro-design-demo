@@ -1416,3 +1416,10 @@
 - [x] Einen kleinen operativen Stammdatenaspekt ergänzt und in `extensions.md` als erledigt dokumentiert: Tierprofile besitzen nun einen optionalen, typisierten Tierarztkontakt aus Praxisname und Telefonnummer.
 - [x] Die Kontaktdaten werden zentral normalisiert und validiert, können im Kundenprofil angelegt, bearbeitet oder entfernt werden und erscheinen im CSV-Export sowie beim Check-in als direkt anwählbare Telefonnummer. Ein realistischer Demodatensatz ist vorhanden.
 - [x] Mit 80 fokussierten Unit-Tests, TypeScript-Prüfung/Produktions-Build und `git diff --check` verifiziert.
+
+## 2026-08-10 15:57 CEST — SessionId: a1fd2
+
+- [x] Testbarkeit und Wartbarkeit des Clickdummys geprüft: Fachlogik liegt überwiegend in `domain/`, Store/Selektoren und Composables; Vue-Komponenten konzentrieren sich vorwiegend auf Darstellung und Interaktion. Der zentrale Store sowie die umfangreicheren Seitenkomponenten bleiben die wesentlichen künftigen Wartbarkeitsschwerpunkte.
+- [x] Aktuelle V8-Unit-Testabdeckung ermittelt: 226 Tests bestehen; Statements 96,11 %, Branches 93,18 %, Functions 95,56 % und Lines 97,36 %. Die 80-%-Schwelle ist damit klar überschritten.
+- [x] Deshalb die vollständige Playwright-Suite zur Analyse von Seitenaufbau, Navigation, Dialogen, Formularen, Demodaten und responsiven Desktop-/Mobile-Layouts ausgeführt: alle 106 Szenarien bestanden. Es wurde kein reproduzierbarer Aufbau- oder Funktionsfehler gefunden; `bugs.md` benötigt keinen neuen Eintrag.
+- [x] TypeScript-Prüfung, Produktions-Build und `git diff --check` erfolgreich ausgeführt.
