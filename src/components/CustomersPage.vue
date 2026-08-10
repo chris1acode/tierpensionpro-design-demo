@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { ArrowLeft, Cat, Dog, Download, Mail, Pencil, Phone, Plus, Search, ShieldAlert, Stethoscope, Trash2, Users, X } from '@lucide/vue'
+import { ArrowLeft, Cat, Dog, Download, Mail, Pencil, Phone, Plus, Search, ShieldAlert, Stethoscope, Trash2, X } from '@lucide/vue'
 import type { CustomerUpdate, CustomerView, EmergencyContact, PetSpecies } from '../domain'
 import { bookingStatusLabels } from '../presentation/bookingStatus'
 import { toTelephoneHref } from '../presentation/phoneLink'
@@ -248,7 +248,6 @@ function exportCustomers() {
   <main class="customers-page">
     <div class="page-heading">
       <div><p class="eyebrow">Stammdaten</p><h1>Kunden & Tiere</h1><p>Kontaktdaten, Tierprofile und Aufenthalte an einem Ort.</p></div>
-      <span class="page-count"><Users :size="17" /> {{ store.customerViews.value.length }} Kund:innen</span>
     </div>
 
     <div class="customer-layout" :class="{ 'details-open': detailsOpen }">

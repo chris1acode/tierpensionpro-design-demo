@@ -186,7 +186,7 @@ onBeforeUnmount(() => {
           </section>
 
           <aside class="panel occupancy-panel">
-            <header><div><h2>Belegung</h2><p>Aktueller Stand</p></div><span class="occupancy-number">{{ store.occupancyRate.value }} %</span></header>
+            <header><div><h2><RouterLink class="panel-title-link" to="/belegung">Belegung ansehen</RouterLink></h2><p>Aktueller Stand</p></div><span class="occupancy-number">{{ store.occupancyRate.value }} %</span></header>
             <div class="progress"><span :style="{ width: `${store.occupancyRate.value}%` }" /></div>
             <div class="room-summary">
               <div v-for="summary in store.occupancyByCategory.value" :key="summary.category">
@@ -194,7 +194,6 @@ onBeforeUnmount(() => {
                 <p><strong>{{ summary.category }}</strong><small>{{ summary.occupied }} von {{ summary.capacity }} belegt</small></p><span>{{ summary.capacity }} Plätze</span>
               </div>
             </div>
-            <div class="occupancy-actions"><RouterLink class="accent-button" to="/belegung">Belegung planen <ArrowRight :size="16" /></RouterLink></div>
           </aside>
         </div>
       </main>
