@@ -21,7 +21,7 @@ export const navigationItems: readonly NavigationItem[] = [
   },
   {
     name: 'customers',
-    path: '/kunden-tiere',
+    path: '/customers-pets',
     title: 'Kunden & Tiere',
     description: 'Verwalte hier künftig Kunden- und Tierstammdaten.',
     icon: Users
@@ -35,28 +35,28 @@ export const navigationItems: readonly NavigationItem[] = [
   },
   {
     name: 'bookings',
-    path: '/buchungen',
+    path: '/bookings',
     title: 'Buchungen',
     description: 'Plane und verwalte Aufenthalte deiner Tiergäste.',
     icon: CalendarDays
   },
   {
     name: 'occupancy',
-    path: '/belegung',
+    path: '/occupancy',
     title: 'Belegung',
     description: 'Tages-Spaltenansicht mit Auslastung je Zimmer und Zeitraum.',
     icon: CalendarRange
   },
   {
     name: 'requests',
-    path: '/anfragen',
+    path: '/requests',
     title: 'Anfragen',
     description: 'Externe Buchungsanfragen prüfen und als Reservierung übernehmen.',
     icon: Inbox
   },
   {
     name: 'settings',
-    path: '/einstellungen',
+    path: '/settings',
     title: 'Einstellungen',
     description: 'Passe Standort, Team und Abläufe an deine Pension an.',
     icon: Settings

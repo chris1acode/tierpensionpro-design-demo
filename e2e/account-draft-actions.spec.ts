@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 test('only enables account actions for an unsaved account draft', async ({ page }) => {
-  await page.goto('/konto')
+  await page.goto('/account')
 
   const save = page.getByRole('button', { name: 'Konto speichern' })
   const discard = page.getByRole('button', { name: 'Änderungen verwerfen' })

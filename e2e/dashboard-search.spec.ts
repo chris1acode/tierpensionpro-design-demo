@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 test('opens the global demo data menu and restores its mock scenario', async ({ page }) => {
-  await page.goto('/buchungen')
+  await page.goto('/bookings')
 
   const trigger = page.getByRole('button', { name: 'Demodaten-Menü öffnen' })
   await expect(trigger).toBeVisible()
@@ -26,11 +26,11 @@ test('keeps the demo data control clear of dashboard actions', async ({ page }) 
     || demoBox!.y + demoBox!.height <= actionBox!.y || actionBox!.y + actionBox!.height <= demoBox!.y).toBeTruthy()
 
   await occupancyAction.click()
-  await expect(page).toHaveURL(/\/belegung$/)
+  await expect(page).toHaveURL(/\/occupancy$/)
 })
 
 test('keeps the booking customer suggestions above the booking panel instead of clipping them', async ({ page }) => {
-  await page.goto('/buchungen')
+  await page.goto('/bookings')
   await page.getByRole('button', { name: 'Neue Buchung' }).click()
 
   const customerSearch = page.getByRole('combobox', { name: 'Kunde' })
@@ -43,7 +43,7 @@ test('keeps the booking customer suggestions above the booking panel instead of 
 })
 
 test('waits for two characters before showing customer suggestions in a new booking', async ({ page }) => {
-  await page.goto('/buchungen')
+  await page.goto('/bookings')
   await page.getByRole('button', { name: 'Neue Buchung' }).click()
 
   const customerSearch = page.getByRole('combobox', { name: 'Kunde' })
@@ -61,7 +61,7 @@ test('waits for two characters before showing customer suggestions in a new book
 })
 
 test('keeps customer pagination compact and provides first and last page actions', async ({ page }, testInfo) => {
-  await page.goto('/kunden-tiere')
+  await page.goto('/customers-pets')
 
   const pagination = page.getByRole('navigation', { name: 'Seiten im Kundenverzeichnis' })
   await expect(pagination.getByText('…')).toHaveCount(1)
@@ -76,13 +76,13 @@ test('keeps customer pagination compact and provides first and last page actions
 
 test('exports the data behind every list as CSV', async ({ page }) => {
   const exports = [
-    ['/buchungen', 'Buchungen als CSV exportieren', 'buchungen.csv'],
-    ['/kunden-tiere', 'Kunden und Tiere als CSV exportieren', 'kunden-und-tiere.csv'],
+    ['/bookings', 'Buchungen als CSV exportieren', 'buchungen.csv'],
+    ['/customers-pets', 'Kunden und Tiere als CSV exportieren', 'kunden-und-tiere.csv'],
     ['/check-in-out?view=arrivals', 'Aktuelle Vorgänge als CSV exportieren', 'anreisen.csv'],
     ['/check-in-out', 'Check-in-out-Verlauf als CSV exportieren', 'check-in-out-verlauf.csv'],
-    ['/anfragen', 'Offene Anfragen als CSV exportieren', 'offene-anfragen.csv'],
-    ['/anfragen', 'Anfragenverlauf als CSV exportieren', 'anfragen-verlauf.csv'],
-    ['/belegung', 'Belegung als CSV exportieren', 'belegung-2026-08-09.csv']
+    ['/requests', 'Offene Anfragen als CSV exportieren', 'offene-anfragen.csv'],
+    ['/requests', 'Anfragenverlauf als CSV exportieren', 'anfragen-verlauf.csv'],
+    ['/occupancy', 'Belegung als CSV exportieren', 'belegung-2026-08-09.csv']
   ] as const
 
   for (const [path, buttonName, fileName] of exports) {
@@ -109,7 +109,7 @@ test('moves focus into the demo data menu and restores it after Escape', async (
 })
 
 test('resets open settings and account form drafts with the demo data', async ({ page }) => {
-  await page.goto('/einstellungen')
+  await page.goto('/settings')
 
   const businessName = page.getByLabel('Name der Pension')
   await businessName.fill('Zwischenstand Pension')
@@ -120,7 +120,7 @@ test('resets open settings and account form drafts with the demo data', async ({
   await page.getByRole('button', { name: 'Ausgangsdaten wiederherstellen' }).click()
   await expect(businessName).toHaveValue('Tierpension Pro')
 
-  await page.goto('/konto')
+  await page.goto('/account')
   const firstName = page.getByLabel('Vorname')
   await firstName.fill('Zwischenstand')
   await page.getByRole('button', { name: 'Konto speichern' }).click()
@@ -135,7 +135,7 @@ test('uses local searches instead of a global dashboard search', async ({ page }
   await page.goto('/')
   await expect(page.getByRole('searchbox', { name: 'Globale Suche' })).toHaveCount(0)
 
-  await page.goto('/kunden-tiere')
+  await page.goto('/customers-pets')
   const customerSearch = page.getByPlaceholder('Kundenname oder Tiername suchen …')
   await customerSearch.fill('nichtvorhanden')
   await expect(page.getByText('Keine passenden Stammdaten.')).toBeVisible()
@@ -198,11 +198,11 @@ test('navigates from dashboard category widgets to their detail pages', async ({
 
   await page.goto('/')
   await page.getByRole('link', { name: 'Belegung ansehen' }).click()
-  await expect(page).toHaveURL(/\/belegung$/)
+  await expect(page).toHaveURL(/\/occupancy$/)
 })
 
 test('navigates the occupancy period from an explicit start date', async ({ page }, testInfo) => {
-  await page.goto('/belegung')
+  await page.goto('/occupancy')
 
   const startDate = page.getByRole('textbox', { name: 'Start' })
   await expect(startDate).toHaveValue('2026-08-09')
@@ -227,7 +227,7 @@ test('navigates the occupancy period from an explicit start date', async ({ page
 })
 
 test('provides an adequately sized today action in occupancy date navigation', async ({ page }) => {
-  await page.goto('/belegung')
+  await page.goto('/occupancy')
 
   const todayButton = page.getByRole('button', { name: 'Heute' })
   const box = await todayButton.boundingBox()
@@ -238,7 +238,7 @@ test('provides an adequately sized today action in occupancy date navigation', a
 })
 
 test('records closure periods and removes all capacity for their dates', async ({ page }, testInfo) => {
-  await page.goto('/belegung')
+  await page.goto('/occupancy')
 
   await page.getByRole('button', { name: 'Schließzeit anlegen' }).click()
   await page.getByLabel('Schließzeit von').fill('2026-08-10')
@@ -257,7 +257,7 @@ test('records closure periods and removes all capacity for their dates', async (
 })
 
 test('does not offer rooms for requests that overlap a closure', async ({ page }, testInfo) => {
-  await page.goto('/belegung')
+  await page.goto('/occupancy')
 
   await page.getByRole('button', { name: 'Schließzeit anlegen' }).click()
   await page.getByLabel('Schließzeit von').fill('2026-08-17')
@@ -268,7 +268,7 @@ test('does not offer rooms for requests that overlap a closure', async ({ page }
     await page.getByRole('button', { name: 'Navigation öffnen' }).click()
   }
   await page.getByRole('link', { name: 'Anfragen', exact: true }).click()
-  await expect(page).toHaveURL(/\/anfragen$/)
+  await expect(page).toHaveURL(/\/requests$/)
   const request = page.locator('.request-card').filter({ hasText: 'Hannah Wolf' })
   await request.getByRole('button', { name: 'Annehmen' }).click()
   const dialog = page.getByRole('dialog', { name: 'Anfrage von Hannah Wolf annehmen' })
@@ -279,7 +279,7 @@ test('does not offer rooms for requests that overlap a closure', async ({ page }
 
 test('uses a vertically readable occupancy list on small screens', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile', 'The room-by-day matrix remains the desktop presentation.')
-  await page.goto('/belegung')
+  await page.goto('/occupancy')
 
   const mobileOccupancy = page.getByRole('region', { name: 'Zimmer pro Tag' })
   await expect(mobileOccupancy).toBeVisible()
@@ -292,7 +292,7 @@ test('uses a vertically readable occupancy list on small screens', async ({ page
 })
 
 test('creates a reservation from the occupancy view after checking its period capacity', async ({ page }) => {
-  await page.goto('/belegung')
+  await page.goto('/occupancy')
 
   await page.getByRole('button', { name: 'Reservierung anlegen' }).click()
   const dialog = page.getByRole('dialog')
@@ -313,7 +313,7 @@ test('creates a reservation from the occupancy view after checking its period ca
 })
 
 test('shows occupancy as compact capacities without animal identities', async ({ page }, testInfo) => {
-  await page.goto('/belegung')
+  await page.goto('/occupancy')
 
   await expect(page.locator('.occupancy-capacity-summary')).toHaveCount(0)
   const occupancyView = testInfo.project.name === 'mobile'
@@ -324,7 +324,7 @@ test('shows occupancy as compact capacities without animal identities', async ({
 })
 
 test('marks fully occupied days and rooms with their own capacity colour', async ({ page }, testInfo) => {
-  await page.goto('/belegung')
+  await page.goto('/occupancy')
 
   const fullDay = testInfo.project.name === 'mobile'
     ? page.locator('.mobile-occupancy-day[data-date="2026-08-10"]')
@@ -371,7 +371,7 @@ test('keeps keyboard focus inside an open dialog', async ({ page }) => {
 
 test('separates account actions clearly from the cancellation area', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop', 'The desktop spacing is covered by this layout regression test.')
-  await page.goto('/konto')
+  await page.goto('/account')
 
   const saveButton = page.getByRole('button', { name: 'Konto speichern' })
   const cancellationPanel = page.locator('.account-page .danger-zone')
@@ -383,9 +383,9 @@ test('separates account actions clearly from the cancellation area', async ({ pa
 })
 
 test('shows bookings as filterable, room-based continuous bars in the timeline', async ({ page }) => {
-  await page.goto('/buchungen')
+  await page.goto('/bookings')
 
-  await page.goto('/buchungen')
+  await page.goto('/bookings')
   await page.getByRole('button', { name: 'Zeitachsenansicht' }).click()
   const timeline = page.getByLabel('Buchungszeitachse')
   await expect(timeline).toBeVisible()
@@ -393,7 +393,7 @@ test('shows bookings as filterable, room-based continuous bars in the timeline',
   await expect(timeline).toContainText('Balu')
 
   await timeline.getByRole('button', { name: 'Buchung von Sofia Berger für Balu öffnen' }).click()
-  await expect(page).toHaveURL(/\/buchungen\?bookingId=b-1$/)
+  await expect(page).toHaveURL(/\/bookings\?bookingId=b-1$/)
   await expect(page.locator('#booking-b-1')).toHaveClass(/focused-booking/)
 
   await page.getByRole('button', { name: 'Zeitachsenansicht' }).click()
@@ -413,7 +413,7 @@ test('shows bookings as filterable, room-based continuous bars in the timeline',
 })
 
 test('pages the booking list in groups of ten and resets for a search', async ({ page }) => {
-  await page.goto('/buchungen')
+  await page.goto('/bookings')
   await page.getByRole('button', { name: 'Listenansicht' }).click()
 
   const bookings = page.locator('.booking-table article')
@@ -487,7 +487,7 @@ test('keeps keyboard focus inside the mobile navigation', async ({ page }, testI
 
 test('gives the customer directory two thirds of the desktop content width', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop', 'The customer page stacks both panels on mobile.')
-  await page.goto('/kunden-tiere')
+  await page.goto('/customers-pets')
 
   const directory = await page.locator('.customer-directory').boundingBox()
   const details = await page.locator('.customer-details').boundingBox()
@@ -499,7 +499,7 @@ test('gives the customer directory two thirds of the desktop content width', asy
 })
 
 test('pages through the complete customer mock data', async ({ page }) => {
-  await page.goto('/kunden-tiere')
+  await page.goto('/customers-pets')
 
   await expect(page.getByText('100 Treffer', { exact: true })).toBeVisible()
   await expect(page.locator('.customer-list button')).toHaveCount(5)
@@ -515,7 +515,7 @@ test('pages through the complete customer mock data', async ({ page }) => {
 
 test('keeps customer pagination within the directory on small screens', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile', 'The pagination only needs compaction on small screens.')
-  await page.goto('/kunden-tiere')
+  await page.goto('/customers-pets')
 
   const pagination = page.getByRole('navigation', { name: 'Seiten im Kundenverzeichnis' })
   await expect(pagination).toBeVisible()
@@ -530,7 +530,7 @@ test('keeps customer pagination within the directory on small screens', async ({
 
 test('uses a master-detail flow for customers on small screens', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile', 'The desktop layout shows directory and details side by side.')
-  await page.goto('/kunden-tiere')
+  await page.goto('/customers-pets')
 
   await expect(page.locator('.customer-directory')).toBeVisible()
   await expect(page.locator('.customer-details')).toBeHidden()
@@ -548,7 +548,7 @@ test('uses a master-detail flow for customers on small screens', async ({ page }
 })
 
 test('shows customer pets as readable species profile cards', async ({ page }) => {
-  await page.goto('/kunden-tiere')
+  await page.goto('/customers-pets')
   await page.getByPlaceholder('Kundenname oder Tiername suchen …').fill('Sofia')
   await page.getByRole('button', { name: /Sofia Berger/ }).click()
 
@@ -560,13 +560,13 @@ test('shows customer pets as readable species profile cards', async ({ page }) =
 })
 
 test('starts a booking from a customer profile with that customer preselected', async ({ page }) => {
-  await page.goto('/kunden-tiere')
+  await page.goto('/customers-pets')
   await page.getByPlaceholder('Kundenname oder Tiername suchen …').fill('Sofia')
   await page.getByRole('button', { name: /Sofia Berger/ }).click()
 
   await page.getByRole('link', { name: 'Jetzt Buchung anlegen' }).click()
 
-  await expect(page).toHaveURL(/\/buchungen\?customerId=c-1$/)
+  await expect(page).toHaveURL(/\/bookings\?customerId=c-1$/)
   const form = page.getByRole('dialog')
   await expect(form).toBeVisible()
   await expect(form.getByRole('combobox', { name: 'Kunde' })).toHaveValue('Sofia Berger')
@@ -595,7 +595,7 @@ test('completes a check-in from the check-in/out page', async ({ page }) => {
   await expect(page.locator('.history-rows article').first()).toContainText('Check-in zurückgenommen')
 
   await page.locator('.history-rows article').first().getByRole('link', { name: 'Zur Buchung' }).click()
-  await expect(page).toHaveURL(/\/buchungen\?bookingId=b-1/)
+  await expect(page).toHaveURL(/\/bookings\?bookingId=b-1/)
   await expect(page.locator('#booking-b-1')).toHaveClass(/focused-booking/)
   await expect(page.locator('.booking-table article')).toHaveCount(1)
 })
@@ -614,7 +614,7 @@ test('lists currently checked-in animals independently of the selected operation
 })
 
 test('checks out an animal directly from its booking while recording the completed stay', async ({ page }) => {
-  await page.goto('/buchungen')
+  await page.goto('/bookings')
   await page.getByRole('button', { name: 'Listenansicht' }).click()
   await page.getByRole('button', { name: 'Eingecheckt' }).click()
 
@@ -638,7 +638,7 @@ test('opens and updates a planned arrival from check-in/out', async ({ page }) =
 
   await page.locator('.operation-row').filter({ hasText: 'Balu' })
     .getByRole('link', { name: 'Buchung bearbeiten' }).click()
-  await expect(page).toHaveURL(/\/buchungen\?bookingId=b-1&edit=true/)
+  await expect(page).toHaveURL(/\/bookings\?bookingId=b-1&edit=true/)
 
   const dialog = page.getByRole('dialog')
   await expect(dialog).toContainText('Sofia Berger · Balu')
@@ -651,14 +651,14 @@ test('opens and updates a planned arrival from check-in/out', async ({ page }) =
 })
 
 test('opens a planned booking for editing directly from the booking list', async ({ page }) => {
-  await page.goto('/buchungen')
+  await page.goto('/bookings')
   await page.getByRole('button', { name: 'Listenansicht' }).click()
   await page.getByPlaceholder('Tier, Kunde oder Zimmer suchen …').fill('Balu')
 
   const booking = page.locator('.booking-table article').filter({ hasText: 'Balu' })
   await booking.getByRole('link', { name: 'Buchung für Balu bearbeiten' }).click()
 
-  await expect(page).toHaveURL(/\/buchungen\?bookingId=b-1&edit=true/)
+  await expect(page).toHaveURL(/\/bookings\?bookingId=b-1&edit=true/)
   await expect(page.getByRole('dialog')).toContainText('Sofia Berger · Balu')
 })
 
@@ -705,7 +705,7 @@ test('pages the check-in/out history in groups of five entries', async ({ page }
 })
 
 test('creates a booking through its customer and pet relationship', async ({ page }) => {
-  await page.goto('/buchungen')
+  await page.goto('/bookings')
   await page.getByRole('button', { name: 'Listenansicht' }).click()
   await page.getByRole('button', { name: 'Neue Buchung' }).click()
 
@@ -731,7 +731,7 @@ test('creates a booking through its customer and pet relationship', async ({ pag
 })
 
 test('marks rooms without free capacity as an explicit overbooking for the selected stay', async ({ page }) => {
-  await page.goto('/buchungen')
+  await page.goto('/bookings')
   await page.getByRole('button', { name: 'Neue Buchung' }).click()
 
   const form = page.getByRole('dialog')
@@ -747,7 +747,7 @@ test('marks rooms without free capacity as an explicit overbooking for the selec
 })
 
 test('shows the room-selection prompt for pending requests', async ({ page }) => {
-  await page.goto('/anfragen')
+  await page.goto('/requests')
 
   const hannahRequest = page.locator('.request-card').filter({ hasText: 'Hannah Wolf' })
   await expect(hannahRequest.getByLabel('Verfügbarkeit: frei')).toContainText('Zeitraum frei')
@@ -768,7 +768,7 @@ test('shows the room-selection prompt for pending requests', async ({ page }) =>
 })
 
 test('groups request details separately from the decision controls', async ({ page }) => {
-  await page.goto('/anfragen')
+  await page.goto('/requests')
 
   const request = page.locator('.request-card').filter({ hasText: 'Emilia Fischer' })
   const summary = request.locator('.request-summary')
@@ -789,7 +789,7 @@ test('groups request details separately from the decision controls', async ({ pa
 })
 
 test('requires an explicit customer choice when accepting a request and highlights a matching contact', async ({ page }) => {
-  await page.goto('/anfragen')
+  await page.goto('/requests')
 
   const emiliaRequest = page.locator('.request-card').filter({ hasText: 'Emilia Fischer' })
   await emiliaRequest.getByRole('button', { name: 'Annehmen' }).click()
@@ -810,7 +810,7 @@ test('requires an explicit customer choice when accepting a request and highligh
 })
 
 test('declines a request in a modal and records its reason', async ({ page }) => {
-  await page.goto('/anfragen')
+  await page.goto('/requests')
 
   const request = page.locator('.request-card').filter({ hasText: 'Hannah Wolf' })
   await request.getByRole('button', { name: 'Ablehnen' }).click()

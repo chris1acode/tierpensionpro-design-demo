@@ -6,7 +6,7 @@ const consoleErrors = []
 page.on('console', (msg) => { if (msg.type() === 'error') consoleErrors.push(msg.text()) })
 page.on('pageerror', (err) => consoleErrors.push(String(err)))
 
-await page.goto('http://localhost:5173/belegung')
+await page.goto('http://localhost:5173/occupancy')
 await page.waitForSelector('.occupancy-page')
 
 const startDateInput = page.locator('.occupancy-start-date input')

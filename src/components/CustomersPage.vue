@@ -240,7 +240,7 @@ function exportCustomers() {
           </div>
         </div>
         <div class="detail-section booking-history">
-          <div class="section-title"><div><h3>Aufenthalte</h3><p>Aktuelle und vergangene Buchungen</p></div><RouterLink class="text-button customer-booking-link" :to="{ path: '/buchungen', query: { customerId: selectedCustomer.id } }"><Plus :size="15" /> Jetzt Buchung anlegen</RouterLink></div>
+          <div class="section-title"><div><h3>Aufenthalte</h3><p>Aktuelle und vergangene Buchungen</p></div><RouterLink class="text-button customer-booking-link" :to="{ path: '/bookings', query: { customerId: selectedCustomer.id } }"><Plus :size="15" /> Jetzt Buchung anlegen</RouterLink></div>
           <article v-for="booking in selectedCustomer.bookings" :key="booking.id">
             <div><strong>{{ booking.pet.name }}</strong><span>{{ booking.room.name }}</span></div>
             <div><strong>{{ booking.arrival }} Uhr</strong><span>bis {{ booking.departure }}</span></div>

@@ -97,9 +97,9 @@ function updateRate(species: PetSpecies, value: string) {
     </div>
 
     <nav class="settings-tabs" aria-label="Einstellungsbereiche">
-      <RouterLink to="/einstellungen/allgemein">Allgemein</RouterLink>
-      <RouterLink to="/einstellungen/tarife">Tarife</RouterLink>
-      <RouterLink to="/einstellungen/unterbringung">Unterbringung</RouterLink>
+      <RouterLink to="/settings/general">Allgemein</RouterLink>
+      <RouterLink to="/settings/rates">Tarife</RouterLink>
+      <RouterLink to="/settings/rooms">Unterbringung</RouterLink>
     </nav>
 
     <form v-if="activeTab !== 'rooms'" class="settings-layout" @submit.prevent="save">

@@ -43,7 +43,7 @@ const currentPage = computed(() => ({
 const visibleNavigationItems = computed(() => navigationItems.filter((item) =>
   item.name !== 'requests' || store.settings.requestsEnabled))
 
-const isSettingsRoute = computed(() => route.path.startsWith('/einstellungen'))
+const isSettingsRoute = computed(() => route.path.startsWith('/settings'))
 
 const filteredArrivals = computed(() => store.arrivals.value)
 
@@ -130,7 +130,7 @@ onBeforeUnmount(() => {
           <component :is="item.icon" :size="19" /><span>{{ item.title }}</span><span v-if="item.name === 'requests' && store.pendingRequests.value.length" class="nav-badge" aria-hidden="true">{{ store.pendingRequests.value.length }}</span>
         </RouterLink>
       </nav>
-      <RouterLink class="sidebar-profile" to="/konto" aria-label="Zu den Kontoeinstellungen" :title="sidebarCollapsed ? 'Kontoeinstellungen' : undefined" @click="closeMobileNavigation()">
+      <RouterLink class="sidebar-profile" to="/account" aria-label="Zu den Kontoeinstellungen" :title="sidebarCollapsed ? 'Kontoeinstellungen' : undefined" @click="closeMobileNavigation()">
         <div class="avatar">{{ accountInitials(store.account) }}</div>
         <div><strong>{{ store.account.firstName }} {{ store.account.lastName }}</strong><small>{{ store.account.role === 'root' ? 'Inhaber' : 'Mitarbeiter' }}</small></div>
       </RouterLink>
@@ -146,7 +146,7 @@ onBeforeUnmount(() => {
       <header class="topbar">
         <button ref="mobileNavTrigger" class="menu-button icon-button" aria-label="Navigation öffnen" @click="openMobileNavigation"><Menu /></button>
         <DemoDataControl />
-        <RouterLink class="top-avatar" to="/konto" aria-label="Zu den Kontoeinstellungen">{{ accountInitials(store.account) }}</RouterLink>
+        <RouterLink class="top-avatar" to="/account" aria-label="Zu den Kontoeinstellungen">{{ accountInitials(store.account) }}</RouterLink>
       </header>
 
       <main v-if="route.name === 'dashboard'">
@@ -158,7 +158,7 @@ onBeforeUnmount(() => {
           <RouterLink class="metric-card" :to="{ path: '/check-in-out', query: { view: 'arrivals' } }" aria-label="Anreisen heute in Check-in und Check-out öffnen"><span class="metric-icon orange"><CalendarDays /></span><div><small>Anreisen heute</small><strong>{{ store.arrivals.value.length }}</strong><p>Nächste um {{ store.arrivals.value[0]?.arrival ?? '–' }} Uhr</p></div><ArrowRight class="metric-arrow" :size="18" /></RouterLink>
           <RouterLink class="metric-card" :to="{ path: '/check-in-out', query: { view: 'departures' } }" aria-label="Abreisen heute in Check-in und Check-out öffnen"><span class="metric-icon teal"><LogOut /></span><div><small>Abreisen heute</small><strong>{{ store.departures.value.length }}</strong><p>{{ store.departures.value.length ? 'Heute abholbereit' : 'Keine Abreise geplant' }}</p></div><ArrowRight class="metric-arrow" :size="18" /></RouterLink>
           <RouterLink class="metric-card" :to="{ path: '/check-in-out', query: { view: 'checked-in' } }" aria-label="Tiere im Haus in Check-in und Check-out öffnen"><span class="metric-icon teal"><Dog /></span><div><small>Tiere im Haus</small><strong>{{ store.checkedIn.value.length }}<em> / {{ store.totalCapacity.value }}</em></strong><p>{{ store.occupancyRate.value }} % der Plätze belegt</p></div><ArrowRight class="metric-arrow" :size="18" /></RouterLink>
-          <RouterLink class="metric-card" to="/anfragen" aria-label="Offene Anfragen öffnen"><span class="metric-icon orange"><Inbox /></span><div><small>Offene Anfragen</small><strong>{{ store.pendingRequests.value.length }}</strong><p>{{ store.pendingRequests.value.length ? 'Bearbeitung ausstehend' : 'Alles erledigt' }}</p></div><ArrowRight class="metric-arrow" :size="18" /></RouterLink>
+          <RouterLink class="metric-card" to="/requests" aria-label="Offene Anfragen öffnen"><span class="metric-icon orange"><Inbox /></span><div><small>Offene Anfragen</small><strong>{{ store.pendingRequests.value.length }}</strong><p>{{ store.pendingRequests.value.length ? 'Bearbeitung ausstehend' : 'Alles erledigt' }}</p></div><ArrowRight class="metric-arrow" :size="18" /></RouterLink>
         </section>
         <section v-else class="metrics three-cols" aria-label="Tageskennzahlen">
           <RouterLink class="metric-card" :to="{ path: '/check-in-out', query: { view: 'arrivals' } }" aria-label="Anreisen heute in Check-in und Check-out öffnen"><span class="metric-icon orange"><CalendarDays /></span><div><small>Anreisen heute</small><strong>{{ store.arrivals.value.length }}</strong><p>Nächste um {{ store.arrivals.value[0]?.arrival ?? '–' }} Uhr</p></div><ArrowRight class="metric-arrow" :size="18" /></RouterLink>
@@ -197,7 +197,7 @@ onBeforeUnmount(() => {
           </section>
 
           <aside class="panel occupancy-panel">
-            <header><div><h2><RouterLink class="panel-title-link" to="/belegung">Belegung ansehen</RouterLink></h2><p>Aktueller Stand</p></div><span class="occupancy-number">{{ store.occupancyRate.value }} %</span></header>
+            <header><div><h2><RouterLink class="panel-title-link" to="/occupancy">Belegung ansehen</RouterLink></h2><p>Aktueller Stand</p></div><span class="occupancy-number">{{ store.occupancyRate.value }} %</span></header>
             <div class="progress"><span :style="{ width: `${store.occupancyRate.value}%` }" /></div>
             <div class="room-summary">
               <div v-for="summary in store.occupancyByCategory.value" :key="summary.category">

@@ -25,14 +25,14 @@
 [ ] Kunden & Tiere Kunde anlegen als Hauptaktion nach oben und primary
 [x] src/components/BookingsPage.vue: "Kund:in" -> "Kunde" (Labels, Fehlermeldungen, Spaltenüberschriften), src/components/OccupancyReservationModal.vue: "Kund:in" -> "Kunde", src/components/CustomerFormModal.vue: "Kund:in anlegen" -> "Kunden anlegen", src/components/CheckInOutPage.vue: "Kund:in" -> "Kunde"
 [x] src/components/RequestsPage.vue: "Kund:in" -> "Kunde", src/components/CustomerAutocomplete.vue: "Kund:in suchen" -> "Kunden suchen", src/components/CustomersPage.vue: "Kund:innen", "Kund:in anlegen" -> "Kunden", "Kunden anlegen", e2e/dashboard-search.spec.ts: Alle Vorkommen von "Kund:in" und "Kund:innen" in Tests anpassen , docs/documentation.md und andere Dokumente prüfen
-[ ] Dashboard: Router-Link auf englischen Bezeichner umstellen (z.B. /dashboard statt / falls gewünscht, aktuell /)
-[ ] Kunden & Tiere: Router-Link auf englischen Bezeichner umstellen (/customers-pets statt /kunden-tiere)
-[ ] Check-in/out: Router-Link prüfen/umstellen auf englischen Bezeichner (/check-in-out ist bereits englisch)
-[ ] Buchungen: Router-Link auf englischen Bezeichner umstellen (/bookings statt /buchungen)
-[ ] Belegung: Router-Link auf englischen Bezeichner umstellen (/occupancy statt /belegung)
-[ ] Anfragen: Router-Link auf englischen Bezeichner umstellen (/requests statt /anfragen)
-[ ] Einstellungen: Router-Link auf englischen Bezeichner umstellen (/settings statt /einstellungen)
-[ ] Konto: Router-Link auf englischen Bezeichner umstellen (/account statt /konto)
+[x] Dashboard: Router-Link auf englischen Bezeichner umstellen (z.B. /dashboard statt / falls gewünscht, aktuell /)
+[x] Kunden & Tiere: Router-Link auf englischen Bezeichner umstellen (/customers-pets statt /kunden-tiere)
+[x] Check-in/out: Router-Link prüfen/umstellen auf englischen Bezeichner (/check-in-out ist bereits englisch)
+[x] Buchungen: Router-Link auf englischen Bezeichner umstellen (/bookings statt /buchungen)
+[x] Belegung: Router-Link auf englischen Bezeichner umstellen (/occupancy statt /belegung)
+[x] Anfragen: Router-Link auf englischen Bezeichner umstellen (/requests statt /anfragen)
+[x] Einstellungen: Router-Link auf englischen Bezeichner umstellen (/settings statt /einstellungen)
+[x] Konto: Router-Link auf englischen Bezeichner umstellen (/account statt /konto)
 [ ] Kundenprofil. Badge weg.
 [ ] Kundenprofil: Tiersymbol viel zu dominant. Als kleines Mini Symbol ok, aber nicht mehr.
 [ ] Check-in/out: Das kleine Badge mit z.b. 6 offen kann weg.

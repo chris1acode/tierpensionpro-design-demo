@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 test('only enables settings actions for changed persistent data', async ({ page }) => {
-  await page.goto('/einstellungen')
+  await page.goto('/settings')
 
   const save = page.getByRole('button', { name: 'Einstellungen speichern' })
   const discard = page.getByRole('button', { name: 'Änderungen verwerfen' })
