@@ -106,7 +106,7 @@ function exportHistory() {
       <button :class="{ active: activeView === 'departures' }" :aria-pressed="activeView === 'departures'" @click="activeView = 'departures'"><span class="metric-icon teal"><ArrowUpFromLine /></span><span><small>Geplante Abreisen</small><strong>{{ departures.length }}</strong><em>heute auszuchecken</em></span></button>
     </section>
     <section class="panel operations-list">
-      <header><div><h2>{{ activeViewTitle }}</h2><p>{{ activeViewDescription }}</p></div><div class="list-header-actions"><button class="text-button" type="button" aria-label="Aktuelle Vorgänge als CSV exportieren" @click="exportOperations"><Download :size="15" /> Exportieren</button><label class="directory-search"><Search :size="17" /><input v-model="localQuery" placeholder="Tier, Kunde oder Zimmer suchen …" /></label></div></header>
+      <header class="operations-list-header"><div><h2>{{ activeViewTitle }}</h2><p>{{ activeViewDescription }}</p></div><label class="directory-search operations-search"><Search :size="19" /><input v-model="localQuery" aria-label="Aktuelle Vorgänge durchsuchen" placeholder="Tier, Kunde oder Zimmer suchen …" /></label><div class="list-header-actions"><button class="text-button" type="button" aria-label="Aktuelle Vorgänge als CSV exportieren" @click="exportOperations"><Download :size="15" /> Exportieren</button></div></header>
       <div v-if="visibleBookings.length" class="operation-rows">
         <article v-for="booking in visibleBookings" :key="booking.id" class="operation-row">
           <div class="pet-avatar" :style="{ background: booking.pet.color }">{{ booking.pet.initials }}</div>

@@ -410,6 +410,10 @@ test('shows bookings as filterable, room-based continuous bars in the timeline',
   await timeline.getByRole('button', { name: 'Buchung von Sofia Berger für Balu öffnen' }).click()
   await expect(page).toHaveURL(/\/bookings\?bookingId=b-1$/)
   await expect(page.locator('#booking-b-1')).toHaveClass(/focused-booking/)
+  await expect(page.getByRole('status')).toContainText('Ausgewählte Buchung: Balu von Sofia Berger.')
+  await page.getByRole('button', { name: 'Auswahl aufheben' }).click()
+  await expect(page).toHaveURL(/\/bookings$/)
+  await expect(page.getByRole('status')).toHaveCount(0)
 
   await page.getByRole('button', { name: 'Zeitachsenansicht' }).click()
 

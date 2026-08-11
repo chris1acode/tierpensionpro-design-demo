@@ -1,5 +1,15 @@
 # Finished Tasks
 
+## Session 48d1f - 2026-08-11 17:01 Europe/Berlin
+
+- `bugs.md`: Den offenen Deep-Link-Punkt fuer `/bookings?bookingId=...` umgesetzt und erledigt markiert. Die Liste zeigt bei einer gezielt ausgewaehlten Buchung jetzt eindeutig Tier und Kund:in sowie die Aktion "Auswahl aufheben", mit der wieder alle Buchungen sichtbar werden. Die Auswahl bleibt ein Filter auf den bestehenden Buchungsentitaeten; es wurde kein separates UI-Mockmodell angelegt.
+- Verifiziert mit `npm.cmd run build` sowie dem betroffenen Playwright-Test (`shows bookings as filterable, room-based continuous bars in the timeline`, Desktop): beide erfolgreich.
+
+## Session 56d73 - 2026-08-11 16:57
+
+- bugs.md: Den offenen Punkt zum oberen Kundenprofil umgesetzt und als erledigt markiert. Das grosse Initialen-Badge wurde entfernt; Name, E-Mail und Telefonnummer bilden jetzt einen klaren linksbuendigen Profilbereich. Die Aktion Kontaktdaten bearbeiten ist nicht mehr absolut positioniert, sondern als normale, responsive Kopfaktion angeordnet.
+- Verifiziert mit npm.cmd run build und npm.cmd run test.
+
 ## Session 27477 — 2026-08-11 16:39
 
 - extension.md: Zeitachsenansichten mit stabiler Mindesthöhe versehen: Die Buchungszeitachse (`.booking-calendar`) bleibt auf Desktop bei mindestens 430px, die Belegungs-Zeitachse (`.occupancy-panel-wide`) bei mindestens 460px. Dadurch verschiebt sich nach einem Zeitraumwechsel nur noch der Inhalt innerhalb des reservierten Bereichs; die nachfolgenden Seitenelemente springen nicht mehr. Die Regel ist bewusst auf Viewports ab 681px beschränkt, weil die mobile Belegung keine horizontale Zeitachse, sondern eine vertikale Tagesliste verwendet.
@@ -159,3 +169,7 @@
 - `CustomersPage.vue`: Tierkacheln auf volle Breite der Card gesetzt für bessere Übersicht.
 - `CustomersPage.vue`: "Kunden anlegen" als primäre Aktion in die Seitenübersicht verschoben und Aktionen im Kundenprofil oben rechts gruppiert.
 - Detaillierte Prüfung und Anpassung der Schriftgrößen in `AccountSettingsPage.vue`, `BookingsPage.vue`, `CheckInOutPage.vue`, `OccupancyPage.vue`, `RequestsPage.vue` und `SettingsPage.vue`.
+## Session 9c3c0 — 2026-08-11 17:00 Europe/Berlin
+
+- `bugs.md`: Check-in/out-Suchfeld als eigene, mittig ausgerichtete Header-Spalte umgesetzt. In `src/components/CheckInOutPage.vue` steht die Suche nun zwischen Listenüberschrift und Exportaktion und besitzt ein eindeutiges Accessibility-Label. `src/styles.css` vergrößert sie auf 48px Höhe und 340–460px Breite auf Desktop; bei weniger Platz (≤760px) wechselt das Layout zu voller Breite unterhalb der Überschrift.
+- Den Bug als erledigt markiert. Verifiziert mit `npm.cmd run build` sowie `npm.cmd run test` (30 Testdateien, 222 Tests grün).

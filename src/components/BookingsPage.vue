@@ -31,6 +31,7 @@ const bookingModalTarget = ref<BookingView | null>(null)
 const bookingModalPresetCustomerId = ref('')
 const searchTerm = computed(() => resolveSearchTerm(localQuery.value))
 const focusedBookingId = computed(() => typeof route.query.bookingId === 'string' ? route.query.bookingId : '')
+const focusedBooking = computed(() => store.bookingViews.value.find((booking) => booking.id === focusedBookingId.value) ?? null)
 const selectedDate = computed(() => {
   const value = typeof route.query.date === 'string' ? route.query.date : ''
   return isValidIsoDate(value) ? value : ''
@@ -121,6 +122,11 @@ function clearSelectedDate() {
   void router.push({ name: 'bookings' })
 }
 
+function clearFocusedBooking() {
+  const { bookingId: _bookingId, edit: _edit, ...remainingQuery } = route.query
+  void router.push({ name: 'bookings', query: remainingQuery })
+}
+
 function openBookingFromTimeline(bookingId: string) {
   view.value = 'list'
   void router.push({ name: 'bookings', query: { bookingId } })
@@ -136,11 +142,15 @@ function openBookingFromTimeline(bookingId: string) {
     </div>
 
     <section class="panel bookings-list">
-      <header><div><h2>{{ view === 'list' ? 'Alle Aufenthalte' : 'Buchungszeitachse' }}</h2><p>{{ view === 'list' ? `${visibleBookings.length} passende Buchungen` : 'Zimmer und zusammenhängende Aufenthalte im Wochenüberblick' }}</p></div><div class="list-header-actions"><div class="booking-view-switch" aria-label="Buchungsansicht"><button :class="{ active: view === 'list' }" aria-label="Listenansicht" @click="view = 'list'"><List :size="15" /> Liste</button><button :class="{ active: view === 'calendar' }" aria-label="Zeitachsenansicht" @click="view = 'calendar'"><CalendarDays :size="15" /> Zeitachse</button></div><button class="text-button" type="button" aria-label="Buchungen als CSV exportieren" @click="exportBookings"><Download :size="15" /> Exportieren</button><label class="directory-search"><Search :size="17" /><input v-model="localQuery" placeholder="Tier, Kunde oder Zimmer suchen …" /></label></div></header>
-      <div class="booking-filters" aria-label="Buchungsstatus">
-        <button v-for="option in bookingStatusFilters" :key="option.value" :class="{ active: status === option.value }" @click="status = option.value">{{ option.label }}</button>
-        <label class="booking-date-filter">Am Datum <input type="date" aria-label="Buchungen am Datum filtern" :value="selectedDate" @change="setSelectedDate" /></label>
-        <button v-if="selectedDate" class="booking-date-filter-clear" type="button" @click="clearSelectedDate">Datum löschen</button>
+      <header><div><h2>{{ focusedBooking ? 'Ausgewählter Aufenthalt' : (view === 'list' ? 'Alle Aufenthalte' : 'Buchungszeitachse') }}</h2><p>{{ focusedBooking ? 'Details und Aktionen für die gewählte Buchung' : (view === 'list' ? `${visibleBookings.length} passende Buchungen` : 'Zimmer und zusammenhängende Aufenthalte im Wochenüberblick') }}</p></div><div class="list-header-actions"><div class="booking-view-switch" aria-label="Buchungsansicht"><button :class="{ active: view === 'list' }" aria-label="Listenansicht" @click="view = 'list'"><List :size="15" /> Liste</button><button :class="{ active: view === 'calendar' }" aria-label="Zeitachsenansicht" :disabled="!!focusedBooking" @click="view = 'calendar'"><CalendarDays :size="15" /> Zeitachse</button></div><button class="text-button" type="button" aria-label="Buchungen als CSV exportieren" :disabled="!!focusedBooking" @click="exportBookings"><Download :size="15" /> Exportieren</button><label class="directory-search" :class="{ disabled: !!focusedBooking }"><Search :size="17" /><input v-model="localQuery" :disabled="!!focusedBooking" placeholder="Tier, Kunde oder Zimmer suchen …" /></label></div></header>
+      <div class="booking-filters" :class="{ disabled: !!focusedBooking }" aria-label="Buchungsstatus">
+        <button v-for="option in bookingStatusFilters" :key="option.value" :class="{ active: status === option.value }" :disabled="!!focusedBooking" @click="status = option.value">{{ option.label }}</button>
+        <label class="booking-date-filter">Am Datum <input type="date" aria-label="Buchungen am Datum filtern" :value="selectedDate" :disabled="!!focusedBooking" @change="setSelectedDate" /></label>
+        <button v-if="selectedDate" class="booking-date-filter-clear" type="button" :disabled="!!focusedBooking" @click="clearSelectedDate">Datum löschen</button>
+      </div>
+      <div v-if="focusedBooking" class="booking-selection-notice" role="status">
+        <span><ChevronLeft :size="14" style="vertical-align: middle; margin-top: -2px" /> Ausgewählte Buchung: <strong>{{ focusedBooking.pet.name }}</strong> von {{ focusedBooking.customer.firstName }} {{ focusedBooking.customer.lastName }}.</span>
+        <button type="button" @click="clearFocusedBooking">Zurück zur Übersicht</button>
       </div>
       <div v-if="view === 'calendar'" class="booking-calendar">
         <div class="booking-calendar-navigation"><button class="icon-button" aria-label="Vorherige Woche" @click="changeCalendarWeek(-1)"><ChevronLeft :size="18" /></button><strong>{{ calendarLabel }}</strong><button class="icon-button" aria-label="Nächste Woche" @click="changeCalendarWeek(1)"><ChevronRight :size="18" /></button><button class="secondary-button booking-calendar-today" type="button" :disabled="calendarStart === store.businessDate.value" @click="jumpTimelineToToday">Heute</button></div>

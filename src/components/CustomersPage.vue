@@ -191,9 +191,15 @@ function exportCustomers() {
       <section v-if="selectedCustomer" class="panel customer-details">
         <button class="customer-details-back" @click="detailsOpen = false"><ArrowLeft :size="17" /> Zurück zum Kundenverzeichnis</button>
         <header class="customer-profile-header">
-          <span class="customer-avatar large">{{ selectedCustomer.firstName[0] }}{{ selectedCustomer.lastName[0] }}</span>
-          <div><p class="eyebrow">Kundenprofil</p><h2>{{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }}</h2><a :href="`mailto:${selectedCustomer.email}`"><Mail :size="14" /> {{ selectedCustomer.email }}</a><a :href="toTelephoneHref(selectedCustomer.phone)"><Phone :size="14" /> {{ selectedCustomer.phone }}</a></div>
-          <div class="emergency-contact-actions">
+          <div class="customer-profile-intro">
+            <p class="eyebrow">Kundenprofil</p>
+            <h2>{{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }}</h2>
+            <div class="customer-contact-links">
+              <a :href="`mailto:${selectedCustomer.email}`"><Mail :size="14" /> {{ selectedCustomer.email }}</a>
+              <a :href="toTelephoneHref(selectedCustomer.phone)"><Phone :size="14" /> {{ selectedCustomer.phone }}</a>
+            </div>
+          </div>
+          <div class="customer-profile-actions">
             <button class="text-button" type="button" @click="customerModalMode = 'edit'"><Pencil :size="15" /> Kontaktdaten bearbeiten</button>
             <button v-if="!selectedCustomer.pets.length && !selectedCustomer.bookings.length" class="text-button danger-text-button" type="button" @click="customerRemovalOpen = true"><Trash2 :size="15" /> Entfernen</button>
           </div>
