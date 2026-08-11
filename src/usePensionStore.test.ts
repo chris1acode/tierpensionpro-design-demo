@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MAX_ALLERGY_NOTE_LENGTH, MAX_FEEDING_PLAN_LENGTH, MAX_MEDICATION_PLAN_LENGTH, MAX_PET_NOTE_LENGTH, MAX_VACCINATION_STATUS_LENGTH } from './domain/petProfile'
+import { MAX_PET_NOTE_LENGTH } from './domain/petProfile'
 import { createPensionStore } from './usePensionStore'
 
 describe('PensionStore', () => {
@@ -40,19 +40,14 @@ describe('PensionStore', () => {
   it('creates a pet for an existing customer and rejects incomplete or unknown assignments', () => {
     const store = createPensionStore()
 
-    expect(store.createPet({ customerId: 'c-1', name: '  Kiwi ', species: 'cat', breed: ' Hauskatze ', note: '  Schreckhaft  ', feedingPlan: '  Zweimal täglich  ', medicationPlan: '  Tablette um 18 Uhr ', allergyNote: '  Kein Geflügel  ', vaccinationStatus: '  Impfpass geprüft  ', veterinaryContact: { practiceName: '  Tierarztpraxis am Park ', phone: '030 1234567' } })).toBe(true)
+    expect(store.createPet({ customerId: 'c-1', name: '  Kiwi ', species: 'cat', note: '  Schreckhaft  ' })).toBe(true)
     expect(store.customerViews.value.find((customer) => customer.id === 'c-1')?.pets.at(-1)).toMatchObject({
-      id: 'p-102', customerId: 'c-1', name: 'Kiwi', species: 'cat', breed: 'Hauskatze', initials: 'KI', note: 'Schreckhaft', feedingPlan: 'Zweimal täglich', medicationPlan: 'Tablette um 18 Uhr', allergyNote: 'Kein Geflügel', vaccinationStatus: 'Impfpass geprüft', veterinaryContact: { practiceName: 'Tierarztpraxis am Park', phone: '030 1234567' }
+      id: 'p-102', customerId: 'c-1', name: 'Kiwi', species: 'cat', initials: 'KI', note: 'Schreckhaft'
     })
     expect(store.announcement.value).toBe('Kiwi wurde im Kundenprofil angelegt.')
-    expect(store.createPet({ customerId: 'missing', name: 'Momo', species: 'dog', breed: 'Pudel' })).toBe(false)
-    expect(store.createPet({ customerId: 'c-1', name: '', species: 'dog', breed: 'Pudel' })).toBe(false)
-    expect(store.createPet({ customerId: 'c-1', name: 'Momo', species: 'dog', breed: 'Pudel', note: 'x'.repeat(MAX_PET_NOTE_LENGTH + 1) })).toBe(false)
-    expect(store.createPet({ customerId: 'c-1', name: 'Momo', species: 'dog', breed: 'Pudel', medicationPlan: 'x'.repeat(MAX_MEDICATION_PLAN_LENGTH + 1) })).toBe(false)
-    expect(store.createPet({ customerId: 'c-1', name: 'Momo', species: 'dog', breed: 'Pudel', feedingPlan: 'x'.repeat(MAX_FEEDING_PLAN_LENGTH + 1) })).toBe(false)
-    expect(store.createPet({ customerId: 'c-1', name: 'Momo', species: 'dog', breed: 'Pudel', allergyNote: 'x'.repeat(MAX_ALLERGY_NOTE_LENGTH + 1) })).toBe(false)
-    expect(store.createPet({ customerId: 'c-1', name: 'Momo', species: 'dog', breed: 'Pudel', vaccinationStatus: 'x'.repeat(MAX_VACCINATION_STATUS_LENGTH + 1) })).toBe(false)
-    expect(store.createPet({ customerId: 'c-1', name: 'Momo', species: 'dog', breed: 'Pudel', veterinaryContact: { practiceName: 'Praxis', phone: 'unbekannt' } })).toBe(false)
+    expect(store.createPet({ customerId: 'missing', name: 'Momo', species: 'dog' })).toBe(false)
+    expect(store.createPet({ customerId: 'c-1', name: '', species: 'dog' })).toBe(false)
+    expect(store.createPet({ customerId: 'c-1', name: 'Momo', species: 'dog', note: 'x'.repeat(MAX_PET_NOTE_LENGTH + 1) })).toBe(false)
     expect(store.pets).toHaveLength(102)
   })
 
@@ -60,25 +55,20 @@ describe('PensionStore', () => {
     const store = createPensionStore()
     const original = store.pets.find((pet) => pet.id === 'p-1')!
 
-    expect(store.updatePet('p-1', { name: '  Balou ', breed: ' Labrador Retriever ', note: '  Benötigt Ruhe  ', feedingPlan: '  Zwei Portionen am Tag  ', medicationPlan: '  Eine Tablette abends  ', allergyNote: '  Kein Rind  ', vaccinationStatus: '  Gültig bis 2027  ', veterinaryContact: { practiceName: ' Tierarztpraxis Mitte ', phone: '030 7654321' } })).toBe(true)
+    expect(store.updatePet('p-1', { name: '  Balou ', note: '  Benötigt Ruhe  ' })).toBe(true)
     expect(store.pets.find((pet) => pet.id === 'p-1')).toMatchObject({
       id: 'p-1', customerId: original.customerId, species: original.species,
-      name: 'Balou', breed: 'Labrador Retriever', note: 'Benötigt Ruhe', feedingPlan: 'Zwei Portionen am Tag', medicationPlan: 'Eine Tablette abends', allergyNote: 'Kein Rind', vaccinationStatus: 'Gültig bis 2027', veterinaryContact: { practiceName: 'Tierarztpraxis Mitte', phone: '030 7654321' }
+      name: 'Balou', note: 'Benötigt Ruhe'
     })
     expect(store.bookingViews.value.find((booking) => booking.id === 'b-1')?.pet.name).toBe('Balou')
-    expect(store.updatePet('p-1', { name: '', breed: 'Labrador' })).toBe(false)
-    expect(store.updatePet('p-1', { name: 'Balu', breed: 'Labrador', note: 'x'.repeat(MAX_PET_NOTE_LENGTH + 1) })).toBe(false)
-    expect(store.updatePet('p-1', { name: 'Balu', breed: 'Labrador', medicationPlan: 'x'.repeat(MAX_MEDICATION_PLAN_LENGTH + 1) })).toBe(false)
-    expect(store.updatePet('p-1', { name: 'Balu', breed: 'Labrador', feedingPlan: 'x'.repeat(MAX_FEEDING_PLAN_LENGTH + 1) })).toBe(false)
-    expect(store.updatePet('p-1', { name: 'Balu', breed: 'Labrador', allergyNote: 'x'.repeat(MAX_ALLERGY_NOTE_LENGTH + 1) })).toBe(false)
-    expect(store.updatePet('p-1', { name: 'Balu', breed: 'Labrador', vaccinationStatus: 'x'.repeat(MAX_VACCINATION_STATUS_LENGTH + 1) })).toBe(false)
-    expect(store.updatePet('p-1', { name: 'Balu', breed: 'Labrador', veterinaryContact: { practiceName: 'Praxis', phone: 'unbekannt' } })).toBe(false)
-    expect(store.updatePet('missing', { name: 'Momo', breed: 'Pudel' })).toBe(false)
+    expect(store.updatePet('p-1', { name: '' })).toBe(false)
+    expect(store.updatePet('p-1', { name: 'Balu', note: 'x'.repeat(MAX_PET_NOTE_LENGTH + 1) })).toBe(false)
+    expect(store.updatePet('missing', { name: 'Momo' })).toBe(false)
   })
 
   it('removes only pet profiles without stays and preserves historical references', () => {
     const store = createPensionStore()
-    expect(store.createPet({ customerId: 'c-1', name: 'Kiwi', species: 'cat', breed: 'Hauskatze' })).toBe(true)
+    expect(store.createPet({ customerId: 'c-1', name: 'Kiwi', species: 'cat' })).toBe(true)
 
     expect(store.removePet('p-102')).toBe(true)
     expect(store.pets.some((pet) => pet.id === 'p-102')).toBe(false)
@@ -88,19 +78,6 @@ describe('PensionStore', () => {
     expect(store.removePet('missing')).toBe(false)
   })
 
-  it('removes only an existing veterinary contact without changing the pet profile', () => {
-    const store = createPensionStore()
-    const original = store.pets.find((pet) => pet.id === 'p-1')!
-
-    expect(store.removePetVeterinaryContact('p-1')).toBe(true)
-    expect(store.pets.find((pet) => pet.id === 'p-1')).toMatchObject({
-      id: original.id, customerId: original.customerId, name: original.name, breed: original.breed
-    })
-    expect(store.pets.find((pet) => pet.id === 'p-1')?.veterinaryContact).toBeUndefined()
-    expect(store.announcement.value).toBe(`Der Tierarztkontakt von ${original.name} wurde entfernt.`)
-    expect(store.removePetVeterinaryContact('p-1')).toBe(false)
-    expect(store.removePetVeterinaryContact('missing')).toBe(false)
-  })
 
   it('creates a normalized customer and rejects invalid or duplicate contact data', () => {
     const store = createPensionStore()
@@ -154,7 +131,7 @@ describe('PensionStore', () => {
     const store = createPensionStore({ now: () => new Date('2026-08-09T10:00:00.000Z') })
 
     expect(store.createCustomer({ firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.de', phone: '+49 151 2345678' })).toBe(true)
-    expect(store.createPet({ customerId: 'c-1', name: 'Kiwi', species: 'cat', breed: 'Hauskatze' })).toBe(true)
+    expect(store.createPet({ customerId: 'c-1', name: 'Kiwi', species: 'cat' })).toBe(true)
     expect(store.toastNotifications).toMatchObject([
       { id: 'toast-1', message: 'Ada Lovelace wurde im Kundenverzeichnis angelegt.', createdAt: '2026-08-09T10:00:00.000Z' },
       { id: 'toast-2', message: 'Kiwi wurde im Kundenprofil angelegt.', createdAt: '2026-08-09T10:00:00.000Z' }

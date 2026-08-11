@@ -443,16 +443,6 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     return true
   }
 
-  /** Removes only the optional veterinary contact; the animal master data stays intact. */
-  function removePetVeterinaryContact(petId: string): boolean {
-    const pet = pets.find((item) => item.id === petId)
-    if (!pet?.veterinaryContact) return false
-
-    delete pet.veterinaryContact
-    showToast(`Der Tierarztkontakt von ${pet.name} wurde entfernt.`)
-    return true
-  }
-
   /**
    * A pet may only be removed before its first stay. Bookings intentionally keep
    * their pet reference, including historical check-in/out events.
@@ -757,7 +747,6 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     updateCustomer,
     createPet,
     updatePet,
-    removePetVeterinaryContact,
     removePet,
     checkIn,
     canUndoCheckIn,

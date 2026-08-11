@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import type { CustomerView, PetSpecies } from '../domain'
 import { usePensionStore } from '../usePensionStore'
-import { MAX_ALLERGY_NOTE_LENGTH, MAX_FEEDING_PLAN_LENGTH, MAX_MEDICATION_PLAN_LENGTH, MAX_PET_NOTE_LENGTH, MAX_VACCINATION_STATUS_LENGTH } from '../domain/petProfile'
+import { MAX_PET_NOTE_LENGTH } from '../domain/petProfile'
 import BaseModal from './BaseModal.vue'
 
 const props = defineProps<{
@@ -20,25 +20,23 @@ const store = usePensionStore()
 const error = ref(false)
 const form = ref(props.mode === 'edit' && props.pet
   ? {
-    name: props.pet.name, species: props.pet.species, breed: props.pet.breed, note: props.pet.note ?? '',
-    feedingPlan: props.pet.feedingPlan ?? '', specialFood: props.pet.specialFood ?? false, medicationPlan: props.pet.medicationPlan ?? '', allergyNote: props.pet.allergyNote ?? '',
-    vaccinationStatus: props.pet.vaccinationStatus ?? '', veterinaryPracticeName: props.pet.veterinaryContact?.practiceName ?? '', veterinaryPhone: props.pet.veterinaryContact?.phone ?? ''
+    name: props.pet.name, species: props.pet.species, note: props.pet.note ?? '',
+    specialFood: props.pet.specialFood ?? false
   }
-  : { name: '', species: 'dog' as PetSpecies, breed: '', note: '', feedingPlan: '', specialFood: false, medicationPlan: '', allergyNote: '', vaccinationStatus: '', veterinaryPracticeName: '', veterinaryPhone: '' })
+  : { name: '', species: 'dog' as PetSpecies, note: '', specialFood: false })
 
 function submit() {
-  const { veterinaryPracticeName, veterinaryPhone, species, ...input } = form.value
-  const veterinaryContact = veterinaryPracticeName || veterinaryPhone ? { practiceName: veterinaryPracticeName, phone: veterinaryPhone } : undefined
+  const { species, ...input } = form.value
 
   if (props.mode === 'edit' && props.pet) {
-    const saved = store.updatePet(props.pet.id, { ...input, ...(veterinaryContact ? { veterinaryContact } : {}) })
+    const saved = store.updatePet(props.pet.id, { ...input })
     error.value = !saved
     if (saved) emit('saved')
     return
   }
 
   if (!props.customerId) return
-  const created = store.createPet({ customerId: props.customerId, species, ...input, ...(veterinaryContact ? { veterinaryContact } : {}) })
+  const created = store.createPet({ customerId: props.customerId, species, ...input })
   error.value = !created
   if (created) emit('saved')
 }
@@ -51,16 +49,9 @@ function submit() {
     <form class="pet-form" @submit.prevent="submit">
       <label>Name *<input v-model="form.name" autocomplete="off" /></label>
       <label v-if="mode === 'create'">Tierart *<select v-model="form.species"><option value="dog">Hund</option><option value="cat">Katze</option></select></label>
-      <label>Rasse *<input v-model="form.breed" autocomplete="off" /></label>
-      <label class="wide">Hinweis <small>optional, max. {{ MAX_PET_NOTE_LENGTH }} Zeichen</small><textarea v-model="form.note" :maxlength="MAX_PET_NOTE_LENGTH" rows="2" /></label>
-      <label class="wide">Fütterungsplan <small>optional, max. {{ MAX_FEEDING_PLAN_LENGTH }} Zeichen</small><textarea v-model="form.feedingPlan" :maxlength="MAX_FEEDING_PLAN_LENGTH" rows="2" placeholder="z. B. Menge, Zeiten und Unverträglichkeiten" /></label>
       <label class="wide checkbox-field"><input v-model="form.specialFood" type="checkbox" /> Besonderes Futter <small>Tier benötigt von zu Hause mitgebrachtes Futter statt Standardfutter</small></label>
-      <label class="wide">Medikationsplan <small>optional, max. {{ MAX_MEDICATION_PLAN_LENGTH }} Zeichen</small><textarea v-model="form.medicationPlan" :maxlength="MAX_MEDICATION_PLAN_LENGTH" rows="2" placeholder="z. B. Medikament, Menge und Uhrzeit" /></label>
-      <label class="wide">Allergien & Unverträglichkeiten <small>optional, max. {{ MAX_ALLERGY_NOTE_LENGTH }} Zeichen</small><textarea v-model="form.allergyNote" :maxlength="MAX_ALLERGY_NOTE_LENGTH" rows="2" placeholder="z. B. Futtermittel oder Stoffe, die vermieden werden müssen" /></label>
-      <label class="wide">Impfstatus <small>optional, max. {{ MAX_VACCINATION_STATUS_LENGTH }} Zeichen</small><textarea v-model="form.vaccinationStatus" :maxlength="MAX_VACCINATION_STATUS_LENGTH" rows="2" placeholder="z. B. Impfpass geprüft, gültig bis …" /></label>
-      <label>Tierarztpraxis <small>optional</small><input v-model="form.veterinaryPracticeName" autocomplete="organization" placeholder="z. B. Tierarztpraxis am Park" /></label>
-      <label>Tierarzttelefon <small>optional</small><input v-model="form.veterinaryPhone" autocomplete="tel" inputmode="tel" placeholder="z. B. 030 123 45 67" /></label>
-      <p v-if="error" class="form-error">Bitte Name und Rasse vollständig angeben; operative Angaben dürfen maximal {{ MAX_PET_NOTE_LENGTH }} Zeichen lang sein.</p>
+      <label class="wide">Notizen & Hinweise <small>max. {{ MAX_PET_NOTE_LENGTH }} Zeichen</small><textarea v-model="form.note" :maxlength="MAX_PET_NOTE_LENGTH" rows="6" placeholder="" /></label>
+      <p v-if="error" class="form-error">Bitte gib einen Namen an.</p>
       <div class="modal-actions"><button type="button" class="secondary-button" @click="$emit('close')">Abbrechen</button><button class="primary-button" type="submit">{{ mode === 'edit' ? 'Änderungen speichern' : 'Tierprofil speichern' }}</button></div>
     </form>
   </BaseModal>

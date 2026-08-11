@@ -22,29 +22,19 @@ export interface Pet {
   customerId: Customer['id']
   name: string
   species: PetSpecies
-  breed: string
   initials: string
   color: string
+  /** A large field for general notes about the animal. */
   note?: string
-  /** Optional, structured operational handover instruction for medication. */
-  medicationPlan?: string
-  /** Optional feeding routine that accompanies the animal during a stay. */
-  feedingPlan?: string
   /** Flags that the animal requires food brought by its owner rather than house food. */
   specialFood?: boolean
-  /** Optional allergy and intolerance information needed during a stay. */
-  allergyNote?: string
-  /** Optional documented vaccination status for the operational handover. */
-  vaccinationStatus?: string
-  /** Optional veterinary practice to contact for this animal in an emergency. */
-  veterinaryContact?: VeterinaryContact
 }
 
-export type NewPet = Pick<Pet, 'customerId' | 'name' | 'species' | 'breed' | 'note' | 'medicationPlan' | 'feedingPlan' | 'specialFood' | 'allergyNote' | 'vaccinationStatus' | 'veterinaryContact'>
+export type NewPet = Pick<Pet, 'customerId' | 'name' | 'species' | 'note' | 'specialFood'>
 
 /** Editable master data of an existing animal. Owner and species stay stable so
  * historical bookings keep their valid customer and room references. */
-export type PetUpdate = Pick<Pet, 'name' | 'breed' | 'note' | 'medicationPlan' | 'feedingPlan' | 'specialFood' | 'allergyNote' | 'vaccinationStatus' | 'veterinaryContact'>
+export type PetUpdate = Pick<Pet, 'name' | 'note' | 'specialFood'>
 
 export interface VeterinaryContact {
   practiceName: string
@@ -319,7 +309,6 @@ export interface BookingRequest {
   phone: string
   petName: string
   species: PetSpecies
-  breed: string
   arrivalDate: string
   arrival: string
   departure: string

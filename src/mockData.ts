@@ -45,19 +45,19 @@ const coreCustomers: Customer[] = [
 ]
 
 const corePets: Pet[] = [
-  { id: 'p-1', customerId: 'c-1', name: 'Balu', species: 'dog', breed: 'Golden Retriever', initials: 'BA', color: '#DCE9E5', note: 'Bitte mit dem gewohnten Futter füttern.', feedingPlan: 'Morgens und abends je 180 g des mitgebrachten Trockenfutters; kein Rind.', specialFood: true, medicationPlan: 'Schilddrüsenmedikament: 1 Tablette täglich um 18 Uhr mit dem Abendfutter.', allergyNote: 'Unverträglichkeit gegen Rind; keine Rinderleckerlis geben.', vaccinationStatus: 'Impfpass geprüft: Staupe, Hepatitis, Parvovirose und Tollwut gültig bis März 2027.', veterinaryContact: { practiceName: 'Tierarztpraxis am Park', phone: '030 554 82 19' } },
-  { id: 'p-2', customerId: 'c-2', name: 'Milo', species: 'cat', breed: 'Britisch Kurzhaar', initials: 'MI', color: '#F3E3D7' },
-  { id: 'p-3', customerId: 'c-3', name: 'Luna', species: 'dog', breed: 'Labrador', initials: 'LU', color: '#E8E1F0' },
-  { id: 'p-4', customerId: 'c-4', name: 'Nala', species: 'cat', breed: 'Europäisch Kurzhaar', initials: 'NA', color: '#E5E9D8', note: 'Bitte nur das mitgebrachte Futter verwenden.', specialFood: true },
-  { id: 'p-5', customerId: 'c-5', name: 'Rocky', species: 'dog', breed: 'Beagle', initials: 'RO', color: '#DCE7F0' },
-  { id: 'p-6', customerId: 'c-6', name: 'Frieda', species: 'dog', breed: 'Havaneser', initials: 'FR', color: '#F1E1D5' },
-  { id: 'p-7', customerId: 'c-7', name: 'Simba', species: 'cat', breed: 'Maine Coon', initials: 'SI', color: '#E2E8D8' },
-  { id: 'p-8', customerId: 'c-8', name: 'Oskar', species: 'dog', breed: 'Dackel', initials: 'OS', color: '#E9DDE8' },
-  { id: 'p-9', customerId: 'c-9', name: 'Loki', species: 'cat', breed: 'Siamkatze', initials: 'LO', color: '#DCE8ED' },
-  { id: 'p-10', customerId: 'c-10', name: 'Maja', species: 'dog', breed: 'Border Collie', initials: 'MA', color: '#EEE5D6' },
-  { id: 'p-11', customerId: 'c-11', name: 'Pepe', species: 'dog', breed: 'Mops', initials: 'PE', color: '#DFE7DC' },
-  { id: 'p-12', customerId: 'c-12', name: 'Minou', species: 'cat', breed: 'Heilige Birma', initials: 'MN', color: '#E5E1EF' },
-  { id: 'p-13', customerId: 'c-6', name: 'Willi', species: 'dog', breed: 'Havaneser', initials: 'WI', color: '#E7E0D4', note: 'Reist gemeinsam mit Frieda an.' }
+  { id: 'p-1', customerId: 'c-1', name: 'Balu', species: 'dog', initials: 'BA', color: '#DCE9E5', note: 'Bitte mit dem gewohnten Futter füttern. Morgens und abends je 180 g des mitgebrachten Trockenfutters; kein Rind. Schilddrüsenmedikament: 1 Tablette täglich um 18 Uhr mit dem Abendfutter. Unverträglichkeit gegen Rind; keine Rinderleckerlis geben. Impfpass geprüft: Staupe, Hepatitis, Parvovirose und Tollwut gültig bis März 2027. Tierarztpraxis am Park, 030 554 82 19.', specialFood: true },
+  { id: 'p-2', customerId: 'c-2', name: 'Milo', species: 'cat', initials: 'MI', color: '#F3E3D7' },
+  { id: 'p-3', customerId: 'c-3', name: 'Luna', species: 'dog', initials: 'LU', color: '#E8E1F0' },
+  { id: 'p-4', customerId: 'c-4', name: 'Nala', species: 'cat', initials: 'NA', color: '#E5E9D8', note: 'Bitte nur das mitgebrachte Futter verwenden.', specialFood: true },
+  { id: 'p-5', customerId: 'c-5', name: 'Rocky', species: 'dog', initials: 'RO', color: '#DCE7F0' },
+  { id: 'p-6', customerId: 'c-6', name: 'Frieda', species: 'dog', initials: 'FR', color: '#F1E1D5' },
+  { id: 'p-7', customerId: 'c-7', name: 'Simba', species: 'cat', initials: 'SI', color: '#E2E8D8' },
+  { id: 'p-8', customerId: 'c-8', name: 'Oskar', species: 'dog', initials: 'OS', color: '#E9DDE8' },
+  { id: 'p-9', customerId: 'c-9', name: 'Loki', species: 'cat', initials: 'LO', color: '#DCE8ED' },
+  { id: 'p-10', customerId: 'c-10', name: 'Maja', species: 'dog', initials: 'MA', color: '#EEE5D6' },
+  { id: 'p-11', customerId: 'c-11', name: 'Pepe', species: 'dog', initials: 'PE', color: '#DFE7DC' },
+  { id: 'p-12', customerId: 'c-12', name: 'Minou', species: 'cat', initials: 'MN', color: '#E5E1EF' },
+  { id: 'p-13', customerId: 'c-6', name: 'Willi', species: 'dog', initials: 'WI', color: '#E7E0D4', note: 'Reist gemeinsam mit Frieda an.' }
 ]
 
 /**
@@ -113,7 +113,6 @@ const additionalPets: Pet[] = additionalCustomers.map((customer, index) => {
     customerId: customer.id,
     name,
     species,
-    breed: species === 'dog' ? ['Mischling', 'Pudel', 'Labrador'][index % 3] : ['Hauskatze', 'Ragdoll'][index % 2],
     initials: name.split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase(),
     color: petColors[index % petColors.length]
   }
@@ -251,7 +250,6 @@ export const initialBookingRequests: BookingRequest[] = [
     phone: '0176 220 93 44',
     petName: 'Charlie',
     species: 'dog',
-    breed: 'Australian Shepherd',
     arrivalDate: '2026-08-17',
     arrival: '09:00',
     departure: '2026-08-21',
@@ -267,7 +265,6 @@ export const initialBookingRequests: BookingRequest[] = [
     phone: '0151 654 39 21',
     petName: 'Oskar',
     species: 'dog',
-    breed: 'Dackel',
     arrivalDate: '2026-08-24',
     arrival: '13:30',
     departure: '2026-08-27',
@@ -282,7 +279,6 @@ export const initialBookingRequests: BookingRequest[] = [
     phone: '0151 660 27 38',
     petName: 'Mimi',
     species: 'cat',
-    breed: 'Norwegische Waldkatze',
     arrivalDate: '2026-08-19',
     arrival: '11:00',
     departure: '2026-08-23',
@@ -298,7 +294,6 @@ export const initialBookingRequests: BookingRequest[] = [
     phone: '0172 558 90 21',
     petName: 'Bruno',
     species: 'dog',
-    breed: 'Cocker Spaniel',
     arrivalDate: '2026-07-28',
     arrival: '10:00',
     departure: '2026-07-31',
@@ -313,7 +308,6 @@ export const initialBookingRequests: BookingRequest[] = [
     phone: '0160 774 32 18',
     petName: 'Zorro',
     species: 'cat',
-    breed: 'Perserkatze',
     arrivalDate: '2026-08-05',
     arrival: '09:30',
     departure: '2026-08-06',

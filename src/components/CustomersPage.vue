@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, Cat, Dog, Download, Mail, Pencil, Phone, Plus, Search, Stethoscope, Trash2, Utensils } from '@lucide/vue'
+import { ArrowLeft, Cat, Dog, Download, Mail, Pencil, Phone, Plus, Search, Trash2, Utensils } from '@lucide/vue'
 import type { CustomerView } from '../domain'
 import { bookingStatusLabels } from '../presentation/bookingStatus'
 import { toTelephoneHref } from '../presentation/phoneLink'
@@ -30,7 +30,7 @@ const compactPaginationQuery = typeof window === 'undefined' ? null : window.mat
 
 const searchTerm = computed(() => resolveSearchTerm(localQuery.value))
 const filteredCustomers = computed(() => store.customerViews.value.filter((customer) =>
-  matchesSearchTerm(searchTerm.value, [customer.firstName, customer.lastName, customer.email, customer.phone, ...customer.pets.flatMap((pet) => [pet.name, pet.breed])])))
+  matchesSearchTerm(searchTerm.value, [customer.firstName, customer.lastName, customer.email, customer.phone, ...customer.pets.flatMap((pet) => [pet.name])])))
 const { currentPage, pageCount, pagedItems: pagedCustomers, resetPage, selectPage: selectPaginationPage } = usePagination(filteredCustomers, pageSize)
 const visiblePageItems = computed<Array<number | 'ellipsis-left' | 'ellipsis-right'>>(() => {
   if (isCompactPagination.value && pageCount.value > 3) {
@@ -153,13 +153,13 @@ function removeVeterinaryContact(petId: string) {
 function exportCustomers() {
   downloadCsv({
     fileName: 'kunden-und-tiere.csv',
-    columns: ['Kunde', 'E-Mail', 'Telefon', 'Tier', 'Tierart', 'Rasse', 'Hinweis', 'Fütterungsplan', 'Besonderes Futter', 'Medikationsplan', 'Allergien & Unverträglichkeiten', 'Impfstatus', 'Tierarztpraxis', 'Tierarzttelefon'],
+    columns: ['Kunde', 'E-Mail', 'Telefon', 'Tier', 'Tierart', 'Hinweis', 'Besonderes Futter'],
     rows: filteredCustomers.value.flatMap((customer) => customer.pets.length
       ? customer.pets.map((pet) => [
         `${customer.firstName} ${customer.lastName}`, customer.email, customer.phone, pet.name,
-        pet.species === 'dog' ? 'Hund' : 'Katze', pet.breed, pet.note, pet.feedingPlan, pet.specialFood ? 'Ja' : 'Nein', pet.medicationPlan, pet.allergyNote, pet.vaccinationStatus, pet.veterinaryContact?.practiceName, pet.veterinaryContact?.phone
+        pet.species === 'dog' ? 'Hund' : 'Katze', pet.note, pet.specialFood ? 'Ja' : 'Nein'
       ])
-      : [[`${customer.firstName} ${customer.lastName}`, customer.email, customer.phone, '', '', '', '', '', '', '', '', '', '', '']])
+      : [[`${customer.firstName} ${customer.lastName}`, customer.email, customer.phone, '', '', '', '']])
   })
 }
 
@@ -231,7 +231,6 @@ function exportCustomers() {
               </span>
               <div class="pet-profile-summary">
                 <strong>{{ pet.name }}</strong>
-                <span class="pet-breed">{{ pet.breed }}</span>
                 <span v-if="pet.specialFood" class="pet-special-food-badge"><Utensils :size="12" /> Besonderes Futter</span>
               </div>
               <div class="pet-card-actions">
@@ -242,21 +241,7 @@ function exportCustomers() {
                 <p><strong>{{ pet.name }} entfernen?</strong> Für dieses Tier gibt es noch keine Aufenthalte.</p>
                 <div><button class="secondary-button" type="button" @click="petRemovalId = null">Behalten</button><button class="danger-button" type="button" @click="removePet(pet.id)">Jetzt entfernen</button></div>
               </div>
-              <p v-if="pet.note">{{ pet.note }}</p>
-              <p v-if="pet.feedingPlan" class="pet-medication-plan"><strong>Fütterung</strong>{{ pet.feedingPlan }}</p>
-              <p v-if="pet.medicationPlan" class="pet-medication-plan"><strong>Medikation</strong>{{ pet.medicationPlan }}</p>
-              <p v-if="pet.allergyNote" class="pet-medication-plan"><strong>Allergien & Unverträglichkeiten</strong>{{ pet.allergyNote }}</p>
-              <p v-if="pet.vaccinationStatus" class="pet-medication-plan"><strong>Impfstatus</strong>{{ pet.vaccinationStatus }}</p>
-              <template v-if="pet.veterinaryContact">
-                <div v-if="veterinaryContactRemovalId === pet.id" class="pet-removal-confirmation" role="alert">
-                  <p><strong>Tierarztkontakt von {{ pet.name }} entfernen?</strong> Praxis und Telefonnummer werden aus diesem Tierprofil gelöscht.</p>
-                  <div><button class="secondary-button" type="button" @click="veterinaryContactRemovalId = null">Behalten</button><button class="danger-button" type="button" @click="removeVeterinaryContact(pet.id)">Jetzt entfernen</button></div>
-                </div>
-                <div v-else class="veterinary-contact-row">
-                  <a class="pet-medication-plan veterinary-contact" :href="toTelephoneHref(pet.veterinaryContact.phone)"><Stethoscope :size="15" /><span><strong>Tierarztpraxis</strong>{{ pet.veterinaryContact.practiceName }} · {{ pet.veterinaryContact.phone }}</span></a>
-                  <button class="pet-remove-button" type="button" :aria-label="`Tierarztkontakt von ${pet.name} entfernen`" @click="veterinaryContactRemovalId = pet.id"><Trash2 :size="14" /> Entfernen</button>
-                </div>
-              </template>
+              <p v-if="pet.note" class="pet-note-display">{{ pet.note }}</p>
             </article>
           </div>
         </div>
