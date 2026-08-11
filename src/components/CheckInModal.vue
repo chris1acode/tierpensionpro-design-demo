@@ -23,7 +23,7 @@ defineEmits<{
       Ist {{ booking.pet.name }} angekommen? Mit der Bestätigung wird {{ booking.pet.name }} dem Zimmer
       <strong>{{ booking.room.name }}</strong> zugewiesen.
     </p>
-    <div v-if="booking.pet.note || booking.pet.feedingPlan || booking.pet.medicationPlan || booking.pet.allergyNote || booking.pet.vaccinationStatus || booking.bookingNote" class="pet-note" aria-label="Operative Hinweise">
+    <div v-if="booking.pet.note || booking.pet.feedingPlan || booking.pet.specialFood || booking.pet.medicationPlan || booking.pet.allergyNote || booking.pet.vaccinationStatus || booking.bookingNote" class="pet-note" aria-label="Operative Hinweise">
       <div v-if="booking.pet.note">
         <strong>Hinweis zum Tier</strong>
         <span>{{ booking.pet.note }}</span>
@@ -35,6 +35,10 @@ defineEmits<{
       <div v-if="booking.pet.feedingPlan">
         <strong>Fütterungsplan</strong>
         <span>{{ booking.pet.feedingPlan }}</span>
+      </div>
+      <div v-if="booking.pet.specialFood">
+        <strong>Besonderes Futter</strong>
+        <span>Tier benötigt von zu Hause mitgebrachtes Futter statt Standardfutter.</span>
       </div>
       <div v-if="booking.pet.medicationPlan">
         <strong>Medikationsplan</strong>

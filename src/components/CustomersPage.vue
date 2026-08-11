@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { ArrowLeft, Cat, Dog, Download, Mail, Pencil, Phone, Plus, Search, Stethoscope, Trash2 } from '@lucide/vue'
+import { ArrowLeft, Cat, Dog, Download, Mail, Pencil, Phone, Plus, Search, Stethoscope, Trash2, Utensils } from '@lucide/vue'
 import type { CustomerView } from '../domain'
 import { bookingStatusLabels } from '../presentation/bookingStatus'
 import { toTelephoneHref } from '../presentation/phoneLink'
@@ -140,13 +140,13 @@ function removeVeterinaryContact(petId: string) {
 function exportCustomers() {
   downloadCsv({
     fileName: 'kunden-und-tiere.csv',
-    columns: ['Kund:in', 'E-Mail', 'Telefon', 'Tier', 'Tierart', 'Rasse', 'Hinweis', 'Fütterungsplan', 'Medikationsplan', 'Allergien & Unverträglichkeiten', 'Impfstatus', 'Tierarztpraxis', 'Tierarzttelefon'],
+    columns: ['Kund:in', 'E-Mail', 'Telefon', 'Tier', 'Tierart', 'Rasse', 'Hinweis', 'Fütterungsplan', 'Besonderes Futter', 'Medikationsplan', 'Allergien & Unverträglichkeiten', 'Impfstatus', 'Tierarztpraxis', 'Tierarzttelefon'],
     rows: filteredCustomers.value.flatMap((customer) => customer.pets.length
       ? customer.pets.map((pet) => [
         `${customer.firstName} ${customer.lastName}`, customer.email, customer.phone, pet.name,
-        pet.species === 'dog' ? 'Hund' : 'Katze', pet.breed, pet.note, pet.feedingPlan, pet.medicationPlan, pet.allergyNote, pet.vaccinationStatus, pet.veterinaryContact?.practiceName, pet.veterinaryContact?.phone
+        pet.species === 'dog' ? 'Hund' : 'Katze', pet.breed, pet.note, pet.feedingPlan, pet.specialFood ? 'Ja' : 'Nein', pet.medicationPlan, pet.allergyNote, pet.vaccinationStatus, pet.veterinaryContact?.practiceName, pet.veterinaryContact?.phone
       ])
-      : [[`${customer.firstName} ${customer.lastName}`, customer.email, customer.phone, '', '', '', '', '', '', '', '', '']])
+      : [[`${customer.firstName} ${customer.lastName}`, customer.email, customer.phone, '', '', '', '', '', '', '', '', '', '', '']])
   })
 }
 
@@ -211,6 +211,7 @@ function exportCustomers() {
                 <strong>{{ pet.name }}</strong>
                 <span class="pet-breed">{{ pet.breed }}</span>
                 <span class="pet-species-badge"><Dog v-if="pet.species === 'dog'" :size="12" /><Cat v-else :size="12" /> {{ pet.species === 'dog' ? 'Hund' : 'Katze' }}</span>
+                <span v-if="pet.specialFood" class="pet-special-food-badge"><Utensils :size="12" /> Besonderes Futter</span>
               </div>
               <div class="pet-card-actions">
                 <button class="pet-edit-button" type="button" :aria-label="`${pet.name} bearbeiten`" @click="openPetEdit(pet)"><Pencil :size="14" /> Bearbeiten</button>

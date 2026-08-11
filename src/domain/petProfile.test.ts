@@ -28,6 +28,15 @@ describe('createPetProfile', () => {
     expect(createPetProfile('p-1', { customerId: 'c-1', ...invalidInput })).toBeUndefined()
   })
 
+  it('carries the special food flag when set and omits it when falsy', () => {
+    expect(createPetProfile('p-1', {
+      customerId: 'c-1', name: 'Momo', species: 'dog', breed: 'Pudel', specialFood: true
+    })).toMatchObject({ specialFood: true })
+    expect(createPetProfile('p-1', {
+      customerId: 'c-1', name: 'Momo', species: 'dog', breed: 'Pudel', specialFood: false
+    })).not.toHaveProperty('specialFood')
+  })
+
   it('uses the first palette color for ids without a positive numeric suffix', () => {
     expect(createPetProfile('pet-new', {
       customerId: 'c-1', name: 'Momo', species: 'dog', breed: 'Pudel'

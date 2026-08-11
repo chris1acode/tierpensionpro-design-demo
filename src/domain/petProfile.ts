@@ -43,6 +43,7 @@ export function createPetProfile(id: Pet['id'], input: NewPet): Pet | undefined 
     ...(note ? { note } : {}),
     ...(medicationPlan ? { medicationPlan } : {}),
     ...(feedingPlan ? { feedingPlan } : {}),
+    ...(input.specialFood ? { specialFood: true } : {}),
     ...(allergyNote ? { allergyNote } : {}),
     ...(vaccinationStatus ? { vaccinationStatus } : {}),
     ...(veterinaryContact ? { veterinaryContact } : {})

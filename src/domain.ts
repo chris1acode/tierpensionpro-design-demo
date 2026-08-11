@@ -30,6 +30,8 @@ export interface Pet {
   medicationPlan?: string
   /** Optional feeding routine that accompanies the animal during a stay. */
   feedingPlan?: string
+  /** Flags that the animal requires food brought by its owner rather than house food. */
+  specialFood?: boolean
   /** Optional allergy and intolerance information needed during a stay. */
   allergyNote?: string
   /** Optional documented vaccination status for the operational handover. */
@@ -38,11 +40,11 @@ export interface Pet {
   veterinaryContact?: VeterinaryContact
 }
 
-export type NewPet = Pick<Pet, 'customerId' | 'name' | 'species' | 'breed' | 'note' | 'medicationPlan' | 'feedingPlan' | 'allergyNote' | 'vaccinationStatus' | 'veterinaryContact'>
+export type NewPet = Pick<Pet, 'customerId' | 'name' | 'species' | 'breed' | 'note' | 'medicationPlan' | 'feedingPlan' | 'specialFood' | 'allergyNote' | 'vaccinationStatus' | 'veterinaryContact'>
 
 /** Editable master data of an existing animal. Owner and species stay stable so
  * historical bookings keep their valid customer and room references. */
-export type PetUpdate = Pick<Pet, 'name' | 'breed' | 'note' | 'medicationPlan' | 'feedingPlan' | 'allergyNote' | 'vaccinationStatus' | 'veterinaryContact'>
+export type PetUpdate = Pick<Pet, 'name' | 'breed' | 'note' | 'medicationPlan' | 'feedingPlan' | 'specialFood' | 'allergyNote' | 'vaccinationStatus' | 'veterinaryContact'>
 
 export interface VeterinaryContact {
   practiceName: string

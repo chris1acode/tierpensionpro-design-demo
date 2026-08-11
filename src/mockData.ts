@@ -39,10 +39,10 @@ const coreCustomers: Customer[] = [
 ]
 
 const corePets: Pet[] = [
-  { id: 'p-1', customerId: 'c-1', name: 'Balu', species: 'dog', breed: 'Golden Retriever', initials: 'BA', color: '#DCE9E5', note: 'Bitte mit dem gewohnten Futter füttern.', feedingPlan: 'Morgens und abends je 180 g des mitgebrachten Trockenfutters; kein Rind.', medicationPlan: 'Schilddrüsenmedikament: 1 Tablette täglich um 18 Uhr mit dem Abendfutter.', allergyNote: 'Unverträglichkeit gegen Rind; keine Rinderleckerlis geben.', vaccinationStatus: 'Impfpass geprüft: Staupe, Hepatitis, Parvovirose und Tollwut gültig bis März 2027.', veterinaryContact: { practiceName: 'Tierarztpraxis am Park', phone: '030 554 82 19' } },
+  { id: 'p-1', customerId: 'c-1', name: 'Balu', species: 'dog', breed: 'Golden Retriever', initials: 'BA', color: '#DCE9E5', note: 'Bitte mit dem gewohnten Futter füttern.', feedingPlan: 'Morgens und abends je 180 g des mitgebrachten Trockenfutters; kein Rind.', specialFood: true, medicationPlan: 'Schilddrüsenmedikament: 1 Tablette täglich um 18 Uhr mit dem Abendfutter.', allergyNote: 'Unverträglichkeit gegen Rind; keine Rinderleckerlis geben.', vaccinationStatus: 'Impfpass geprüft: Staupe, Hepatitis, Parvovirose und Tollwut gültig bis März 2027.', veterinaryContact: { practiceName: 'Tierarztpraxis am Park', phone: '030 554 82 19' } },
   { id: 'p-2', customerId: 'c-2', name: 'Milo', species: 'cat', breed: 'Britisch Kurzhaar', initials: 'MI', color: '#F3E3D7' },
   { id: 'p-3', customerId: 'c-3', name: 'Luna', species: 'dog', breed: 'Labrador', initials: 'LU', color: '#E8E1F0' },
-  { id: 'p-4', customerId: 'c-4', name: 'Nala', species: 'cat', breed: 'Europäisch Kurzhaar', initials: 'NA', color: '#E5E9D8', note: 'Bitte nur das mitgebrachte Futter verwenden.' },
+  { id: 'p-4', customerId: 'c-4', name: 'Nala', species: 'cat', breed: 'Europäisch Kurzhaar', initials: 'NA', color: '#E5E9D8', note: 'Bitte nur das mitgebrachte Futter verwenden.', specialFood: true },
   { id: 'p-5', customerId: 'c-5', name: 'Rocky', species: 'dog', breed: 'Beagle', initials: 'RO', color: '#DCE7F0' },
   { id: 'p-6', customerId: 'c-6', name: 'Frieda', species: 'dog', breed: 'Havaneser', initials: 'FR', color: '#F1E1D5' },
   { id: 'p-7', customerId: 'c-7', name: 'Simba', species: 'cat', breed: 'Maine Coon', initials: 'SI', color: '#E2E8D8' },

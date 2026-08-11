@@ -14,7 +14,7 @@
 [ ] Schriftarten in OccupancyPage.vue prüfen und vergrößern
 [ ] Schriftarten in RequestsPage.vue prüfen und vergrößern
 [ ] Schriftarten in SettingsPage.vue prüfen und vergrößern
-[ ] Besonderes Futter als Checkbox bei Tieren ermöglichen
+[x] Besonderes Futter als Checkbox bei Tieren ermöglichen
 [x] Logo ist bei zusammengeklapptem Men gequetscht. Fixe das! (Zusätzlich richtiges logo.svg verwendet)
 [x] Logo wird nur als orange Fläche angezeigt. Fixe das! (Details wie Dachlinie, Tür und Fenster in SVG ergänzt)
 [x] Logo ist falsch. Die drehung muss weg. Das äußere element muss weg. Das Logo SVG soll selbst die primärfarbe haben.
@@ -38,4 +38,5 @@
 [ ] Buchungsliste soll nach Zeitstempel sortiert sein. Zuletzt angelegt oben.
 [ ] Gib seiten mit Zeitachsenansichten eine Mindesthöhe, damit sie bei der navigation nicht springen.
 [ ] Buchungen braucht in der Liste einen Datumsfilter (url parameter). Und von der der Belegung soll man zu den aktuellen Buchungen gelangen können über Datumsklick
-[ ] Der Dropdown bei Anfragen hat einen sehr dunklen Hintergrund.und die Schrift ist kaum lesbar. Mach hellen Hintergrund und passende Schrift. 
+[ ] Der Dropdown bei Anfragen hat einen sehr dunklen Hintergrund.und die Schrift ist kaum lesbar. Mach hellen Hintergrund und passende Schrift.
+[ ] Check-in/out, es muss die Möglichkeit geben das Zimmer zu wechseln.
