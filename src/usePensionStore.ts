@@ -168,6 +168,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       arrivalDate: input.arrivalDate,
       arrival: input.arrival,
       departure: input.departure,
+      createdAt: dependencies.now().toISOString(),
       ...(input.pickupTime ? { pickupTime: input.pickupTime } : {}),
       ...(normalizeBookingNote(input.bookingNote) ? { bookingNote: normalizeBookingNote(input.bookingNote) } : {}),
       status: 'confirmed',
@@ -200,14 +201,15 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       || (exceedsCapacity && !allowOverbooking)) return false
 
     const reservationId = nextEntityId(bookingReservations, 'reservation')
+    const createdAt = dependencies.now().toISOString()
     bookingReservations.push({
-      ...reservationInput, id: reservationId, petIds, createdAt: dependencies.now().toISOString(),
+      ...reservationInput, id: reservationId, petIds, createdAt,
       ...(normalizeBookingNote(bookingNote) ? { bookingNote: normalizeBookingNote(bookingNote) } : {})
     })
     for (const petId of petIds) {
       bookings.push({
         id: nextEntityId(bookings, 'b'), reservationId, petId, roomId: room.id,
-        arrivalDate: input.arrivalDate, arrival: input.arrival, departure: input.departure,
+        arrivalDate: input.arrivalDate, arrival: input.arrival, departure: input.departure, createdAt,
         ...(input.pickupTime ? { pickupTime: input.pickupTime } : {}),
         ...(normalizeBookingNote(bookingNote) ? { bookingNote: normalizeBookingNote(bookingNote) } : {}),
         status: 'confirmed', overbooked: Boolean(exceedsCapacity)
@@ -270,6 +272,33 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       }
     }
     showToast(`Die Buchung für ${pet.name} wurde aktualisiert.`)
+    return true
+  }
+
+  /** Moves an already checked-in stay into a different, currently available room. */
+  function changeCheckedInBookingRoom(bookingId: string, roomId: string): boolean {
+    const booking = bookings.find((item) => item.id === bookingId)
+    const pet = booking && pets.find((item) => item.id === booking.petId)
+    const previousRoom = booking && rooms.find((item) => item.id === booking.roomId)
+    const room = rooms.find((item) => item.id === roomId)
+    const roomIsReady = roomOperationalStates.some((state) => state.roomId === room?.id && state.status === 'ready')
+    const speciesMatchesRoom = pet && room && isRoomCompatibleWithSpecies(room, pet.species)
+    const otherBookings = bookings.filter((item) => item.id !== bookingId)
+    const hasCapacity = booking && room && hasRoomCapacityForStay(
+      otherBookings, room.id, room.capacity, businessDate.value, booking.departure
+    )
+    if (!booking || !pet || !previousRoom || booking.status !== 'checked-in' || !room || !roomIsReady
+      || !speciesMatchesRoom || room.id === previousRoom.id || !hasCapacity) return false
+
+    booking.roomId = room.id
+    const reservation = booking.reservationId ? bookingReservations.find((item) => item.id === booking.reservationId) : undefined
+    if (reservation && reservation.roomId !== room.id) {
+      reservation.petIds = reservation.petIds.filter((petId) => petId !== booking.petId)
+      delete booking.reservationId
+      if (!reservation.petIds.length) bookingReservations.splice(bookingReservations.indexOf(reservation), 1)
+    }
+
+    showToast(`${pet.name} wurde von ${previousRoom.name} in ${room.name} verlegt.`)
     return true
   }
 
@@ -356,6 +385,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       arrivalDate: request.arrivalDate,
       arrival: request.arrival,
       departure: request.departure,
+      createdAt: dependencies.now().toISOString(),
       status: 'confirmed'
     })
     request.status = 'accepted'
@@ -707,6 +737,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     createBooking,
     createBookingReservation,
     updateBooking,
+    changeCheckedInBookingRoom,
     canDeleteBooking,
     deleteBooking,
     createCustomer,

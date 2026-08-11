@@ -36,7 +36,7 @@ function exportRequests(scope: 'pending' | 'history') {
   const requests = scope === 'pending' ? store.pendingRequests.value : store.requestHistory.value
   downloadCsv({
     fileName: scope === 'pending' ? 'offene-anfragen.csv' : 'anfragen-verlauf.csv',
-    columns: ['Kund:in', 'Telefon', 'Tier', 'Tierart', 'Rasse', 'Anreise', 'Ankunftszeit', 'Abreise', 'Status', 'Hinweis', 'Ablehnungsgrund'],
+    columns: ['Kunde', 'Telefon', 'Tier', 'Tierart', 'Rasse', 'Anreise', 'Ankunftszeit', 'Abreise', 'Status', 'Hinweis', 'Ablehnungsgrund'],
     rows: requests.map((request) => [
       `${request.customerFirstName} ${request.customerLastName}`, request.phone, request.petName,
       request.species === 'dog' ? 'Hund' : 'Katze', request.breed, request.arrivalDate, request.arrival,

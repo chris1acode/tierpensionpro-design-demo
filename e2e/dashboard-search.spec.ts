@@ -33,10 +33,10 @@ test('keeps the booking customer suggestions above the booking panel instead of 
   await page.goto('/buchungen')
   await page.getByRole('button', { name: 'Neue Buchung' }).click()
 
-  const customerSearch = page.getByRole('combobox', { name: 'Kund:in' })
+  const customerSearch = page.getByRole('combobox', { name: 'Kunde' })
   await customerSearch.fill('Lea')
 
-  const suggestions = page.getByRole('listbox', { name: 'Kund:in-Vorschläge' })
+  const suggestions = page.getByRole('listbox', { name: 'Kunde-Vorschläge' })
   await expect(suggestions).toBeVisible()
   await expect(suggestions.getByRole('option', { name: /Lea Albrecht/ })).toBeVisible()
   await expect(page.locator('.booking-form-modal')).toHaveCSS('overflow-y', 'visible')
@@ -46,8 +46,8 @@ test('waits for two characters before showing customer suggestions in a new book
   await page.goto('/buchungen')
   await page.getByRole('button', { name: 'Neue Buchung' }).click()
 
-  const customerSearch = page.getByRole('combobox', { name: 'Kund:in' })
-  const suggestions = page.getByRole('listbox', { name: 'Kund:in-Vorschläge' })
+  const customerSearch = page.getByRole('combobox', { name: 'Kunde' })
+  const suggestions = page.getByRole('listbox', { name: 'Kunde-Vorschläge' })
   await customerSearch.focus()
   await expect(suggestions).toContainText('2 Zeichen eingeben, um Kunden zu suchen.')
   await expect(suggestions.getByRole('option')).toHaveCount(0)
@@ -299,7 +299,7 @@ test('creates a reservation from the occupancy view after checking its period ca
   await expect(dialog.getByRole('heading', { name: 'Reservierung anlegen' })).toBeVisible()
   await expect(dialog).toContainText('Wähle mindestens ein Tier und den Zeitraum, um freie Zimmer zu prüfen.')
 
-  await dialog.getByRole('combobox', { name: 'Kund:in' }).fill('Lea')
+  await dialog.getByRole('combobox', { name: 'Kunde' }).fill('Lea')
   await dialog.getByRole('option', { name: /Lea Albrecht/ }).click()
   await dialog.getByText('Frieda · Havaneser', { exact: true }).click()
   await dialog.getByText('Willi · Havaneser', { exact: true }).click()
@@ -569,8 +569,8 @@ test('starts a booking from a customer profile with that customer preselected', 
   await expect(page).toHaveURL(/\/buchungen\?customerId=c-1$/)
   const form = page.getByRole('dialog')
   await expect(form).toBeVisible()
-  await expect(form.getByRole('combobox', { name: 'Kund:in' })).toHaveValue('Sofia Berger')
-  await expect(form.getByRole('group', { name: 'Tiere' })).not.toContainText('Zuerst Kund:in wählen')
+  await expect(form.getByRole('combobox', { name: 'Kunde' })).toHaveValue('Sofia Berger')
+  await expect(form.getByRole('group', { name: 'Tiere' })).not.toContainText('Zuerst Kunde wählen')
 })
 
 test('completes a check-in from the check-in/out page', async ({ page }) => {
@@ -710,11 +710,11 @@ test('creates a booking through its customer and pet relationship', async ({ pag
   await page.getByRole('button', { name: 'Neue Buchung' }).click()
 
   const form = page.getByRole('dialog')
-  await expect(form.getByRole('group', { name: 'Tiere' })).toContainText('Zuerst Kund:in wählen')
+  await expect(form.getByRole('group', { name: 'Tiere' })).toContainText('Zuerst Kunde wählen')
 
-  await form.getByRole('combobox', { name: 'Kund:in' }).fill('Lea')
+  await form.getByRole('combobox', { name: 'Kunde' }).fill('Lea')
   await expect(form.getByRole('option', { name: /Lea Albrecht/ })).toBeVisible()
-  await form.getByRole('combobox', { name: 'Kund:in' }).press('Enter')
+  await form.getByRole('combobox', { name: 'Kunde' }).press('Enter')
   const friedasChoice = form.getByRole('checkbox', { name: 'Frieda · Havaneser' })
   await expect(friedasChoice).toBeEnabled()
   await expect(form.getByRole('checkbox', { name: 'Willi · Havaneser' })).toBeVisible()
@@ -735,7 +735,7 @@ test('marks rooms without free capacity as an explicit overbooking for the selec
   await page.getByRole('button', { name: 'Neue Buchung' }).click()
 
   const form = page.getByRole('dialog')
-  await form.getByRole('combobox', { name: 'Kund:in' }).fill('Tobias')
+  await form.getByRole('combobox', { name: 'Kunde' }).fill('Tobias')
   await form.getByRole('option', { name: /Tobias Bauer/ }).click()
   await form.getByRole('checkbox', { name: 'Simba · Maine Coon' }).check()
   await form.getByLabel('Anreisedatum').fill('2026-08-10')

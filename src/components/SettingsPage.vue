@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
 import { Banknote, Building2, Cat, Clock3, Dog, Inbox, Pencil, Plus, Save, Trash2 } from '@lucide/vue'
 import type { PensionSettingsUpdate, PetSpecies, Room } from '../domain'
 import { useSynchronizedDraft } from '../composables/useSynchronizedDraft'
@@ -8,14 +9,21 @@ import { usePensionStore } from '../usePensionStore'
 import RoomFormModal from './RoomFormModal.vue'
 
 const store = usePensionStore()
+const route = useRoute()
 const error = ref('')
 const roomError = ref('')
 const roomModalMode = ref<'create' | 'edit' | null>(null)
 const roomBeingEdited = ref<Room | null>(null)
 
+const activeTab = computed<'general' | 'rates' | 'rooms'>(() => {
+  if (route.name === 'settings-rates') return 'rates'
+  if (route.name === 'settings-rooms') return 'rooms'
+  return 'general'
+})
+
 function settingsDraft(): PensionSettingsUpdate {
   const { id: _id, ...values } = store.settings
-  return { ...values }
+  return { ...values, dailyPetRates: values.dailyPetRates.map((rate) => ({ ...rate })) }
 }
 
 const { draft, resetDraft } = useSynchronizedDraft(
@@ -85,20 +93,44 @@ function updateRate(species: PetSpecies, value: string) {
 <template>
   <main class="settings-page">
     <div class="page-heading">
-      <div><p class="eyebrow">Betrieb konfigurieren</p><h1>Einstellungen</h1><p>Kontaktdaten und verbindliche Übergabezeiten zentral verwalten.</p></div>
+      <div><p class="eyebrow">Betrieb konfigurieren</p><h1>Einstellungen</h1><p>Kontaktdaten, Tarife und Zimmer zentral verwalten.</p></div>
     </div>
 
-    <form class="settings-layout" @submit.prevent="save">
-      <section class="panel settings-panel">
-        <header><span class="settings-icon"><Building2 :size="20" /></span><div><h2>Pensionsprofil</h2><p>Diese Angaben dienen als betriebliche Stammdaten.</p></div></header>
-        <div class="settings-fields">
-          <label class="wide">Name der Pension<input v-model.trim="draft.businessName" required /></label>
-          <label>E-Mail<input v-model.trim="draft.contactEmail" type="email" required /></label>
-          <label>Telefon<input v-model.trim="draft.contactPhone" type="tel" required /></label>
-        </div>
-      </section>
+    <nav class="settings-tabs" aria-label="Einstellungsbereiche">
+      <RouterLink to="/einstellungen/allgemein">Allgemein</RouterLink>
+      <RouterLink to="/einstellungen/tarife">Tarife</RouterLink>
+      <RouterLink to="/einstellungen/unterbringung">Unterbringung</RouterLink>
+    </nav>
 
-      <section class="panel settings-panel">
+    <form v-if="activeTab !== 'rooms'" class="settings-layout" @submit.prevent="save">
+      <template v-if="activeTab === 'general'">
+        <section class="panel settings-panel">
+          <header><span class="settings-icon"><Building2 :size="20" /></span><div><h2>Pensionsprofil</h2><p>Diese Angaben dienen als betriebliche Stammdaten.</p></div></header>
+          <div class="settings-fields">
+            <label class="wide">Name der Pension<input v-model.trim="draft.businessName" required /></label>
+            <label>E-Mail<input v-model.trim="draft.contactEmail" type="email" required /></label>
+            <label>Telefon<input v-model.trim="draft.contactPhone" type="tel" required /></label>
+          </div>
+        </section>
+
+        <section class="panel settings-panel">
+          <header><span class="settings-icon teal"><Clock3 :size="20" /></span><div><h2>An- und Abreisezeiten</h2><p>Das Zeitfenster gilt für die tägliche Übergabeplanung.</p></div></header>
+          <div class="settings-fields time-fields">
+            <label>Check-in ab<input v-model="draft.checkInFrom" type="time" required /></label>
+            <label>Check-in bis<input v-model="draft.checkInUntil" type="time" required /></label>
+            <label>Check-out bis<input v-model="draft.checkOutUntil" type="time" required /></label>
+          </div>
+        </section>
+
+        <section class="panel settings-panel">
+          <header><span class="settings-icon teal"><Inbox :size="20" /></span><div><h2>Anfragen</h2><p>Externe Buchungsanfragen empfangen und im Menü anzeigen.</p></div></header>
+          <div class="settings-fields">
+            <label class="wide checkbox-field"><input v-model="draft.requestsEnabled" type="checkbox" /> Anfragen aktivieren</label>
+          </div>
+        </section>
+      </template>
+
+      <section v-else class="panel settings-panel">
         <header><span class="settings-icon amber"><Banknote :size="20" /></span><div><h2>Preisliste</h2><p>Grundpreis je Tier und angefangenen Betreuungstag. Alle Beträge inklusive Mehrwertsteuer.</p></div></header>
         <div class="settings-fields price-fields">
           <label>Hund pro Tag
@@ -110,27 +142,11 @@ function updateRate(species: PetSpecies, value: string) {
         </div>
       </section>
 
-      <section class="panel settings-panel">
-        <header><span class="settings-icon teal"><Clock3 :size="20" /></span><div><h2>An- und Abreisezeiten</h2><p>Das Zeitfenster gilt für die tägliche Übergabeplanung.</p></div></header>
-        <div class="settings-fields time-fields">
-          <label>Check-in ab<input v-model="draft.checkInFrom" type="time" required /></label>
-          <label>Check-in bis<input v-model="draft.checkInUntil" type="time" required /></label>
-          <label>Check-out bis<input v-model="draft.checkOutUntil" type="time" required /></label>
-        </div>
-      </section>
-
-      <section class="panel settings-panel">
-        <header><span class="settings-icon teal"><Inbox :size="20" /></span><div><h2>Anfragen</h2><p>Externe Buchungsanfragen empfangen und im Menü anzeigen.</p></div></header>
-        <div class="settings-fields">
-          <label class="wide checkbox-field"><input v-model="draft.requestsEnabled" type="checkbox" /> Anfragen aktivieren</label>
-        </div>
-      </section>
-
       <p v-if="error" class="form-error" role="alert">{{ error }}</p>
       <div class="settings-actions"><button class="secondary-button" :disabled="!hasUnsavedSettings" type="button" @click="discard">Änderungen verwerfen</button><button class="primary-button" :disabled="!hasUnsavedSettings" type="submit"><Save :size="16" /> Einstellungen speichern</button></div>
     </form>
 
-    <section class="panel settings-panel room-settings-panel">
+    <section v-else class="panel settings-panel room-settings-panel">
       <header>
         <span class="settings-icon teal"><Building2 :size="20" /></span>
         <div><h2>Zimmer</h2><p>Zimmernamen, Tierart und Platzanzahl für Belegung und Buchungen verwalten.</p></div>

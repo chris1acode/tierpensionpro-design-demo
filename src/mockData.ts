@@ -1,4 +1,10 @@
 import type { Account, Booking, BookingRequest, BookingReservation, CheckInOutEvent, Customer, DemoEnvironment, PensionClosure, PensionSettings, Pet, Room, RoomOperationalState } from './domain'
+import { addDaysToIsoDate } from './domain/bookingPeriod'
+
+/** Demo bookings are "created" a plausible lead time before arrival, so the list sorts sensibly by creation time. */
+function bookingCreatedAt(arrivalDate: string, leadDays: number): string {
+  return `${addDaysToIsoDate(arrivalDate, -leadDays)}T09:00:00.000Z`
+}
 
 export const initialAccount: Account = {
   id: 'acc-1',
@@ -145,31 +151,31 @@ export const initialDemoEnvironment: DemoEnvironment = {
 }
 
 const coreBookings: Booking[] = [
-  { id: 'b-1', petId: 'p-1', roomId: 'r-1', arrivalDate: '2026-08-09', arrival: '08:30', departure: '2026-08-12', bookingNote: 'Futterportion liegt beschriftet im Kühlschrank.', status: 'confirmed' },
-  { id: 'b-2', petId: 'p-2', roomId: 'r-3', arrivalDate: '2026-08-09', arrival: '09:15', departure: '2026-08-11', status: 'confirmed' },
-  { id: 'b-3', petId: 'p-3', roomId: 'r-2', arrivalDate: '2026-08-08', arrival: '07:45', departure: '2026-08-10', pickupTime: '10:30', status: 'checked-in' },
-  { id: 'b-4', petId: 'p-4', roomId: 'r-4', arrivalDate: '2026-08-10', arrival: '10:30', departure: '2026-08-14', status: 'confirmed' },
-  { id: 'b-5', petId: 'p-5', roomId: 'r-1', arrivalDate: '2026-08-07', arrival: '11:00', departure: '2026-08-09', pickupTime: '14:00', status: 'checked-in' },
-  { id: 'b-6', petId: 'p-6', roomId: 'r-2', arrivalDate: '2026-07-14', arrival: '09:00', departure: '2026-07-18', status: 'checked-out' },
-  { id: 'b-7', petId: 'p-7', roomId: 'r-3', arrivalDate: '2026-07-19', arrival: '10:15', departure: '2026-07-22', status: 'checked-out' },
-  { id: 'b-8', petId: 'p-8', roomId: 'r-1', arrivalDate: '2026-06-10', arrival: '08:45', departure: '2026-06-14', status: 'checked-out' },
-  { id: 'b-9', petId: 'p-9', roomId: 'r-4', arrivalDate: '2026-06-25', arrival: '11:30', departure: '2026-06-29', status: 'checked-out' },
-  { id: 'b-10', petId: 'p-10', roomId: 'r-2', arrivalDate: '2026-05-07', arrival: '07:30', departure: '2026-05-11', status: 'checked-out' },
-  { id: 'b-11', petId: 'p-11', roomId: 'r-1', arrivalDate: '2026-04-23', arrival: '09:45', departure: '2026-04-26', status: 'checked-out' },
-  { id: 'b-12', petId: 'p-12', roomId: 'r-3', arrivalDate: '2026-04-04', arrival: '10:00', departure: '2026-04-08', status: 'checked-out' }
+  { id: 'b-1', petId: 'p-1', roomId: 'r-1', arrivalDate: '2026-08-09', arrival: '08:30', departure: '2026-08-12', createdAt: bookingCreatedAt('2026-08-09', 4), bookingNote: 'Futterportion liegt beschriftet im Kühlschrank.', status: 'confirmed' },
+  { id: 'b-2', petId: 'p-2', roomId: 'r-3', arrivalDate: '2026-08-09', arrival: '09:15', departure: '2026-08-11', createdAt: bookingCreatedAt('2026-08-09', 6), status: 'confirmed' },
+  { id: 'b-3', petId: 'p-3', roomId: 'r-2', arrivalDate: '2026-08-08', arrival: '07:45', departure: '2026-08-10', createdAt: bookingCreatedAt('2026-08-08', 5), pickupTime: '10:30', status: 'checked-in' },
+  { id: 'b-4', petId: 'p-4', roomId: 'r-4', arrivalDate: '2026-08-10', arrival: '10:30', departure: '2026-08-14', createdAt: bookingCreatedAt('2026-08-10', 3), status: 'confirmed' },
+  { id: 'b-5', petId: 'p-5', roomId: 'r-1', arrivalDate: '2026-08-07', arrival: '11:00', departure: '2026-08-09', createdAt: bookingCreatedAt('2026-08-07', 7), pickupTime: '14:00', status: 'checked-in' },
+  { id: 'b-6', petId: 'p-6', roomId: 'r-2', arrivalDate: '2026-07-14', arrival: '09:00', departure: '2026-07-18', createdAt: bookingCreatedAt('2026-07-14', 9), status: 'checked-out' },
+  { id: 'b-7', petId: 'p-7', roomId: 'r-3', arrivalDate: '2026-07-19', arrival: '10:15', departure: '2026-07-22', createdAt: bookingCreatedAt('2026-07-19', 8), status: 'checked-out' },
+  { id: 'b-8', petId: 'p-8', roomId: 'r-1', arrivalDate: '2026-06-10', arrival: '08:45', departure: '2026-06-14', createdAt: bookingCreatedAt('2026-06-10', 12), status: 'checked-out' },
+  { id: 'b-9', petId: 'p-9', roomId: 'r-4', arrivalDate: '2026-06-25', arrival: '11:30', departure: '2026-06-29', createdAt: bookingCreatedAt('2026-06-25', 10), status: 'checked-out' },
+  { id: 'b-10', petId: 'p-10', roomId: 'r-2', arrivalDate: '2026-05-07', arrival: '07:30', departure: '2026-05-11', createdAt: bookingCreatedAt('2026-05-07', 14), status: 'checked-out' },
+  { id: 'b-11', petId: 'p-11', roomId: 'r-1', arrivalDate: '2026-04-23', arrival: '09:45', departure: '2026-04-26', createdAt: bookingCreatedAt('2026-04-23', 11), status: 'checked-out' },
+  { id: 'b-12', petId: 'p-12', roomId: 'r-3', arrivalDate: '2026-04-04', arrival: '10:00', departure: '2026-04-08', createdAt: bookingCreatedAt('2026-04-04', 13), status: 'checked-out' }
 ]
 
 // Ten stays touch the business date: five arrivals and five departures. Three
 // departures are already completed, so the initial room occupancy remains a
 // manageable starting point for the live check-in/out workflow.
 const businessDateBookings: Booking[] = [
-  { id: 'b-13', petId: 'p-14', roomId: 'r-3', arrivalDate: '2026-08-09', arrival: '08:45', departure: '2026-08-13', status: 'confirmed' },
-  { id: 'b-14', petId: 'p-15', roomId: 'r-1', arrivalDate: '2026-08-09', arrival: '09:45', departure: '2026-08-12', status: 'confirmed' },
-  { id: 'b-15', petId: 'p-16', roomId: 'r-2', arrivalDate: '2026-08-09', arrival: '11:15', departure: '2026-08-11', status: 'confirmed' },
-  { id: 'b-16', petId: 'p-17', roomId: 'r-4', arrivalDate: '2026-08-05', arrival: '09:30', departure: '2026-08-09', status: 'checked-out' },
-  { id: 'b-17', petId: 'p-18', roomId: 'r-2', arrivalDate: '2026-08-06', arrival: '10:15', departure: '2026-08-09', status: 'checked-out' },
-  { id: 'b-18', petId: 'p-19', roomId: 'r-1', arrivalDate: '2026-08-07', arrival: '08:00', departure: '2026-08-09', status: 'checked-out' },
-  { id: 'b-19', petId: 'p-20', roomId: 'r-4', arrivalDate: '2026-08-08', arrival: '11:00', departure: '2026-08-09', status: 'checked-out' }
+  { id: 'b-13', petId: 'p-14', roomId: 'r-3', arrivalDate: '2026-08-09', arrival: '08:45', departure: '2026-08-13', createdAt: bookingCreatedAt('2026-08-09', 2), status: 'confirmed' },
+  { id: 'b-14', petId: 'p-15', roomId: 'r-1', arrivalDate: '2026-08-09', arrival: '09:45', departure: '2026-08-12', createdAt: bookingCreatedAt('2026-08-09', 1), status: 'confirmed' },
+  { id: 'b-15', petId: 'p-16', roomId: 'r-2', arrivalDate: '2026-08-09', arrival: '11:15', departure: '2026-08-11', createdAt: bookingCreatedAt('2026-08-09', 5), status: 'confirmed' },
+  { id: 'b-16', petId: 'p-17', roomId: 'r-4', arrivalDate: '2026-08-05', arrival: '09:30', departure: '2026-08-09', createdAt: bookingCreatedAt('2026-08-05', 6), status: 'checked-out' },
+  { id: 'b-17', petId: 'p-18', roomId: 'r-2', arrivalDate: '2026-08-06', arrival: '10:15', departure: '2026-08-09', createdAt: bookingCreatedAt('2026-08-06', 4), status: 'checked-out' },
+  { id: 'b-18', petId: 'p-19', roomId: 'r-1', arrivalDate: '2026-08-07', arrival: '08:00', departure: '2026-08-09', createdAt: bookingCreatedAt('2026-08-07', 3), status: 'checked-out' },
+  { id: 'b-19', petId: 'p-20', roomId: 'r-4', arrivalDate: '2026-08-08', arrival: '11:00', departure: '2026-08-09', createdAt: bookingCreatedAt('2026-08-08', 2), status: 'checked-out' }
 ]
 
 const historicalBookings: Booking[] = additionalPets.slice(7, -14).map((pet, index) => {
@@ -182,6 +188,7 @@ const historicalBookings: Booking[] = additionalPets.slice(7, -14).map((pet, ind
     arrivalDate: `2026-${month}-${arrivalDay}`,
     arrival: `${String(8 + (index % 4)).padStart(2, '0')}:00`,
     departure: `2026-${month}-${String(Math.min((index % 27) + 4, 28)).padStart(2, '0')}`,
+    createdAt: bookingCreatedAt(`2026-${month}-${arrivalDay}`, 3 + (index % 10)),
     status: 'checked-out'
   }
 })
@@ -212,6 +219,7 @@ const occupancyScenarioBookings: Booking[] = [
   arrivalDate: booking.arrivalDate,
   arrival: '10:00',
   departure: booking.departure,
+  createdAt: bookingCreatedAt(booking.arrivalDate, 2 + (index % 5)),
   status: 'confirmed' as const,
   ...(booking.overbooked ? { overbooked: true } : {})
 }))

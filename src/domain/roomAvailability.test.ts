@@ -3,9 +3,9 @@ import type { Booking, BookingView, Pet, RoomView } from '../domain'
 import { getRequestAvailability, getRequestRoomOptions, hasRoomCapacityForStay, selectAvailableRoomsForBooking, selectRoomBookingAvailability } from './roomAvailability'
 
 const bookings: Booking[] = [
-  { id: 'b-1', petId: 'p-1', roomId: 'r-1', arrivalDate: '2026-08-10', arrival: '09:00', departure: '2026-08-13', status: 'confirmed' },
-  { id: 'b-2', petId: 'p-2', roomId: 'r-1', arrivalDate: '2026-08-11', arrival: '10:00', departure: '2026-08-12', status: 'checked-out' },
-  { id: 'b-3', petId: 'p-3', roomId: 'r-2', arrivalDate: '2026-08-10', arrival: '09:00', departure: '2026-08-13', status: 'confirmed' }
+  { id: 'b-1', petId: 'p-1', roomId: 'r-1', arrivalDate: '2026-08-10', arrival: '09:00', departure: '2026-08-13', createdAt: '2026-08-01T09:00:00.000Z', status: 'confirmed' },
+  { id: 'b-2', petId: 'p-2', roomId: 'r-1', arrivalDate: '2026-08-11', arrival: '10:00', departure: '2026-08-12', createdAt: '2026-08-01T09:00:00.000Z', status: 'checked-out' },
+  { id: 'b-3', petId: 'p-3', roomId: 'r-2', arrivalDate: '2026-08-10', arrival: '09:00', departure: '2026-08-13', createdAt: '2026-08-01T09:00:00.000Z', status: 'confirmed' }
 ]
 
 describe('room availability', () => {

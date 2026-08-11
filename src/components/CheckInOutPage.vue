@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUpFromLine, Check, ChevronLeft, ChevronRight, ClipboardCheck, Download, ExternalLink, History, RotateCcw, Search } from '@lucide/vue'
+import { ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUpFromLine, Check, ChevronLeft, ChevronRight, ClipboardCheck, DoorOpen, Download, ExternalLink, History, RotateCcw, Search } from '@lucide/vue'
 import type { BookingView, DepartureView } from '../domain'
 import { addDaysToIsoDate, isValidIsoDate } from '../domain/bookingPeriod'
 import { usePagination } from '../composables/usePagination'
@@ -11,6 +11,7 @@ import { matchesSearchTerm, resolveSearchTerm } from '../shared/search'
 import { downloadCsv } from '../shared/csvExport'
 import { selectArrivals, selectCheckedIn, selectDepartures } from '../store/pensionSelectors'
 import { usePensionStore } from '../usePensionStore'
+import RoomChangeModal from './RoomChangeModal.vue'
 
 const emit = defineEmits<{ checkIn: [booking: BookingView]; checkOut: [departure: DepartureView] }>()
 const store = usePensionStore()
@@ -20,6 +21,7 @@ const activeView = ref<OperationsView>('checked-in')
 const localQuery = ref('')
 const selectedDate = ref(store.businessDate.value)
 const historyPageSize = 5
+const bookingToMove = ref<BookingView | null>(null)
 
 const searchTerm = computed(() => resolveSearchTerm(localQuery.value))
 const matchesSearch = (booking: BookingView) => matchesSearchTerm(searchTerm.value, [
@@ -66,7 +68,7 @@ function setSelectedDate(event: Event): void {
 function exportOperations() {
   downloadCsv({
     fileName: activeView.value === 'arrivals' ? 'anreisen.csv' : activeView.value === 'departures' ? 'abreisen.csv' : 'eingecheckte-tiere.csv',
-    columns: ['Kund:in', 'Tier', 'Rasse', 'Zimmer', activeView.value === 'arrivals' ? 'Ankunftszeit' : activeView.value === 'departures' ? 'Abholung' : 'Geplante Abreise'],
+    columns: ['Kunde', 'Tier', 'Rasse', 'Zimmer', activeView.value === 'arrivals' ? 'Ankunftszeit' : activeView.value === 'departures' ? 'Abholung' : 'Geplante Abreise'],
     rows: visibleBookings.value.map((booking) => [
       `${booking.customer.firstName} ${booking.customer.lastName}`, booking.pet.name, booking.pet.breed,
       booking.room.name, activeView.value === 'arrivals' ? booking.arrival : activeView.value === 'departures' ? (booking.pickupTime || 'Nicht vereinbart') : booking.departure
@@ -77,7 +79,7 @@ function exportOperations() {
 function exportHistory() {
   downloadCsv({
     fileName: 'check-in-out-verlauf.csv',
-    columns: ['Zeitpunkt', 'Vorgang', 'Kund:in', 'Tier', 'Zimmer'],
+    columns: ['Zeitpunkt', 'Vorgang', 'Kunde', 'Tier', 'Zimmer'],
     rows: store.checkInOutHistory.value.map((event) => [
       formatEventTime(event.occurredAt), checkInOutEventLabels[event.type],
       `${event.booking.customer.firstName} ${event.booking.customer.lastName}`,
@@ -90,7 +92,7 @@ function exportHistory() {
 <template>
   <main class="operations-page">
     <div class="page-heading">
-      <div><p class="eyebrow">Tagesgeschäft</p><h1>Check-in/out</h1><p>Alle anstehenden Anreisen und Abreisen zentral bearbeiten.</p></div>
+      <div><p class="eyebrow">Tagesgeschäft</p><h1>Check-in/out</h1><p>Eingecheckte Tiere sowie anstehende Anreisen und Abreisen zentral bearbeiten.</p></div>
       <span class="page-count"><ClipboardCheck :size="17" /> {{ openTaskCount }} offen</span>
     </div>
     <div class="operations-date-nav" :class="{ disabled: activeView === 'checked-in' }" role="group" aria-label="Vorgangsdatum">
@@ -117,11 +119,15 @@ function exportHistory() {
             <RouterLink class="text-button" :to="{ name: 'bookings', query: { bookingId: booking.id, edit: 'true' } }">Buchung bearbeiten <ExternalLink :size="14" /></RouterLink>
             <button class="link-button" @click="emit('checkIn', booking)"><ArrowDownToLine :size="16" /> Einchecken</button>
           </div>
-          <button v-else class="link-button" @click="emit('checkOut', booking as DepartureView)"><ArrowUpFromLine :size="16" /> Auschecken</button>
+          <div v-else class="operation-actions">
+            <button class="text-button" type="button" @click="bookingToMove = booking"><DoorOpen :size="14" /> Zimmer wechseln</button>
+            <button class="link-button" @click="emit('checkOut', booking as DepartureView)"><ArrowUpFromLine :size="16" /> Auschecken</button>
+          </div>
         </article>
       </div>
       <div v-else class="empty-state"><span><Search v-if="searchTerm" /><Check v-else /></span><strong>{{ searchTerm ? 'Keine passenden Vorgänge.' : activeView === 'checked-in' ? 'Keine Tiere eingecheckt.' : 'Alles erledigt.' }}</strong><p>{{ searchTerm ? 'Versuche einen anderen Suchbegriff.' : activeView === 'checked-in' ? 'Aktuell befindet sich kein Tier in der Pension.' : 'In diesem Bereich sind keine Vorgänge mehr offen.' }}</p></div>
     </section>
+    <RoomChangeModal v-if="bookingToMove" :booking="bookingToMove" @close="bookingToMove = null" />
     <section class="panel operations-history">
       <header><div><h2>Letzte Vorgänge</h2><p>Zuletzt ein- und ausgecheckte Tiere · {{ store.checkInOutHistory.value.length }} insgesamt</p></div><div class="list-header-actions"><button class="text-button" type="button" aria-label="Check-in-out-Verlauf als CSV exportieren" @click="exportHistory"><Download :size="15" /> Exportieren</button><History :size="20" /></div></header>
       <div class="history-rows">

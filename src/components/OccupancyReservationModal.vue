@@ -55,10 +55,10 @@ function submit(): void {
     <h2 id="occupancy-reservation-heading">Reservierung anlegen</h2>
     <p>Die Verfügbarkeit wird für jede Nacht des Aufenthalts geprüft.</p>
     <form class="occupancy-reservation-form" @submit.prevent="submit">
-      <label>Kund:in
-        <CustomerAutocomplete v-model="draft.customerId" input-id="occupancy-reservation-customer" label="Kund:in" :customers="availableCustomers" @selected="selectCustomer" @cleared="selectCustomer" />
+      <label>Kunde
+        <CustomerAutocomplete v-model="draft.customerId" input-id="occupancy-reservation-customer" label="Kunde" :customers="availableCustomers" @selected="selectCustomer" @cleared="selectCustomer" />
       </label>
-      <fieldset class="pet-selection" :disabled="!draft.customerId"><legend>Tiere</legend><p>{{ draft.customerId ? 'Ein oder mehrere Tiere gemeinsam reservieren.' : 'Zuerst Kund:in wählen' }}</p><label v-for="pet in customerPets" :key="pet.id" class="pet-choice"><input v-model="draft.petIds" type="checkbox" :value="pet.id" /><span>{{ pet.name }} · {{ pet.breed }}</span></label></fieldset>
+      <fieldset class="pet-selection" :disabled="!draft.customerId"><legend>Tiere</legend><p>{{ draft.customerId ? 'Ein oder mehrere Tiere gemeinsam reservieren.' : 'Zuerst Kunde wählen' }}</p><label v-for="pet in customerPets" :key="pet.id" class="pet-choice"><input v-model="draft.petIds" type="checkbox" :value="pet.id" /><span>{{ pet.name }} · {{ pet.breed }}</span></label></fieldset>
       <div class="occupancy-reservation-period">
         <label>Anreise<input v-model="draft.arrivalDate" aria-label="Anreise" type="date" required /></label>
         <label>Uhrzeit<input v-model="draft.arrival" aria-label="Uhrzeit" type="time" required /></label>

@@ -157,6 +157,7 @@ export interface Booking {
   arrivalDate: string
   arrival: string
   departure: string
+  createdAt: string
   /** Optional agreed collection time on the departure date (HH:mm). */
   pickupTime?: string
   /** Short operational note for this individual animal stay. */

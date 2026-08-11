@@ -496,6 +496,36 @@ describe('PensionStore', () => {
     expect(store.checkedIn.value.filter((booking) => booking.roomId === 'r-1')).toHaveLength(1)
   })
 
+  it('moves a checked-in stay into a different available, species-compatible room', () => {
+    const store = createPensionStore({ now: () => new Date(2026, 7, 9, 12, 0) })
+    expect(store.createRoom({ name: 'Waldzimmer 3', category: 'Hundezimmer', capacity: 1 })).toBe(true)
+    const newRoom = store.rooms.find((room) => room.name === 'Waldzimmer 3')!
+
+    expect(store.changeCheckedInBookingRoom('b-3', newRoom.id)).toBe(true)
+
+    const moved = store.bookingViews.value.find((booking) => booking.id === 'b-3')
+    expect(moved?.roomId).toBe(newRoom.id)
+    expect(moved?.status).toBe('checked-in')
+    expect(store.checkedIn.value.filter((booking) => booking.roomId === 'r-2')).toHaveLength(0)
+  })
+
+  it('rejects moving a checked-in stay into a species-incompatible or full room', () => {
+    const store = createPensionStore({ now: () => new Date(2026, 7, 9, 12, 0) })
+
+    expect(store.changeCheckedInBookingRoom('b-3', 'r-4')).toBe(false)
+    expect(store.changeCheckedInBookingRoom('b-3', 'r-1')).toBe(false)
+    expect(store.bookingViews.value.find((booking) => booking.id === 'b-3')?.roomId).toBe('r-2')
+  })
+
+  it('only allows changing the room of a stay that is currently checked in', () => {
+    const store = createPensionStore({ now: () => new Date(2026, 7, 9, 12, 0) })
+    expect(store.createRoom({ name: 'Waldzimmer 3', category: 'Hundezimmer', capacity: 1 })).toBe(true)
+    const newRoom = store.rooms.find((room) => room.name === 'Waldzimmer 3')!
+
+    expect(store.changeCheckedInBookingRoom('b-1', newRoom.id)).toBe(false)
+    expect(store.changeCheckedInBookingRoom('does-not-exist', newRoom.id)).toBe(false)
+  })
+
   it('restores booking states after resetting the demo', () => {
     const store = createPensionStore({ now: () => new Date(2026, 7, 9, 12, 0) })
     store.checkIn('b-1')

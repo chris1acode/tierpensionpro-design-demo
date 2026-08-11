@@ -43,6 +43,8 @@ const currentPage = computed(() => ({
 const visibleNavigationItems = computed(() => navigationItems.filter((item) =>
   item.name !== 'requests' || store.settings.requestsEnabled))
 
+const isSettingsRoute = computed(() => route.path.startsWith('/einstellungen'))
+
 const filteredArrivals = computed(() => store.arrivals.value)
 
 const filteredDepartures = computed(() => store.departures.value)
@@ -124,7 +126,7 @@ onBeforeUnmount(() => {
       </RouterLink>
       <button ref="mobileNavClose" class="close-nav icon-button" aria-label="Navigation schließen" @click="closeMobileNavigation(true)"><X /></button>
       <nav aria-label="Hauptnavigation">
-        <RouterLink v-for="item in visibleNavigationItems" :key="item.name" :to="item.path" :title="sidebarCollapsed ? item.title : undefined" @click="closeMobileNavigation()">
+        <RouterLink v-for="item in visibleNavigationItems" :key="item.name" :to="item.path" :class="{ 'router-link-exact-active': item.name === 'settings' && isSettingsRoute }" :title="sidebarCollapsed ? item.title : undefined" @click="closeMobileNavigation()">
           <component :is="item.icon" :size="19" /><span>{{ item.title }}</span><span v-if="item.name === 'requests' && store.pendingRequests.value.length" class="nav-badge" aria-hidden="true">{{ store.pendingRequests.value.length }}</span>
         </RouterLink>
       </nav>
@@ -211,7 +213,7 @@ onBeforeUnmount(() => {
       <BookingsPage v-else-if="route.name === 'bookings'" @check-out="selectedDeparture = $event" />
       <OccupancyPage v-else-if="route.name === 'occupancy'" />
       <RequestsPage v-else-if="route.name === 'requests'" />
-      <SettingsPage v-else-if="route.name === 'settings'" />
+      <SettingsPage v-else-if="isSettingsRoute" />
       <AccountSettingsPage v-else-if="route.name === 'account'" />
       <main v-else-if="route.name !== 'intro'" class="route-page">
         <div class="route-page-card">

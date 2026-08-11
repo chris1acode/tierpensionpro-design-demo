@@ -140,7 +140,7 @@ function removeVeterinaryContact(petId: string) {
 function exportCustomers() {
   downloadCsv({
     fileName: 'kunden-und-tiere.csv',
-    columns: ['Kund:in', 'E-Mail', 'Telefon', 'Tier', 'Tierart', 'Rasse', 'Hinweis', 'Fütterungsplan', 'Besonderes Futter', 'Medikationsplan', 'Allergien & Unverträglichkeiten', 'Impfstatus', 'Tierarztpraxis', 'Tierarzttelefon'],
+    columns: ['Kunde', 'E-Mail', 'Telefon', 'Tier', 'Tierart', 'Rasse', 'Hinweis', 'Fütterungsplan', 'Besonderes Futter', 'Medikationsplan', 'Allergien & Unverträglichkeiten', 'Impfstatus', 'Tierarztpraxis', 'Tierarzttelefon'],
     rows: filteredCustomers.value.flatMap((customer) => customer.pets.length
       ? customer.pets.map((pet) => [
         `${customer.firstName} ${customer.lastName}`, customer.email, customer.phone, pet.name,
@@ -162,7 +162,7 @@ function exportCustomers() {
       <section class="panel customer-directory">
         <header>
           <div><h2>Kundenverzeichnis</h2><p>{{ filteredCustomers.length }} Treffer</p></div>
-          <div class="list-header-actions"><button class="text-button" type="button" aria-label="Kunden und Tiere als CSV exportieren" @click="exportCustomers"><Download :size="15" /> Exportieren</button><button class="text-button" type="button" @click="customerModalMode = 'create'"><Plus :size="15" /> Kund:in anlegen</button></div>
+          <div class="list-header-actions"><button class="text-button" type="button" aria-label="Kunden und Tiere als CSV exportieren" @click="exportCustomers"><Download :size="15" /> Exportieren</button><button class="text-button" type="button" @click="customerModalMode = 'create'"><Plus :size="15" /> Kunden anlegen</button></div>
         </header>
         <label class="directory-search"><Search :size="17" /><input v-model="localQuery" placeholder="Kundenname oder Tiername suchen …" /></label>
         <div v-if="filteredCustomers.length" class="customer-list">

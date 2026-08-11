@@ -39,7 +39,7 @@ function submit() {
 <template>
   <BaseModal labelled-by="customer-form-heading" modal-class="customer-form-modal" @close="$emit('close')">
     <p class="eyebrow">{{ mode === 'edit' ? 'Kundenprofil' : 'Stammdaten' }}</p>
-    <h2 id="customer-form-heading">{{ mode === 'edit' ? 'Kontaktdaten bearbeiten' : 'Kund:in anlegen' }}</h2>
+    <h2 id="customer-form-heading">{{ mode === 'edit' ? 'Kontaktdaten bearbeiten' : 'Kunden anlegen' }}</h2>
     <form class="customer-create-form" @submit.prevent="submit">
       <label>Vorname *<input v-model="form.firstName" autocomplete="given-name" /></label>
       <label>Nachname *<input v-model="form.lastName" autocomplete="family-name" /></label>

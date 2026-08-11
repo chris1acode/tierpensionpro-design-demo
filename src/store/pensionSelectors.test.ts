@@ -26,7 +26,7 @@ const rooms: Room[] = [
   { id: 'room-2', name: 'Zimmer 2', category: 'Hundezimmer', capacity: 2 }
 ]
 const bookings: Booking[] = [
-  { id: 'booking-1', petId: 'pet-1', roomId: 'room-1', arrivalDate: '2026-08-09', arrival: '09:00', departure: '2026-08-10', status: 'confirmed' }
+  { id: 'booking-1', petId: 'pet-1', roomId: 'room-1', arrivalDate: '2026-08-09', arrival: '09:00', departure: '2026-08-10', createdAt: '2026-08-01T09:00:00.000Z', status: 'confirmed' }
 ]
 
 describe('pension selectors', () => {

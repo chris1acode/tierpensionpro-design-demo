@@ -39,7 +39,7 @@ const visibleBookings = computed(() => store.bookingViews.value
   .filter((booking) => shouldFocusBooking.value || matchesSearchTerm(searchTerm.value, [
     booking.pet.name, booking.customer.firstName, booking.customer.lastName, booking.room.name, booking.arrivalDate, booking.departure
   ]))
-  .sort((a, b) => a.departure.localeCompare(b.departure)))
+  .sort((a, b) => b.createdAt.localeCompare(a.createdAt)))
 const { currentPage, pageCount, pagedItems: pagedBookings, resetPage, selectPage } = usePagination(visibleBookings, bookingPageSize)
 const calendarDates = computed(() => buildDateRange(fromLocalIsoDate(calendarStart.value), calendarDays))
 const calendarLabel = computed(() => `${formatDayAndMonth(calendarDates.value[0] ?? calendarStart.value)} – ${formatDayAndMonth(calendarDates.value.at(-1) ?? calendarStart.value)}`)
@@ -86,7 +86,7 @@ function confirmDeletion() {
 function exportBookings() {
   downloadCsv({
     fileName: 'buchungen.csv',
-    columns: ['Tier', 'Kund:in', 'Zimmer', 'Anreise', 'Ankunftszeit', 'Abreise', 'Abholzeit', 'Hinweis', 'Status', 'Rechnungsbetrag'],
+    columns: ['Tier', 'Kunde', 'Zimmer', 'Anreise', 'Ankunftszeit', 'Abreise', 'Abholzeit', 'Hinweis', 'Status', 'Rechnungsbetrag'],
     rows: visibleBookings.value.map((booking) => [
       booking.pet.name, `${booking.customer.firstName} ${booking.customer.lastName}`, booking.room.name,
       booking.arrivalDate, booking.arrival, booking.departure, booking.pickupTime ?? '', booking.bookingNote ?? '', bookingStatusLabels[booking.status],
