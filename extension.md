@@ -5,7 +5,7 @@
 [x] Umbau "Schließzeit anlegen" von Inline-Formular auf Modal in OccupancyPage.vue (inkl. Bearbeiten via Modal)
 [x] Umbau Offene Anfragen. Kein Inline Formular mehr. Zuordnung über Modal.
 [x] Gleiche color-concept.md mit den tatsächlichen Farben ab und fixe sie ggf.
-[ ] Zimmer Einstellungen sieht visuell kacke aus. Geht das nicht übersichtlicher? Außerdem Modal verwenden für Create und Edit.
+[x] Zimmer Einstellungen sieht visuell kacke aus. Geht das nicht übersichtlicher? Außerdem Modal verwenden für Create und Edit.
 [ ] Schriftarten in AccountSettingsPage.vue prüfen und vergrößern
 [ ] Schriftarten in BookingsPage.vue prüfen und vergrößern
 [ ] Kunden & Tiere Aufteilung von verzeichnis und card daneben 50/50

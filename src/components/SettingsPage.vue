@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { Banknote, Building2, Clock3, Inbox, Plus, Save, Trash2 } from '@lucide/vue'
-import type { PensionSettingsUpdate, PetSpecies, RoomInput } from '../domain'
+import { Banknote, Building2, Cat, Clock3, Dog, Inbox, Pencil, Plus, Save, Trash2 } from '@lucide/vue'
+import type { PensionSettingsUpdate, PetSpecies, Room } from '../domain'
 import { useSynchronizedDraft } from '../composables/useSynchronizedDraft'
 import { arePensionSettingsEqual } from '../domain/pensionSettings'
-import { areRoomConfigurationsEqual } from '../domain/roomConfiguration'
 import { usePensionStore } from '../usePensionStore'
+import RoomFormModal from './RoomFormModal.vue'
 
 const store = usePensionStore()
 const error = ref('')
 const roomError = ref('')
-const newRoom = ref<RoomInput>({ name: '', category: 'Hundezimmer', capacity: 1 })
+const roomModalMode = ref<'create' | 'edit' | null>(null)
+const roomBeingEdited = ref<Room | null>(null)
 
 function settingsDraft(): PensionSettingsUpdate {
   const { id: _id, ...values } = store.settings
@@ -23,15 +24,7 @@ const { draft, resetDraft } = useSynchronizedDraft(
   () => { error.value = '' }
 )
 
-const { draft: roomDraft, resetDraft: resetRoomDraft } = useSynchronizedDraft(
-  () => store.rooms.map((room) => ({ ...room })),
-  () => store.rooms,
-  () => { roomError.value = '' }
-)
-
 const hasUnsavedSettings = computed(() => !arePensionSettingsEqual(draft.value, settingsDraft()))
-const hasUnsavedRooms = computed(() => !areRoomConfigurationsEqual(roomDraft.value, store.rooms))
-const hasUnsavedChanges = computed(() => hasUnsavedSettings.value || hasUnsavedRooms.value)
 
 function save() {
   error.value = ''
@@ -42,30 +35,27 @@ function save() {
 
 function discard() {
   resetDraft()
-  resetRoomDraft()
   error.value = ''
 }
 
-function saveRoom(index: number) {
-  roomError.value = ''
-  const room = roomDraft.value[index]
-  if (!store.updateRoom(room.id, room)) {
-    roomError.value = 'Zimmer konnten nicht gespeichert werden. Namen müssen eindeutig sein; Kapazität und bestehende Buchungen müssen weiterhin zusammenpassen.'
-  }
+function openRoomCreate(): void {
+  roomBeingEdited.value = null
+  roomModalMode.value = 'create'
 }
 
-function addRoom() {
-  roomError.value = ''
-  if (!store.createRoom(newRoom.value)) {
-    roomError.value = 'Bitte vergib einen eindeutigen Namen (mindestens 2 Zeichen) und eine Kapazität von 1 bis 20 Plätzen.'
-    return
-  }
-  newRoom.value = { name: '', category: 'Hundezimmer', capacity: 1 }
+function openRoomEdit(room: Room): void {
+  roomBeingEdited.value = room
+  roomModalMode.value = 'edit'
 }
 
-function removeRoom(roomId: string) {
+function closeRoomModal(): void {
+  roomModalMode.value = null
+  roomBeingEdited.value = null
+}
+
+function removeRoom(room: Room): void {
   roomError.value = ''
-  if (!store.deleteRoom(roomId)) {
+  if (!store.deleteRoom(room.id)) {
     roomError.value = 'Zimmer mit bestehenden Buchungen können nicht entfernt werden.'
   }
 }
@@ -108,34 +98,6 @@ function updateRate(species: PetSpecies, value: string) {
         </div>
       </section>
 
-      <section class="panel settings-panel room-settings-panel">
-        <header><span class="settings-icon teal"><Building2 :size="20" /></span><div><h2>Zimmer</h2><p>Zimmernamen, Tierart und Platzanzahl für Belegung und Buchungen verwalten.</p></div></header>
-        <div class="room-configuration-list">
-          <article v-for="(room, index) in roomDraft" :key="room.id" class="room-configuration-row">
-            <label>Zimmername<input v-model.trim="room.name" :aria-label="`Name von ${store.rooms[index]?.name ?? 'Zimmer'}`" required /></label>
-            <label>Tierart
-              <select v-model="room.category" :disabled="roomHasBookings(room.id)" :aria-label="`Tierart von ${room.name}`">
-                <option value="Hundezimmer">Hunde</option>
-                <option value="Katzenzimmer">Katzen</option>
-              </select>
-            </label>
-            <label>Plätze<input v-model.number="room.capacity" min="1" max="20" step="1" type="number" required /></label>
-            <div class="room-configuration-actions">
-              <small v-if="roomHasBookings(room.id)">Tierart durch Buchungen geschützt</small>
-              <button class="secondary-button" type="button" @click="saveRoom(index)">Zimmer speichern</button>
-              <button class="icon-button danger-icon-button" :aria-label="`${room.name} entfernen`" :disabled="roomHasBookings(room.id)" type="button" @click="removeRoom(room.id)"><Trash2 :size="16" /></button>
-            </div>
-          </article>
-          <div class="room-create-row">
-            <label>Neues Zimmer<input v-model.trim="newRoom.name" placeholder="z. B. Waldzimmer 3" /></label>
-            <label>Tierart<select v-model="newRoom.category"><option value="Hundezimmer">Hunde</option><option value="Katzenzimmer">Katzen</option></select></label>
-            <label>Plätze<input v-model.number="newRoom.capacity" min="1" max="20" step="1" type="number" /></label>
-            <button class="secondary-button" type="button" @click="addRoom"><Plus :size="16" /> Zimmer anlegen</button>
-          </div>
-        </div>
-        <p v-if="roomError" class="form-error room-form-error" role="alert">{{ roomError }}</p>
-      </section>
-
       <section class="panel settings-panel">
         <header><span class="settings-icon amber"><Banknote :size="20" /></span><div><h2>Preisliste</h2><p>Grundpreis je Tier und angefangenen Betreuungstag. Alle Beträge inklusive Mehrwertsteuer.</p></div></header>
         <div class="settings-fields price-fields">
@@ -165,7 +127,36 @@ function updateRate(species: PetSpecies, value: string) {
       </section>
 
       <p v-if="error" class="form-error" role="alert">{{ error }}</p>
-      <div class="settings-actions"><button class="secondary-button" :disabled="!hasUnsavedChanges" type="button" @click="discard">Änderungen verwerfen</button><button class="primary-button" :disabled="!hasUnsavedSettings" type="submit"><Save :size="16" /> Einstellungen speichern</button></div>
+      <div class="settings-actions"><button class="secondary-button" :disabled="!hasUnsavedSettings" type="button" @click="discard">Änderungen verwerfen</button><button class="primary-button" :disabled="!hasUnsavedSettings" type="submit"><Save :size="16" /> Einstellungen speichern</button></div>
     </form>
+
+    <section class="panel settings-panel room-settings-panel">
+      <header>
+        <span class="settings-icon teal"><Building2 :size="20" /></span>
+        <div><h2>Zimmer</h2><p>Zimmernamen, Tierart und Platzanzahl für Belegung und Buchungen verwalten.</p></div>
+        <button class="secondary-button" type="button" @click="openRoomCreate"><Plus :size="15" /> Zimmer anlegen</button>
+      </header>
+      <p v-if="!store.rooms.length" class="empty-state">Keine Zimmer angelegt.</p>
+      <ul v-else class="room-list">
+        <li v-for="room in store.rooms" :key="room.id">
+          <span class="room-icon" :class="{ cat: room.category === 'Katzenzimmer' }"><Dog v-if="room.category === 'Hundezimmer'" :size="18" /><Cat v-else :size="18" /></span>
+          <div><strong>{{ room.name }}</strong><span>{{ room.category === 'Katzenzimmer' ? 'Katzen' : 'Hunde' }} · {{ room.capacity }} {{ room.capacity === 1 ? 'Platz' : 'Plätze' }}</span></div>
+          <div class="room-list-actions">
+            <button class="icon-button" type="button" :aria-label="`${room.name} bearbeiten`" @click="openRoomEdit(room)"><Pencil :size="15" /></button>
+            <button class="icon-button danger-icon-button" type="button" :aria-label="`${room.name} entfernen`" :disabled="roomHasBookings(room.id)" @click="removeRoom(room)"><Trash2 :size="15" /></button>
+          </div>
+        </li>
+      </ul>
+      <p v-if="roomError" class="form-error room-form-error" role="alert">{{ roomError }}</p>
+    </section>
+
+    <RoomFormModal
+      v-if="roomModalMode"
+      :mode="roomModalMode"
+      :room="roomBeingEdited ?? undefined"
+      :category-locked="roomModalMode === 'edit' && roomBeingEdited ? roomHasBookings(roomBeingEdited.id) : false"
+      @close="closeRoomModal"
+      @saved="closeRoomModal"
+    />
   </main>
 </template>
