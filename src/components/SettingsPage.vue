@@ -152,9 +152,8 @@ function updateRate(species: PetSpecies, value: string) {
 
     <section v-else class="panel settings-panel room-settings-panel">
       <header>
-        <span class="settings-icon teal"><Building2 :size="20" /></span>
         <div><h2>Zimmer</h2><p>Zimmernamen, Tierart und Platzanzahl für Belegung und Buchungen verwalten.</p></div>
-        <button class="secondary-button" type="button" @click="openRoomCreate"><Plus :size="15" /> Zimmer anlegen</button>
+        <button class="primary-button" type="button" @click="openRoomCreate"><Plus :size="15" /> Zimmer anlegen</button>
       </header>
       <p v-if="!store.rooms.length" class="empty-state">Keine Zimmer angelegt.</p>
       <ul v-else class="room-list">
