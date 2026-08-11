@@ -106,7 +106,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     })
   }
 
-  function checkIn(bookingId: string): boolean {
+  function checkIn(bookingId: string, allowOverbooking = false): boolean {
     const booking = bookings.find((item) => item.id === bookingId)
     const pet = booking && pets.find((item) => item.id === booking.petId)
     const room = booking && rooms.find((item) => item.id === booking.roomId)
@@ -115,11 +115,16 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       || booking.status !== 'confirmed' || booking.arrivalDate !== businessDate.value) return false
 
     const occupiedPlaces = bookings.filter((item) => item.roomId === room.id && item.status === 'checked-in').length
-    if (occupiedPlaces >= room.capacity) return false
+    if (occupiedPlaces >= room.capacity && !allowOverbooking) return false
 
     booking.status = 'checked-in'
+    if (occupiedPlaces >= room.capacity) {
+      booking.overbooked = true
+    }
     recordCheckInOutEvent(booking.id, 'check-in')
-    showToast(`${pet.name} ist jetzt eingecheckt.`)
+    showToast(occupiedPlaces >= room.capacity
+      ? `${pet.name} wurde als Überbuchung eingecheckt.`
+      : `${pet.name} ist jetzt eingecheckt.`)
     return true
   }
 

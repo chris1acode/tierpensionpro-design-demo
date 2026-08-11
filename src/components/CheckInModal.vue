@@ -1,17 +1,32 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import { Check, ClipboardCheck } from '@lucide/vue'
 import type { BookingView } from '../domain'
 import { toTelephoneHref } from '../presentation/phoneLink'
+import { usePensionStore } from '../usePensionStore'
 import BaseModal from './BaseModal.vue'
 
-defineProps<{
+const props = defineProps<{
   booking: BookingView
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   close: []
-  confirm: []
+  confirm: [allowOverbooking: boolean]
 }>()
+
+const store = usePensionStore()
+const allowOverbooking = ref(false)
+
+const roomOccupancy = computed(() => {
+  const room = store.roomViews.value.find(r => r.id === props.booking.roomId)
+  return {
+    capacity: room?.capacity ?? 0,
+    occupied: room?.guests.length ?? 0
+  }
+})
+
+const isRoomFull = computed(() => roomOccupancy.value.occupied >= roomOccupancy.value.capacity)
 </script>
 
 <template>
@@ -58,9 +73,13 @@ defineEmits<{
       <div><dt>Abreise</dt><dd>{{ booking.departure }}</dd></div>
       <div v-if="booking.pet.veterinaryContact"><dt>Tierarztpraxis</dt><dd><a :href="toTelephoneHref(booking.pet.veterinaryContact.phone)">{{ booking.pet.veterinaryContact.practiceName }} · {{ booking.pet.veterinaryContact.phone }}</a></dd></div>
     </dl>
+    <label v-if="isRoomFull" class="overbooking-warning">
+      <input v-model="allowOverbooking" type="checkbox" />
+      <span><strong>Überbuchung bewusst durchführen</strong> · Das Zimmer {{ booking.room.name }} ist bereits mit {{ roomOccupancy.occupied }} Tieren voll belegt.</span>
+    </label>
     <div class="modal-actions">
       <button class="secondary-button" @click="$emit('close')">Abbrechen</button>
-      <button class="primary-button" @click="$emit('confirm')"><Check :size="17" /> Jetzt einchecken</button>
+      <button class="primary-button" :disabled="isRoomFull && !allowOverbooking" @click="$emit('confirm', allowOverbooking)"><Check :size="17" /> Jetzt einchecken</button>
     </div>
   </BaseModal>
 </template>

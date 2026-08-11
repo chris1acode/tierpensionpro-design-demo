@@ -53,8 +53,8 @@ const selectedDeparturePrice = computed(() => selectedDeparture.value
   ? calculateStayPrice(selectedDeparture.value, store.settings.dailyPetRates)
   : null)
 
-function confirmCheckIn(booking: BookingView) {
-  if (store.checkIn(booking.id)) selectedBooking.value = null
+function confirmCheckIn(booking: BookingView, allowOverbooking = false) {
+  if (store.checkIn(booking.id, allowOverbooking)) selectedBooking.value = null
 }
 
 function confirmCheckout(departure: DepartureView) {
@@ -236,7 +236,7 @@ onBeforeUnmount(() => {
       v-if="selectedBooking"
       :booking="selectedBooking"
       @close="selectedBooking = null"
-      @confirm="confirmCheckIn(selectedBooking)"
+      @confirm="confirmCheckIn(selectedBooking, $event)"
     />
 
     <CheckoutModal

@@ -42,3 +42,4 @@
 [x] Der Dropdown bei Anfragen hat einen sehr dunklen Hintergrund.und die Schrift ist kaum lesbar. Mach hellen Hintergrund und passende Schrift.
 [x] Check-in/out, es muss die Möglichkeit geben das Zimmer zu wechseln.
 [ ] Mach Demodaten button und demodaten icon im menu leicht lila statt blau
+[ ] Tierarztpraxis wird nicht benötigt. Weg damit
