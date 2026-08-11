@@ -399,6 +399,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       createdAt: dependencies.now().toISOString(),
       status: 'confirmed'
     })
+    request.customerId = customer.id
     request.status = 'accepted'
     showToast(`Die Anfrage von ${request.customerFirstName} ${request.customerLastName} wurde als Reservierung angelegt.`)
     return true

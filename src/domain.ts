@@ -311,6 +311,8 @@ export interface BookingRequestNotification {
 
 export interface BookingRequest {
   id: string
+  /** Set after an accepted request was assigned to a customer profile. */
+  customerId?: Customer['id']
   customerFirstName: string
   customerLastName: string
   contactEmail: string

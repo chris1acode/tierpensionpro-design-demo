@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { RouterLink } from 'vue-router'
 import { Check, ClipboardCheck } from '@lucide/vue'
 import type { BookingView } from '../domain'
 import { toTelephoneHref } from '../presentation/phoneLink'
@@ -33,7 +34,7 @@ const isRoomFull = computed(() => roomOccupancy.value.occupied >= roomOccupancy.
   <BaseModal labelled-by="checkin-title" @close="$emit('close')">
     <span class="modal-icon"><ClipboardCheck /></span>
     <p class="eyebrow">Check-in bestätigen</p>
-    <h2 id="checkin-title">Check-in für {{ booking.customer.firstName }} {{ booking.customer.lastName }}</h2>
+    <h2 id="checkin-title">Check-in für <RouterLink class="customer-profile-link" :to="{ name: 'customers', query: { customerId: booking.customer.id } }">{{ booking.customer.firstName }} {{ booking.customer.lastName }}</RouterLink></h2>
     <p>
       Ist {{ booking.pet.name }} angekommen? Mit der Bestätigung wird {{ booking.pet.name }} dem Zimmer
       <strong>{{ booking.room.name }}</strong> zugewiesen.

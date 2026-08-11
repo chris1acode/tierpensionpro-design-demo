@@ -110,7 +110,7 @@ function exportHistory() {
       <div v-if="visibleBookings.length" class="operation-rows">
         <article v-for="booking in visibleBookings" :key="booking.id" class="operation-row">
           <div class="pet-avatar" :style="{ background: booking.pet.color }">{{ booking.pet.initials }}</div>
-          <div class="pet-info"><strong>{{ booking.customer.firstName }} {{ booking.customer.lastName }}</strong><span>{{ booking.pet.name }} · {{ booking.pet.breed }}</span></div>
+          <div class="pet-info"><RouterLink class="customer-profile-link" :to="{ name: 'customers', query: { customerId: booking.customer.id } }">{{ booking.customer.firstName }} {{ booking.customer.lastName }}</RouterLink><span>{{ booking.pet.name }} · {{ booking.pet.breed }}</span></div>
           <div class="operation-room"><small>Zimmer</small><strong>{{ booking.room.name }}</strong></div>
           <div class="operation-time"><small>{{ activeView === 'arrivals' ? 'Ankunft' : activeView === 'departures' ? 'Abholung' : 'Geplante Abreise' }}</small><strong>{{ activeView === 'arrivals' ? `${booking.arrival} Uhr` : activeView === 'departures' ? (booking.pickupTime ? `${booking.pickupTime} Uhr` : 'Nicht vereinbart') : formatDayAndMonth(booking.departure) }}</strong></div>
           <div v-if="activeView === 'arrivals'" class="operation-actions">
@@ -131,7 +131,7 @@ function exportHistory() {
       <div class="history-rows">
         <article v-for="event in pagedHistory" :key="event.id">
           <span class="history-event-icon" :class="event.type"><ArrowDownToLine v-if="event.type === 'check-in'" :size="17" /><RotateCcw v-else-if="event.type === 'check-in-reverted'" :size="17" /><ArrowUpFromLine v-else :size="17" /></span>
-          <div class="pet-info"><strong>{{ event.booking.customer.firstName }} {{ event.booking.customer.lastName }}</strong><span>{{ event.booking.pet.name }} · {{ event.booking.room.name }}</span></div>
+          <div class="pet-info"><RouterLink class="customer-profile-link" :to="{ name: 'customers', query: { customerId: event.booking.customer.id } }">{{ event.booking.customer.firstName }} {{ event.booking.customer.lastName }}</RouterLink><span>{{ event.booking.pet.name }} · {{ event.booking.room.name }}</span></div>
           <div class="history-event-time"><strong>{{ checkInOutEventLabels[event.type] }}</strong><span>{{ formatEventTime(event.occurredAt) }} Uhr</span></div>
           <button v-if="event.type === 'check-in' && store.canUndoCheckIn(event.bookingId)" class="text-button history-undo" type="button" @click="store.undoCheckIn(event.bookingId)"><RotateCcw :size="14" /> Rückgängig</button>
           <RouterLink class="text-button" :to="{ name: 'bookings', query: { bookingId: event.bookingId } }">Zur Buchung <ExternalLink :size="14" /></RouterLink>

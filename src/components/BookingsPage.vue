@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { CalendarDays, Check, ChevronLeft, ChevronRight, Download, List, LogOut, Pencil, Plus, Search, Trash2 } from '@lucide/vue'
 import type { BookingStatus, BookingView, DepartureView } from '../domain'
 import DeleteBookingModal from './DeleteBookingModal.vue'
@@ -160,9 +160,10 @@ function openBookingFromTimeline(bookingId: string) {
             <strong>{{ row.label }}</strong>
             <div class="booking-timeline-lanes">
               <div v-for="(lane, laneIndex) in row.lanes" :key="laneIndex" class="booking-timeline-lane">
-                <button v-for="bar in lane" :key="bar.booking.id" type="button" :class="bar.booking.status" :style="{ gridColumn: `${bar.startDay + 1} / span ${bar.duration}` }" :aria-label="`Buchung von ${bar.booking.customer.firstName} ${bar.booking.customer.lastName} für ${bar.booking.pet.name} öffnen`" :title="`${bar.booking.customer.firstName} ${bar.booking.customer.lastName} · ${bar.booking.pet.name}`" @click="openBookingFromTimeline(bar.booking.id)">
-                  <i :style="{ background: bar.booking.pet.color }" /><span><b>{{ bar.booking.customer.firstName }} {{ bar.booking.customer.lastName }}</b><em>{{ bar.booking.pet.name }}</em></span>
-                </button>
+                <article v-for="bar in lane" :key="bar.booking.id" :class="bar.booking.status" :style="{ gridColumn: `${bar.startDay + 1} / span ${bar.duration}` }" :title="`${bar.booking.customer.firstName} ${bar.booking.customer.lastName} · ${bar.booking.pet.name}`">
+                  <i :style="{ background: bar.booking.pet.color }" />
+                  <span><RouterLink class="customer-profile-link" :to="{ name: 'customers', query: { customerId: bar.booking.customer.id } }">{{ bar.booking.customer.firstName }} {{ bar.booking.customer.lastName }}</RouterLink><button type="button" :aria-label="`Buchung von ${bar.booking.customer.firstName} ${bar.booking.customer.lastName} für ${bar.booking.pet.name} öffnen`" @click="openBookingFromTimeline(bar.booking.id)">{{ bar.booking.pet.name }}</button></span>
+                </article>
               </div>
               <p v-if="!row.lanes.length">Keine Aufenthalte</p>
             </div>
@@ -173,7 +174,7 @@ function openBookingFromTimeline(bookingId: string) {
       <div v-else-if="visibleBookings.length" class="booking-table">
         <article v-for="booking in pagedBookings" :id="`booking-${booking.id}`" :key="booking.id" :class="{ 'focused-booking': booking.id === focusedBookingId }">
           <div class="pet-avatar" :style="{ background: booking.pet.color }">{{ booking.pet.initials }}</div>
-          <div class="pet-info"><strong>{{ booking.pet.name }}</strong><span>{{ booking.customer.firstName }} {{ booking.customer.lastName }}</span><small v-if="booking.bookingNote" class="booking-note-summary">Hinweis · {{ booking.bookingNote }}</small><small v-if="booking.checkoutPrice" class="checkout-price-summary">Abgerechnet · {{ formatEuroCents(booking.checkoutPrice.totalCents) }}</small></div>
+          <div class="pet-info"><strong>{{ booking.pet.name }}</strong><RouterLink class="customer-profile-link" :to="{ name: 'customers', query: { customerId: booking.customer.id } }">{{ booking.customer.firstName }} {{ booking.customer.lastName }}</RouterLink><small v-if="booking.bookingNote" class="booking-note-summary">Hinweis · {{ booking.bookingNote }}</small><small v-if="booking.checkoutPrice" class="checkout-price-summary">Abgerechnet · {{ formatEuroCents(booking.checkoutPrice.totalCents) }}</small></div>
           <div><small>Zimmer</small><strong>{{ booking.room.name }}</strong></div>
           <div><small>Ankunft</small><strong>{{ booking.arrivalDate }} · {{ booking.arrival }} Uhr</strong></div>
           <div><small>Abreise</small><strong>{{ booking.departure }}<template v-if="booking.pickupTime"> · {{ booking.pickupTime }} Uhr</template></strong></div>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { LogOut } from '@lucide/vue'
+import { RouterLink } from 'vue-router'
 import type { DepartureView, StayPrice } from '../domain'
 import { formatEuroCents } from '../presentation/currencyFormat'
 import BaseModal from './BaseModal.vue'
@@ -19,7 +20,7 @@ defineEmits<{
   <BaseModal labelled-by="checkout-title" @close="$emit('close')">
     <span class="modal-icon checkout-icon"><LogOut /></span>
     <p class="eyebrow">Check-out bestätigen</p>
-    <h2 id="checkout-title">Check-out für {{ departure.customer.firstName }} {{ departure.customer.lastName }}</h2>
+    <h2 id="checkout-title">Check-out für <RouterLink class="customer-profile-link" :to="{ name: 'customers', query: { customerId: departure.customer.id } }">{{ departure.customer.firstName }} {{ departure.customer.lastName }}</RouterLink></h2>
     <p>
       Wird {{ departure.pet.name }} von {{ departure.customer.firstName }} {{ departure.customer.lastName }} abgeholt?
       Mit der Bestätigung wird <strong>{{ departure.room.name }}</strong> wieder als frei geführt.

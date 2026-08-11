@@ -769,7 +769,7 @@ describe('PensionStore', () => {
       status: 'confirmed', room: { id: 'r-2' }, pet: { name: 'Charlie' }, customer: { firstName: 'Hannah', lastName: 'Wolf', email: 'hannah.wolf@example.test' }
     })
     expect(store.pendingRequests.value.some((request) => request.id === 'req-1')).toBe(false)
-    expect(store.requestHistory.value.find((request) => request.id === 'req-1')?.status).toBe('accepted')
+    expect(store.requestHistory.value.find((request) => request.id === 'req-1')).toMatchObject({ status: 'accepted', customerId: 'c-101' })
   })
 
   it('accepts a pending request for an explicitly selected known customer and reuses the existing pet', () => {
@@ -781,6 +781,7 @@ describe('PensionStore', () => {
     expect(store.customers).toHaveLength(customerCount)
     expect(store.pets).toHaveLength(petCount)
     expect(store.bookingViews.value.at(-1)).toMatchObject({ pet: { id: 'p-8', name: 'Oskar' }, customer: { id: 'c-8' } })
+    expect(store.requestHistory.value.find((request) => request.id === 'req-2')?.customerId).toBe('c-8')
   })
 
   it('rejects accepting a request into a room that does not match the requested species', () => {

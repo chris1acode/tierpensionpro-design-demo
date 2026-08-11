@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { RouterLink } from 'vue-router'
 import { Cat, Check, CircleAlert, CircleCheck, Dog, Download, Inbox, ThumbsDown, ThumbsUp } from '@lucide/vue'
 import type { BookingRequest } from '../domain'
 import DeclineRequestModal from './DeclineRequestModal.vue'
@@ -106,7 +107,8 @@ function exportRequests(scope: 'pending' | 'history') {
         <div v-if="store.requestHistory.value.length" class="request-history">
           <article v-for="request in store.requestHistory.value" :key="request.id">
             <div class="request-history-customer">
-              <strong>{{ request.customerFirstName }} {{ request.customerLastName }}</strong>
+              <RouterLink v-if="request.customerId" class="customer-profile-link" :to="{ name: 'customers', query: { customerId: request.customerId } }">{{ request.customerFirstName }} {{ request.customerLastName }}</RouterLink>
+              <strong v-else>{{ request.customerFirstName }} {{ request.customerLastName }}</strong>
               <span>{{ request.petName }} · {{ request.breed }}</span>
             </div>
             <div class="request-history-dates"><small>Aufenthalt</small><span>{{ request.arrivalDate }} – {{ request.departure }}</span></div>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Cat, Dog, Download, Mail, Pencil, Phone, Plus, Search, Stethoscope, Trash2, Utensils } from '@lucide/vue'
 import type { CustomerView } from '../domain'
 import { bookingStatusLabels } from '../presentation/bookingStatus'
@@ -12,6 +13,8 @@ import CustomerFormModal from './CustomerFormModal.vue'
 import PetFormModal from './PetFormModal.vue'
 
 const store = usePensionStore()
+const route = useRoute()
+const router = useRouter()
 const localQuery = ref('')
 const selectedCustomerId = ref<string | null>(store.customerViews.value[0]?.id ?? null)
 const detailsOpen = ref(false)
@@ -77,6 +80,15 @@ watch(searchTerm, () => {
   detailsOpen.value = false
 })
 
+watch(() => route.query.customerId, (customerId) => {
+  if (typeof customerId !== 'string') return
+  const index = store.customerViews.value.findIndex((customer) => customer.id === customerId)
+  if (index < 0) return
+  currentPage.value = Math.floor(index / pageSize) + 1
+  selectedCustomerId.value = customerId
+  detailsOpen.value = true
+}, { immediate: true })
+
 function selectPage(page: number) {
   selectPaginationPage(page)
   selectedCustomerId.value = pagedCustomers.value[0]?.id ?? null
@@ -88,6 +100,7 @@ function selectCustomer(customerId: string) {
   detailsOpen.value = true
   veterinaryContactRemovalId.value = null
   customerRemovalOpen.value = false
+  void router.replace({ name: 'customers', query: { ...route.query, customerId } })
 }
 
 function removeCustomer() {
