@@ -213,7 +213,7 @@ function exportCustomers() {
             </div>
           </div>
           <div class="customer-profile-actions">
-            <button class="text-button" type="button" @click="customerModalMode = 'edit'"><Pencil :size="15" /> Kontaktdaten bearbeiten</button>
+            <button class="link-button" type="button" @click="customerModalMode = 'edit'"><Pencil :size="15" /> Kontaktdaten bearbeiten</button>
             <button v-if="!selectedCustomer.pets.length && !selectedCustomer.bookings.length" class="text-button danger-text-button" type="button" @click="customerRemovalOpen = true"><Trash2 :size="15" /> Entfernen</button>
           </div>
         </header>
