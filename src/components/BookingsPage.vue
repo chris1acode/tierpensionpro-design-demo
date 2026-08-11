@@ -11,7 +11,7 @@ import { matchesSearchTerm, resolveSearchTerm } from '../shared/search'
 import { downloadCsv } from '../shared/csvExport'
 import { usePensionStore } from '../usePensionStore'
 import { createBookingTimeline } from '../domain/bookingTimeline'
-import { addDaysToIsoDate, buildDateRange, fromLocalIsoDate } from '../domain/bookingPeriod'
+import { addDaysToIsoDate, buildDateRange, fromLocalIsoDate, isDateWithinStay, isValidIsoDate } from '../domain/bookingPeriod'
 import { formatDayAndMonth, formatShortWeekday } from '../presentation/dateFormat'
 import { formatEuroCents } from '../presentation/currencyFormat'
 
@@ -31,11 +31,16 @@ const bookingModalTarget = ref<BookingView | null>(null)
 const bookingModalPresetCustomerId = ref('')
 const searchTerm = computed(() => resolveSearchTerm(localQuery.value))
 const focusedBookingId = computed(() => typeof route.query.bookingId === 'string' ? route.query.bookingId : '')
+const selectedDate = computed(() => {
+  const value = typeof route.query.date === 'string' ? route.query.date : ''
+  return isValidIsoDate(value) ? value : ''
+})
 const shouldFocusBooking = computed(() => view.value === 'list' && Boolean(focusedBookingId.value))
 const editBookingId = computed(() => route.query.edit === 'true' ? focusedBookingId.value : '')
 const preselectedCustomerId = computed(() => typeof route.query.customerId === 'string' ? route.query.customerId : '')
 const visibleBookings = computed(() => store.bookingViews.value
   .filter((booking) => shouldFocusBooking.value ? booking.id === focusedBookingId.value : status.value === 'all' || booking.status === status.value)
+  .filter((booking) => shouldFocusBooking.value || !selectedDate.value || isDateWithinStay(selectedDate.value, booking.arrivalDate, booking.departure))
   .filter((booking) => shouldFocusBooking.value || matchesSearchTerm(searchTerm.value, [
     booking.pet.name, booking.customer.firstName, booking.customer.lastName, booking.room.name, booking.arrivalDate, booking.departure
   ]))
@@ -45,12 +50,16 @@ const calendarDates = computed(() => buildDateRange(fromLocalIsoDate(calendarSta
 const calendarLabel = computed(() => `${formatDayAndMonth(calendarDates.value[0] ?? calendarStart.value)} – ${formatDayAndMonth(calendarDates.value.at(-1) ?? calendarStart.value)}`)
 const bookingTimeline = computed(() => createBookingTimeline(visibleBookings.value, store.rooms, calendarStart.value, calendarDays))
 
-watch([searchTerm, status, focusedBookingId], () => {
+watch([searchTerm, status, focusedBookingId, selectedDate], () => {
   resetPage()
 })
 
 watch(focusedBookingId, (bookingId) => {
   if (bookingId) view.value = 'list'
+}, { immediate: true })
+
+watch(selectedDate, (date) => {
+  if (date) view.value = 'list'
 }, { immediate: true })
 
 watch(editBookingId, (bookingId) => {
@@ -103,6 +112,15 @@ function jumpTimelineToToday() {
   calendarStart.value = store.businessDate.value
 }
 
+function setSelectedDate(event: Event) {
+  const date = (event.target as HTMLInputElement).value
+  void router.push({ name: 'bookings', query: date ? { date } : {} })
+}
+
+function clearSelectedDate() {
+  void router.push({ name: 'bookings' })
+}
+
 function openBookingFromTimeline(bookingId: string) {
   view.value = 'list'
   void router.push({ name: 'bookings', query: { bookingId } })
@@ -121,6 +139,8 @@ function openBookingFromTimeline(bookingId: string) {
       <header><div><h2>{{ view === 'list' ? 'Alle Aufenthalte' : 'Buchungszeitachse' }}</h2><p>{{ view === 'list' ? `${visibleBookings.length} passende Buchungen` : 'Zimmer und zusammenhängende Aufenthalte im Wochenüberblick' }}</p></div><div class="list-header-actions"><div class="booking-view-switch" aria-label="Buchungsansicht"><button :class="{ active: view === 'list' }" aria-label="Listenansicht" @click="view = 'list'"><List :size="15" /> Liste</button><button :class="{ active: view === 'calendar' }" aria-label="Zeitachsenansicht" @click="view = 'calendar'"><CalendarDays :size="15" /> Zeitachse</button></div><button class="text-button" type="button" aria-label="Buchungen als CSV exportieren" @click="exportBookings"><Download :size="15" /> Exportieren</button><label class="directory-search"><Search :size="17" /><input v-model="localQuery" placeholder="Tier, Kunde oder Zimmer suchen …" /></label></div></header>
       <div class="booking-filters" aria-label="Buchungsstatus">
         <button v-for="option in bookingStatusFilters" :key="option.value" :class="{ active: status === option.value }" @click="status = option.value">{{ option.label }}</button>
+        <label class="booking-date-filter">Am Datum <input type="date" aria-label="Buchungen am Datum filtern" :value="selectedDate" @change="setSelectedDate" /></label>
+        <button v-if="selectedDate" class="booking-date-filter-clear" type="button" @click="clearSelectedDate">Datum löschen</button>
       </div>
       <div v-if="view === 'calendar'" class="booking-calendar">
         <div class="booking-calendar-navigation"><button class="icon-button" aria-label="Vorherige Woche" @click="changeCalendarWeek(-1)"><ChevronLeft :size="18" /></button><strong>{{ calendarLabel }}</strong><button class="icon-button" aria-label="Nächste Woche" @click="changeCalendarWeek(1)"><ChevronRight :size="18" /></button><button class="secondary-button booking-calendar-today" type="button" :disabled="calendarStart === store.businessDate.value" @click="jumpTimelineToToday">Heute</button></div>

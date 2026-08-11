@@ -275,8 +275,11 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     return true
   }
 
-  /** Moves an already checked-in stay into a different, currently available room. */
-  function changeCheckedInBookingRoom(bookingId: string, roomId: string): boolean {
+  /**
+   * Moves an already checked-in stay into another room. Capacity overrides need
+   * an explicit acknowledgement, just like when a booking is created or edited.
+   */
+  function changeCheckedInBookingRoom(bookingId: string, roomId: string, allowOverbooking = false): boolean {
     const booking = bookings.find((item) => item.id === bookingId)
     const pet = booking && pets.find((item) => item.id === booking.petId)
     const previousRoom = booking && rooms.find((item) => item.id === booking.roomId)
@@ -288,9 +291,10 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       otherBookings, room.id, room.capacity, businessDate.value, booking.departure
     )
     if (!booking || !pet || !previousRoom || booking.status !== 'checked-in' || !room || !roomIsReady
-      || !speciesMatchesRoom || room.id === previousRoom.id || !hasCapacity) return false
+      || !speciesMatchesRoom || room.id === previousRoom.id || (!hasCapacity && !allowOverbooking)) return false
 
     booking.roomId = room.id
+    booking.overbooked = !hasCapacity
     const reservation = booking.reservationId ? bookingReservations.find((item) => item.id === booking.reservationId) : undefined
     if (reservation && reservation.roomId !== room.id) {
       reservation.petIds = reservation.petIds.filter((petId) => petId !== booking.petId)
@@ -298,7 +302,9 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       if (!reservation.petIds.length) bookingReservations.splice(bookingReservations.indexOf(reservation), 1)
     }
 
-    showToast(`${pet.name} wurde von ${previousRoom.name} in ${room.name} verlegt.`)
+    showToast(!hasCapacity
+      ? `${pet.name} wurde von ${previousRoom.name} in ${room.name} verlegt und ist dort überbucht.`
+      : `${pet.name} wurde von ${previousRoom.name} in ${room.name} verlegt.`)
     return true
   }
 

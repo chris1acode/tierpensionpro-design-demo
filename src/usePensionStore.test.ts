@@ -509,12 +509,22 @@ describe('PensionStore', () => {
     expect(store.checkedIn.value.filter((booking) => booking.roomId === 'r-2')).toHaveLength(0)
   })
 
-  it('rejects moving a checked-in stay into a species-incompatible or full room', () => {
+  it('rejects moving a checked-in stay into a species-incompatible or unacknowledged overbooked room', () => {
     const store = createPensionStore({ now: () => new Date(2026, 7, 9, 12, 0) })
 
     expect(store.changeCheckedInBookingRoom('b-3', 'r-4')).toBe(false)
     expect(store.changeCheckedInBookingRoom('b-3', 'r-1')).toBe(false)
     expect(store.bookingViews.value.find((booking) => booking.id === 'b-3')?.roomId).toBe('r-2')
+  })
+
+  it('allows an explicitly acknowledged overbooked room change and records it on the stay', () => {
+    const store = createPensionStore({ now: () => new Date(2026, 7, 9, 12, 0) })
+
+    expect(store.changeCheckedInBookingRoom('b-3', 'r-1', true)).toBe(true)
+    expect(store.bookingViews.value.find((booking) => booking.id === 'b-3')).toMatchObject({
+      roomId: 'r-1', status: 'checked-in', overbooked: true
+    })
+    expect(store.announcement.value).toContain('überbucht')
   })
 
   it('only allows changing the room of a stay that is currently checked in', () => {

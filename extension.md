@@ -33,11 +33,12 @@
 [x] Anfragen: Router-Link auf englischen Bezeichner umstellen (/requests statt /anfragen)
 [x] Einstellungen: Router-Link auf englischen Bezeichner umstellen (/settings statt /einstellungen)
 [x] Konto: Router-Link auf englischen Bezeichner umstellen (/account statt /konto)
-[ ] Kundenprofil. Badge weg.
-[ ] Kundenprofil: Tiersymbol viel zu dominant. Als kleines Mini Symbol ok, aber nicht mehr.
-[ ] Check-in/out: Das kleine Badge mit z.b. 6 offen kann weg.
+[x] Kundenprofil. Badge weg.
+[x] Kundenprofil: Tiersymbol viel zu dominant. Als kleines Mini Symbol ok, aber nicht mehr.
+[x] Check-in/out: Das kleine Badge mit z.b. 6 offen kann weg.
 [x] Buchungsliste soll nach Zeitstempel sortiert sein. Zuletzt angelegt oben.
-[ ] Gib seiten mit Zeitachsenansichten eine Mindesthöhe, damit sie bei der navigation nicht springen.
-[ ] Buchungen braucht in der Liste einen Datumsfilter (url parameter). Und von der der Belegung soll man zu den aktuellen Buchungen gelangen können über Datumsklick
+[x] Gib seiten mit Zeitachsenansichten eine Mindesthöhe, damit sie bei der navigation nicht springen.
+[x] Buchungen braucht in der Liste einen Datumsfilter (url parameter). Und von der der Belegung soll man zu den aktuellen Buchungen gelangen können über Datumsklick
 [x] Der Dropdown bei Anfragen hat einen sehr dunklen Hintergrund.und die Schrift ist kaum lesbar. Mach hellen Hintergrund und passende Schrift.
 [x] Check-in/out, es muss die Möglichkeit geben das Zimmer zu wechseln.
+[ ] Mach Demodaten button und demodaten icon im menu leicht lila statt blau

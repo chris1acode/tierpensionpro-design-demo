@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { CalendarOff, CalendarPlus, ChevronLeft, ChevronRight, Download, Lock, LockKeyhole, Pencil, Trash2 } from '@lucide/vue'
 import type { DailyOccupancy, OccupancyLevel, OccupancyRangeDays, PensionClosure } from '../domain'
 import { formatDayAndMonth, formatShortWeekday } from '../presentation/dateFormat'
@@ -9,6 +10,7 @@ import ClosureFormModal from './ClosureFormModal.vue'
 import { downloadCsv } from '../shared/csvExport'
 
 const store = usePensionStore()
+const router = useRouter()
 const rangeOptions: { value: OccupancyRangeDays; label: string }[] = [
   { value: 7, label: '7 Tage' },
   { value: 14, label: '14 Tage' },
@@ -38,6 +40,10 @@ function closeClosureModal(): void {
 function onStartDateChange(event: Event): void {
   const value = (event.target as HTMLInputElement).value
   if (value) store.setOccupancyStartDate(value)
+}
+
+function openBookingsForDate(date: string): void {
+  void router.push({ name: 'bookings', query: { date } })
 }
 const gridStyle = computed(() => ({
   gridTemplateColumns: `200px repeat(${store.occupancyDates.value.length}, minmax(64px, 1fr))`
@@ -125,13 +131,16 @@ function closureLabel(startDate: string, endDate: string): string {
       <div class="occupancy-scroll">
         <div class="occupancy-grid" :style="gridStyle">
           <div class="occupancy-corner">Zimmer</div>
-          <div
+          <button
             v-for="day in store.dailyOccupancy.value"
             :key="day.date"
+            type="button"
             class="occupancy-day-header"
             :class="[levelClass(day.level), { today: day.date === todayIso }]"
             :data-date="day.date"
             :data-occupancy-level="day.level"
+            :aria-label="`Buchungen am ${day.date} anzeigen`"
+            @click="openBookingsForDate(day.date)"
           >
             <span class="occupancy-weekday">{{ formatShortWeekday(day.date) }}</span>
             <span class="occupancy-daynum">{{ formatDayAndMonth(day.date) }}</span>
@@ -139,7 +148,7 @@ function closureLabel(startDate: string, endDate: string): string {
               <i aria-hidden="true"><b :style="{ width: `${Math.min(100, day.rate)}%` }" /></i>
               {{ day.isClosed ? 'Zu' : occupancyCount(day.occupied, day.capacity) }}
             </span>
-          </div>
+          </button>
 
           <template v-for="room in store.roomTimelines.value" :key="room.id">
             <div class="occupancy-room-label">
@@ -191,7 +200,7 @@ function closureLabel(startDate: string, endDate: string): string {
       >
         <header>
           <div>
-            <span>{{ formatShortWeekday(day.date) }} · {{ formatDayAndMonth(day.date) }}</span>
+            <button type="button" class="mobile-occupancy-date" :aria-label="`Buchungen am ${day.date} anzeigen`" @click="openBookingsForDate(day.date)">{{ formatShortWeekday(day.date) }} · {{ formatDayAndMonth(day.date) }}</button>
             <strong>{{ occupancyLabel(day) }}</strong>
           </div>
           <b>{{ day.rate }} %</b>

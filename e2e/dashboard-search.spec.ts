@@ -226,6 +226,21 @@ test('navigates the occupancy period from an explicit start date', async ({ page
   await expect(startDate).toHaveValue('2026-08-09')
 })
 
+test('opens bookings for the selected occupancy date with a shareable date filter', async ({ page }, testInfo) => {
+  await page.goto('/occupancy')
+
+  const date = '2026-08-10'
+  const dateTrigger = testInfo.project.name === 'mobile'
+    ? page.locator(`.mobile-occupancy-day[data-date="${date}"]`).getByRole('button', { name: `Buchungen am ${date} anzeigen` })
+    : page.getByRole('button', { name: `Buchungen am ${date} anzeigen` })
+  await dateTrigger.click()
+
+  await expect(page).toHaveURL(`/bookings?date=${date}`)
+  await expect(page.getByLabel('Buchungen am Datum filtern')).toHaveValue(date)
+  await expect(page.getByRole('button', { name: 'Listenansicht' })).toHaveClass(/active/)
+  await expect(page.locator('.booking-table article')).not.toHaveCount(0)
+})
+
 test('provides an adequately sized today action in occupancy date navigation', async ({ page }) => {
   await page.goto('/occupancy')
 

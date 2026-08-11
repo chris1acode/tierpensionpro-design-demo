@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUpFromLine, Check, ChevronLeft, ChevronRight, ClipboardCheck, DoorOpen, Download, ExternalLink, History, RotateCcw, Search } from '@lucide/vue'
+import { ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUpFromLine, Check, ChevronLeft, ChevronRight, DoorOpen, Download, ExternalLink, History, RotateCcw, Search } from '@lucide/vue'
 import type { BookingView, DepartureView } from '../domain'
 import { addDaysToIsoDate, isValidIsoDate } from '../domain/bookingPeriod'
 import { usePagination } from '../composables/usePagination'
@@ -34,7 +34,6 @@ const matchesSearch = (booking: BookingView) => matchesSearchTerm(searchTerm.val
 const arrivals = computed(() => selectArrivals(store.bookingViews.value, selectedDate.value).filter(matchesSearch))
 const departures = computed(() => selectDepartures(store.bookingViews.value, selectedDate.value).filter(matchesSearch))
 const checkedIn = computed(() => selectCheckedIn(store.bookingViews.value).filter(matchesSearch))
-const openTaskCount = computed(() => arrivals.value.length + departures.value.length)
 const visibleBookings = computed(() => {
   if (activeView.value === 'arrivals') return arrivals.value
   if (activeView.value === 'departures') return departures.value
@@ -93,7 +92,6 @@ function exportHistory() {
   <main class="operations-page">
     <div class="page-heading">
       <div><p class="eyebrow">Tagesgeschäft</p><h1>Check-in/out</h1><p>Eingecheckte Tiere sowie anstehende Anreisen und Abreisen zentral bearbeiten.</p></div>
-      <span class="page-count"><ClipboardCheck :size="17" /> {{ openTaskCount }} offen</span>
     </div>
     <div class="operations-date-nav" :class="{ disabled: activeView === 'checked-in' }" role="group" aria-label="Vorgangsdatum">
       <button type="button" aria-label="Einen Tag zurück" :disabled="activeView === 'checked-in'" @click="shiftSelectedDate(-1)"><ChevronLeft :size="16" /></button>

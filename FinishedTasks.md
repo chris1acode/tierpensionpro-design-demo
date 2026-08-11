@@ -1,5 +1,31 @@
 # Finished Tasks
 
+## Session 27477 — 2026-08-11 16:39
+
+- extension.md: Zeitachsenansichten mit stabiler Mindesthöhe versehen: Die Buchungszeitachse (`.booking-calendar`) bleibt auf Desktop bei mindestens 430px, die Belegungs-Zeitachse (`.occupancy-panel-wide`) bei mindestens 460px. Dadurch verschiebt sich nach einem Zeitraumwechsel nur noch der Inhalt innerhalb des reservierten Bereichs; die nachfolgenden Seitenelemente springen nicht mehr. Die Regel ist bewusst auf Viewports ab 681px beschränkt, weil die mobile Belegung keine horizontale Zeitachse, sondern eine vertikale Tagesliste verwendet.
+
+## Session 59957 — 2026-08-11 16:38
+- `bugs.md` geprüft: keine offenen Punkte. In `extension.md` den Punkt „Check-in/out: Das kleine Badge mit z. B. 6 offen kann weg.“ umgesetzt und als erledigt markiert.
+- `src/components/CheckInOutPage.vue`: Das Kopfbereichs-Badge für offene Vorgänge entfernt, einschließlich der ausschließlich dafür verwendeten abgeleiteten Zählung und des `ClipboardCheck`-Imports. Die Anreise- und Abreise-Zahlen in den fachlichen Statuskarten bleiben unverändert erhalten.
+- Verifiziert mit `npm.cmd run build` und `npm.cmd run test` (30 Testdateien, 222 Tests grün).
+
+## Session 50478 — 2026-08-11 16:37
+- `bugs.md` geprüft: keine offenen Punkte mehr. Anschließend `extension.md` geprüft und den offenen Punkt „Buchungen braucht in der Liste einen Datumsfilter …“ umgesetzt und als erledigt markiert.
+- `BookingsPage.vue`: Neuer, validierter URL-Parameter `?date=YYYY-MM-DD` filtert die Listenansicht fachlich nach Aufenthalten, die am gewählten Tag tatsächlich laufen (Anreisetag inklusive, Abreisetag exklusive). Das Datum kann direkt über ein Datumseingabefeld gesetzt und wieder gelöscht werden; ein gültiger Deep-Link öffnet automatisch die Listenansicht.
+- `OccupancyPage.vue`: Tagesköpfe der Desktop-Belegungsansicht und Tagesangaben der mobilen Ansicht sind nun zugängliche Links zu den gefilterten Buchungen. Die Daten bleiben echte vorhandene Buchungs- und Belegungsmodelle; es wurde kein separates UI-Mock geschaffen.
+- E2E-Test ergänzt für Desktop und Mobile: Tagesklick führt zu `/bookings?date=2026-08-10`, setzt den Filter und zeigt gefilterte Buchungen. Verifiziert mit `npm.cmd run build`, `npm.cmd run test` (222 Tests grün) und dem neuen Playwright-Test (2/2 grün).
+
+## Session f4d8b — 2026-08-11 16:35
+- `bugs.md` geprüft: keine offenen Punkte.
+- `extension.md`: Die beiden offenen Kundenprofil-Details erledigt und markiert. Die redundante Tierart-Badge ("Hund"/"Katze") wurde aus den Tierprofilkarten entfernt.
+- Das dominante Tiersymbol wurde von 46×46 auf ein kompaktes 32×32-Icon mit 16px-Piktogramm verkleinert; Tierart und Farbe bleiben weiterhin direkt am Profil erkennbar.
+- Verifiziert mit `npx.cmd vue-tsc --noEmit` und `npm.cmd run test` (222 Tests grün).
+
+## Session c8280 — 2026-08-11 16:34
+- bugs.md: „Beim Zimmerwechsel muss Überbuchung möglich sein“ umgesetzt und als erledigt markiert. `RoomChangeModal.vue` listet jetzt auch volle, aber weiterhin artspezifisch passende und betriebsbereite Zielzimmer auf. Bei einer Überbuchung erscheint eine explizite Bestätigungs-Checkbox; ohne diese bleibt der Wechsel gesperrt.
+- `changeCheckedInBookingRoom(bookingId, roomId, allowOverbooking)` in `src/usePensionStore.ts` erzwingt dieselbe Bestätigung unabhängig von der Oberfläche und aktualisiert das bestehende Datenmodell-Feld `Booking.overbooked`. Die Erfolgsmeldung kennzeichnet eine erfolgte Überbuchung ebenfalls eindeutig.
+- Test ergänzt: Ein bereits eingechecktes Tier kann nur mit expliziter Bestätigung in ein volles kompatibles Zimmer wechseln; der Aufenthalt bleibt eingecheckt und wird als überbucht gespeichert. Verifiziert mit `npm.cmd run test` (222 Tests grün), `npx.cmd vue-tsc --noEmit` und `git diff --check`.
+
 ## Session c912e — 2026-08-11 15:05
 - extension.md Punkt 42: "Der Dropdown bei Anfragen hat einen sehr dunklen Hintergrund. und die Schrift ist kaum lesbar." behoben. Ursache war kein Farb-, sondern ein Fehlen des `color-scheme`-Hinweises: `.request-assign-form select` (und alle anderen `<select>`-Elemente der App) hatten bereits explizit hellen Hintergrund/Text für den geschlossenen Zustand, aber die aufklappbare nativen Options-Liste wird vom Browser gerendert und richtet sich mangels `color-scheme`-Angabe nach der OS-/Browser-Präferenz — bei aktiviertem Dark Mode also dunkler Hintergrund mit heller Schrift, die auf dem hellen Options-Hintergrund kaum lesbar war. Fix: `color-scheme:light` im `:root`-Selektor in `src/styles.css` ergänzt, damit alle nativen Formularsteuerelemente (Selects, Datumsfelder etc.) app-weit im hellen Farbschema gerendert werden, unabhängig von der OS-Einstellung — konsistent mit der Design-Vorgabe (`ui_ux_design/light-theme.md`), dass die App ausschließlich ein Light Theme hat.
 - Verifiziert mit `vue-tsc --noEmit` (fehlerfrei), `npm run test` (221 Tests, alle grün) sowie einem Playwright-Skript gegen den Dev-Server mit `colorScheme:'dark'` emuliert: `getComputedStyle(document.documentElement).colorScheme` liefert jetzt `light` statt der OS-Vorgabe, wodurch native Dropdown-Popups nicht mehr dunkel gerendert werden.

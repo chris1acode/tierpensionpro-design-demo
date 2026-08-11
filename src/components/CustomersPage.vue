@@ -213,7 +213,6 @@ function exportCustomers() {
               <div class="pet-profile-summary">
                 <strong>{{ pet.name }}</strong>
                 <span class="pet-breed">{{ pet.breed }}</span>
-                <span class="pet-species-badge"><Dog v-if="pet.species === 'dog'" :size="12" /><Cat v-else :size="12" /> {{ pet.species === 'dog' ? 'Hund' : 'Katze' }}</span>
                 <span v-if="pet.specialFood" class="pet-special-food-badge"><Utensils :size="12" /> Besonderes Futter</span>
               </div>
               <div class="pet-card-actions">
