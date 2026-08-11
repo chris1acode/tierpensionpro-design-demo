@@ -156,13 +156,16 @@ function exportCustomers() {
   <main class="customers-page">
     <div class="page-heading">
       <div><p class="eyebrow">Stammdaten</p><h1>Kunden & Tiere</h1><p>Kontaktdaten, Tierprofile und Aufenthalte an einem Ort.</p></div>
+      <div class="page-heading-actions">
+        <button class="primary-button" type="button" @click="customerModalMode = 'create'"><Plus :size="18" /> Kunden anlegen</button>
+      </div>
     </div>
 
     <div class="customer-layout" :class="{ 'details-open': detailsOpen }">
       <section class="panel customer-directory">
         <header>
           <div><h2>Kundenverzeichnis</h2><p>{{ filteredCustomers.length }} Treffer</p></div>
-          <div class="list-header-actions"><button class="text-button" type="button" aria-label="Kunden und Tiere als CSV exportieren" @click="exportCustomers"><Download :size="15" /> Exportieren</button><button class="text-button" type="button" @click="customerModalMode = 'create'"><Plus :size="15" /> Kunden anlegen</button></div>
+          <div class="list-header-actions"><button class="text-button" type="button" aria-label="Kunden und Tiere als CSV exportieren" @click="exportCustomers"><Download :size="15" /> Exportieren</button></div>
         </header>
         <label class="directory-search"><Search :size="17" /><input v-model="localQuery" placeholder="Kundenname oder Tiername suchen …" /></label>
         <div v-if="filteredCustomers.length" class="customer-list">

@@ -121,3 +121,10 @@
 - Logo-Einbindung in `src/App.vue` und `src/components/IntroPage.vue` angepasst: `style="color: white"` hinzugefügt, damit das Logo weiß auf dem orangen `brand-mark` Hintergrund erscheint.
 - Die korrigierte `logo.svg` wurde auch nach `ui_ux_design/assets/logo.svg` kopiert, um die Design-Assets synchron zu halten.
 - `LogoIcon.vue` Komponente erstellt und in `App.vue` sowie `IntroPage.vue` integriert. Das Logo in der `IntroPage.vue` hat nun keine Drehung mehr und verwendet die Primärfarbe direkt.
+
+
+- Schriftgrößen-Optimierung in der gesamten Anwendung (`src/styles.css`): Basis-Schriftgröße von 13px auf 15px erhöht, Überschriften und Labels moderat vergrößert.
+- `CustomersPage.vue`: Layout auf 50/50 Split (Verzeichnis vs. Detail) angepasst.
+- `CustomersPage.vue`: Tierkacheln auf volle Breite der Card gesetzt für bessere Übersicht.
+- `CustomersPage.vue`: "Kunden anlegen" als primäre Aktion in die Seitenübersicht verschoben und Aktionen im Kundenprofil oben rechts gruppiert.
+- Detaillierte Prüfung und Anpassung der Schriftgrößen in `AccountSettingsPage.vue`, `BookingsPage.vue`, `CheckInOutPage.vue`, `OccupancyPage.vue`, `RequestsPage.vue` und `SettingsPage.vue`.
