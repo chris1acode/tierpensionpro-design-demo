@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { CalendarOff, CalendarPlus, ChevronLeft, ChevronRight, Download, Lock, LockKeyhole, Trash2 } from '@lucide/vue'
-import type { DailyOccupancy, OccupancyLevel, OccupancyRangeDays } from '../domain'
+import { CalendarOff, CalendarPlus, ChevronLeft, ChevronRight, Download, Lock, LockKeyhole, Pencil, Trash2 } from '@lucide/vue'
+import type { DailyOccupancy, OccupancyLevel, OccupancyRangeDays, PensionClosure } from '../domain'
 import { formatDayAndMonth, formatShortWeekday } from '../presentation/dateFormat'
 import { usePensionStore } from '../usePensionStore'
 import OccupancyReservationModal from './OccupancyReservationModal.vue'
+import ClosureFormModal from './ClosureFormModal.vue'
 import { downloadCsv } from '../shared/csvExport'
 
 const store = usePensionStore()
@@ -16,12 +17,23 @@ const rangeOptions: { value: OccupancyRangeDays; label: string }[] = [
 
 const todayIso = computed(() => store.businessDate.value)
 const reservationOpen = ref(false)
-const closureError = ref('')
-const closureDraft = ref({
-  startDate: '',
-  endDate: '',
-  reason: ''
-})
+const closureModalMode = ref<'create' | 'edit' | null>(null)
+const closureBeingEdited = ref<PensionClosure | null>(null)
+
+function openClosureCreate(): void {
+  closureBeingEdited.value = null
+  closureModalMode.value = 'create'
+}
+
+function openClosureEdit(closure: PensionClosure): void {
+  closureBeingEdited.value = closure
+  closureModalMode.value = 'edit'
+}
+
+function closeClosureModal(): void {
+  closureModalMode.value = null
+  closureBeingEdited.value = null
+}
 
 function onStartDateChange(event: Event): void {
   const value = (event.target as HTMLInputElement).value
@@ -40,7 +52,7 @@ function occupancyLabel(day: DailyOccupancy): string {
 }
 
 function levelClass(level: OccupancyLevel): string {
-  return level === 'medium' ? 'mid' : level
+  return level
 }
 
 function occupancyCount(occupied: number, capacity: number): string {
@@ -55,15 +67,6 @@ function exportOccupancy() {
       day.date, day.occupied, day.capacity, day.availablePlaces, `${day.rate} %`, occupancyLabel(day)
     ])
   })
-}
-
-function saveClosure(): void {
-  closureError.value = ''
-  if (!store.createPensionClosure(closureDraft.value)) {
-    closureError.value = 'Bitte einen gültigen Zeitraum für die Schließzeit angeben.'
-    return
-  }
-  closureDraft.value = { startDate: '', endDate: '', reason: '' }
 }
 
 function closureLabel(startDate: string, endDate: string): string {
@@ -115,6 +118,7 @@ function closureLabel(startDate: string, endDate: string): string {
           <span><i class="legend-swatch full" /> Ausgebucht</span>
           <span><i class="legend-swatch overbooked" /> Überbucht</span>
           <span><i class="legend-swatch maintenance" /> Gesperrt</span>
+          <span><i class="legend-swatch closed" /> Geschlossen</span>
         </div></div>
       </header>
 
@@ -141,7 +145,7 @@ function closureLabel(startDate: string, endDate: string): string {
             <div class="occupancy-room-label">
               <strong>{{ room.name }}</strong>
               <span>{{ room.category }} · {{ room.capacity }} {{ room.capacity === 1 ? 'Platz' : 'Plätze' }}</span>
-              <span v-if="room.operationalState.status === 'maintenance'" class="status-badge full"><Lock :size="11" /> Gesperrt</span>
+              <span v-if="room.operationalState.status === 'maintenance'" class="status-badge locked"><Lock :size="11" /> Gesperrt</span>
             </div>
             <div
               v-for="segment in room.segments"
@@ -199,7 +203,7 @@ function closureLabel(startDate: string, endDate: string): string {
               <span>{{ room.category }} · {{ room.capacity }} {{ room.capacity === 1 ? 'Platz' : 'Plätze' }}</span>
             </div>
             <template v-if="room.segments.find((segment) => segment.date === day.date)?.isClosed">
-              <span class="mobile-room-state maintenance"><CalendarOff :size="13" /> Geschlossen</span>
+              <span class="mobile-room-state closed"><CalendarOff :size="13" /> Geschlossen</span>
             </template>
             <template v-else-if="room.operationalState.status === 'maintenance'">
               <span class="mobile-room-state maintenance"><Lock :size="13" /> Gesperrt</span>
@@ -220,22 +224,28 @@ function closureLabel(startDate: string, endDate: string): string {
       </article>
     </section>
     <section class="panel occupancy-closures" aria-labelledby="closures-heading">
-      <header><div><h2 id="closures-heading">Schließzeiten</h2><p>Während einer Schließzeit stehen keine Plätze für Reservierungen zur Verfügung.</p></div></header>
-      <form class="closure-form" @submit.prevent="saveClosure">
-        <label>Von<input v-model="closureDraft.startDate" aria-label="Schließzeit von" type="date" required /></label>
-        <label>Bis<input v-model="closureDraft.endDate" aria-label="Schließzeit bis" type="date" :min="closureDraft.startDate" required /></label>
-        <label class="closure-reason">Hinweis <input v-model="closureDraft.reason" aria-label="Hinweis zur Schließzeit" type="text" placeholder="z. B. Betriebsferien" /></label>
-        <button class="secondary-button" type="submit"><LockKeyhole :size="15" /> Schließzeit hinterlegen</button>
-      </form>
-      <p v-if="closureError" class="form-error" role="alert">{{ closureError }}</p>
+      <header>
+        <div><h2 id="closures-heading">Schließzeiten</h2><p>Während einer Schließzeit stehen keine Plätze für Reservierungen zur Verfügung.</p></div>
+        <button class="secondary-button" type="button" @click="openClosureCreate"><LockKeyhole :size="15" /> Schließzeit anlegen</button>
+      </header>
       <p v-if="!store.pensionClosures.length" class="empty-state">Keine Schließzeiten hinterlegt.</p>
       <ul v-else class="closure-list">
         <li v-for="closure in store.pensionClosures" :key="closure.id">
           <div><strong>{{ closureLabel(closure.startDate, closure.endDate) }}</strong><span>{{ closure.reason || 'Ohne Hinweis' }}</span></div>
-          <button class="icon-button" type="button" :aria-label="`Schließzeit ${closureLabel(closure.startDate, closure.endDate)} entfernen`" @click="store.deletePensionClosure(closure.id)"><Trash2 :size="15" /></button>
+          <div class="closure-actions">
+            <button class="icon-button" type="button" :aria-label="`Schließzeit ${closureLabel(closure.startDate, closure.endDate)} bearbeiten`" @click="openClosureEdit(closure)"><Pencil :size="15" /></button>
+            <button class="icon-button" type="button" :aria-label="`Schließzeit ${closureLabel(closure.startDate, closure.endDate)} entfernen`" @click="store.deletePensionClosure(closure.id)"><Trash2 :size="15" /></button>
+          </div>
         </li>
       </ul>
     </section>
     <OccupancyReservationModal v-if="reservationOpen" :start-date="store.occupancyStartDate.value" @close="reservationOpen = false" />
+    <ClosureFormModal
+      v-if="closureModalMode"
+      :mode="closureModalMode"
+      :closure="closureBeingEdited ?? undefined"
+      @close="closeClosureModal"
+      @saved="closeClosureModal"
+    />
   </main>
 </template>

@@ -17,7 +17,7 @@ test('keeps the demo data control clear of dashboard actions', async ({ page }) 
   await page.goto('/')
 
   const demoControl = page.getByRole('button', { name: 'Demodaten-Menü öffnen' })
-  const occupancyAction = page.getByRole('link', { name: /Belegung planen/ })
+  const occupancyAction = page.getByRole('link', { name: /Belegung ansehen/ })
   const [demoBox, actionBox] = await Promise.all([demoControl.boundingBox(), occupancyAction.boundingBox()])
 
   expect(demoBox).not.toBeNull()
@@ -78,7 +78,7 @@ test('exports the data behind every list as CSV', async ({ page }) => {
   const exports = [
     ['/buchungen', 'Buchungen als CSV exportieren', 'buchungen.csv'],
     ['/kunden-tiere', 'Kunden und Tiere als CSV exportieren', 'kunden-und-tiere.csv'],
-    ['/check-in-out', 'Aktuelle Vorgänge als CSV exportieren', 'anreisen.csv'],
+    ['/check-in-out?view=arrivals', 'Aktuelle Vorgänge als CSV exportieren', 'anreisen.csv'],
     ['/check-in-out', 'Check-in-out-Verlauf als CSV exportieren', 'check-in-out-verlauf.csv'],
     ['/anfragen', 'Offene Anfragen als CSV exportieren', 'offene-anfragen.csv'],
     ['/anfragen', 'Anfragenverlauf als CSV exportieren', 'anfragen-verlauf.csv'],
@@ -197,7 +197,7 @@ test('navigates from dashboard category widgets to their detail pages', async ({
   await expect(page).toHaveURL(/\/check-in-out$/)
 
   await page.goto('/')
-  await page.getByRole('link', { name: 'Belegung planen' }).click()
+  await page.getByRole('link', { name: 'Belegung ansehen' }).click()
   await expect(page).toHaveURL(/\/belegung$/)
 })
 
@@ -240,6 +240,7 @@ test('provides an adequately sized today action in occupancy date navigation', a
 test('records closure periods and removes all capacity for their dates', async ({ page }, testInfo) => {
   await page.goto('/belegung')
 
+  await page.getByRole('button', { name: 'Schließzeit anlegen' }).click()
   await page.getByLabel('Schließzeit von').fill('2026-08-10')
   await page.getByLabel('Schließzeit bis').fill('2026-08-10')
   await page.getByLabel('Hinweis zur Schließzeit').fill('Betriebsferien')
@@ -258,6 +259,7 @@ test('records closure periods and removes all capacity for their dates', async (
 test('does not offer rooms for requests that overlap a closure', async ({ page }, testInfo) => {
   await page.goto('/belegung')
 
+  await page.getByRole('button', { name: 'Schließzeit anlegen' }).click()
   await page.getByLabel('Schließzeit von').fill('2026-08-17')
   await page.getByLabel('Schließzeit bis').fill('2026-08-20')
   await page.getByRole('button', { name: 'Schließzeit hinterlegen' }).click()
@@ -268,7 +270,9 @@ test('does not offer rooms for requests that overlap a closure', async ({ page }
   await page.getByRole('link', { name: 'Anfragen', exact: true }).click()
   await expect(page).toHaveURL(/\/anfragen$/)
   const request = page.locator('.request-card').filter({ hasText: 'Hannah Wolf' })
-  const roomSelection = request.getByRole('combobox', { name: 'Zimmer für Anfrage von Hannah Wolf' })
+  await request.getByRole('button', { name: 'Annehmen' }).click()
+  const dialog = page.getByRole('dialog', { name: 'Anfrage von Hannah Wolf annehmen' })
+  const roomSelection = dialog.getByLabel('Zimmer wählen')
   await expect(roomSelection.locator('option')).toHaveCount(1)
   await expect(roomSelection).toContainText('Zimmer wählen')
 })
@@ -410,6 +414,7 @@ test('shows bookings as filterable, room-based continuous bars in the timeline',
 
 test('pages the booking list in groups of ten and resets for a search', async ({ page }) => {
   await page.goto('/buchungen')
+  await page.getByRole('button', { name: 'Listenansicht' }).click()
 
   const bookings = page.locator('.booking-table article')
   const pagination = page.getByRole('navigation', { name: 'Seiten in der Buchungsliste' })
@@ -496,7 +501,7 @@ test('gives the customer directory two thirds of the desktop content width', asy
 test('pages through the complete customer mock data', async ({ page }) => {
   await page.goto('/kunden-tiere')
 
-  await expect(page.getByText('100 Kund:innen', { exact: true })).toBeVisible()
+  await expect(page.getByText('100 Treffer', { exact: true })).toBeVisible()
   await expect(page.locator('.customer-list button')).toHaveCount(5)
   await page.getByRole('button', { name: 'Nächste Seite' }).click()
   await expect(page.getByRole('button', { name: '2', exact: true })).toHaveAttribute('aria-current', 'page')
@@ -530,6 +535,7 @@ test('uses a master-detail flow for customers on small screens', async ({ page }
   await expect(page.locator('.customer-directory')).toBeVisible()
   await expect(page.locator('.customer-details')).toBeHidden()
 
+  await page.getByPlaceholder('Kundenname oder Tiername suchen …').fill('Sofia')
   await page.getByRole('button', { name: /Sofia Berger/ }).click()
 
   await expect(page.locator('.customer-directory')).toBeHidden()
@@ -543,6 +549,7 @@ test('uses a master-detail flow for customers on small screens', async ({ page }
 
 test('shows customer pets as readable species profile cards', async ({ page }) => {
   await page.goto('/kunden-tiere')
+  await page.getByPlaceholder('Kundenname oder Tiername suchen …').fill('Sofia')
   await page.getByRole('button', { name: /Sofia Berger/ }).click()
 
   const petCard = page.locator('.pet-profile-card').filter({ hasText: 'Balu' })
@@ -567,7 +574,7 @@ test('starts a booking from a customer profile with that customer preselected', 
 })
 
 test('completes a check-in from the check-in/out page', async ({ page }) => {
-  await page.goto('/check-in-out')
+  await page.goto('/check-in-out?view=arrivals')
 
   await expect(page.getByRole('heading', { name: 'Check-in/out' })).toBeVisible()
   await expect(page.getByText('6 offen', { exact: true })).toBeVisible()
@@ -597,7 +604,7 @@ test('lists currently checked-in animals independently of the selected operation
   await page.goto('/check-in-out?view=checked-in')
 
   await expect(page.getByRole('heading', { name: 'Jetzt eingecheckt' })).toBeVisible()
-  await expect(page.getByRole('textbox', { name: 'Datum für Check-in und Check-out' })).toHaveCount(0)
+  await expect(page.getByRole('textbox', { name: 'Datum für Check-in und Check-out' })).toBeDisabled()
   const checkedInRow = page.locator('.operation-row').first()
   await expect(checkedInRow).toContainText('Auschecken')
   await checkedInRow.getByRole('button', { name: 'Auschecken' }).click()
@@ -608,6 +615,7 @@ test('lists currently checked-in animals independently of the selected operation
 
 test('checks out an animal directly from its booking while recording the completed stay', async ({ page }) => {
   await page.goto('/buchungen')
+  await page.getByRole('button', { name: 'Listenansicht' }).click()
   await page.getByRole('button', { name: 'Eingecheckt' }).click()
 
   const booking = page.locator('.booking-table article').filter({ hasText: 'Luna' }).first()
@@ -626,7 +634,7 @@ test('checks out an animal directly from its booking while recording the complet
 })
 
 test('opens and updates a planned arrival from check-in/out', async ({ page }) => {
-  await page.goto('/check-in-out')
+  await page.goto('/check-in-out?view=arrivals')
 
   await page.locator('.operation-row').filter({ hasText: 'Balu' })
     .getByRole('link', { name: 'Buchung bearbeiten' }).click()
@@ -644,6 +652,8 @@ test('opens and updates a planned arrival from check-in/out', async ({ page }) =
 
 test('opens a planned booking for editing directly from the booking list', async ({ page }) => {
   await page.goto('/buchungen')
+  await page.getByRole('button', { name: 'Listenansicht' }).click()
+  await page.getByPlaceholder('Tier, Kunde oder Zimmer suchen …').fill('Balu')
 
   const booking = page.locator('.booking-table article').filter({ hasText: 'Balu' })
   await booking.getByRole('link', { name: 'Buchung für Balu bearbeiten' }).click()
@@ -653,7 +663,7 @@ test('opens a planned booking for editing directly from the booking list', async
 })
 
 test('selects the operational day for check-in and check-out tasks', async ({ page }) => {
-  await page.goto('/check-in-out')
+  await page.goto('/check-in-out?view=arrivals')
 
   const date = page.getByRole('textbox', { name: 'Datum für Check-in und Check-out' })
   await expect(date).toHaveValue('2026-08-09')
@@ -670,7 +680,7 @@ test('selects the operational day for check-in and check-out tasks', async ({ pa
 
   await page.getByRole('button', { name: 'Einen Tag zurück' }).click()
   await expect(date).toHaveValue('2026-08-08')
-  await page.getByRole('button', { name: 'Heute' }).click()
+  await page.getByRole('button', { name: 'Heute', exact: true }).click()
   await expect(date).toHaveValue('2026-08-09')
 })
 
@@ -696,6 +706,7 @@ test('pages the check-in/out history in groups of five entries', async ({ page }
 
 test('creates a booking through its customer and pet relationship', async ({ page }) => {
   await page.goto('/buchungen')
+  await page.getByRole('button', { name: 'Listenansicht' }).click()
   await page.getByRole('button', { name: 'Neue Buchung' }).click()
 
   const form = page.getByRole('dialog')
@@ -741,16 +752,19 @@ test('shows the room-selection prompt for pending requests', async ({ page }) =>
   const hannahRequest = page.locator('.request-card').filter({ hasText: 'Hannah Wolf' })
   await expect(hannahRequest.getByLabel('Verfügbarkeit: frei')).toContainText('Zeitraum frei')
 
-  const customerSelect = page.getByLabel('Kunde für Anfrage von Hannah Wolf')
+  await hannahRequest.getByRole('button', { name: 'Annehmen' }).click()
+  const dialog = page.getByRole('dialog', { name: 'Anfrage von Hannah Wolf annehmen' })
+
+  const customerSelect = dialog.getByLabel('Kunde zuordnen')
   await expect(customerSelect).toHaveValue('')
   await expect(customerSelect.locator('option:checked')).toHaveText('Kunde zuordnen')
 
-  const roomSelect = page.getByLabel('Zimmer für Anfrage von Hannah Wolf')
+  const roomSelect = dialog.getByLabel('Zimmer wählen')
   await expect(roomSelect).toHaveValue('')
   await expect(roomSelect).toHaveJSProperty('selectedIndex', 0)
   await expect(roomSelect.locator('option:checked')).toHaveText('Zimmer wählen')
 
-  await expect(page.getByRole('button', { name: 'Annehmen' }).first()).toBeDisabled()
+  await expect(dialog.getByRole('button', { name: 'Anfrage annehmen' })).toBeDisabled()
 })
 
 test('groups request details separately from the decision controls', async ({ page }) => {
@@ -777,16 +791,19 @@ test('groups request details separately from the decision controls', async ({ pa
 test('requires an explicit customer choice when accepting a request and highlights a matching contact', async ({ page }) => {
   await page.goto('/anfragen')
 
-  const emiliaRequest = page.getByLabel('Kunde für Anfrage von Emilia Fischer').locator('xpath=ancestor::article')
-  const customerSelect = emiliaRequest.getByLabel('Kunde für Anfrage von Emilia Fischer')
-  await expect(emiliaRequest).toContainText('Passender Kunde: Emilia Fischer · gleiche E-Mail-Adresse. Mit der Auswahl wird die Anfrage diesem Kunden zugeordnet.')
+  const emiliaRequest = page.locator('.request-card').filter({ hasText: 'Emilia Fischer' })
+  await emiliaRequest.getByRole('button', { name: 'Annehmen' }).click()
+
+  const dialog = page.getByRole('dialog', { name: 'Anfrage von Emilia Fischer annehmen' })
+  const customerSelect = dialog.getByLabel('Kunde zuordnen')
+  await expect(dialog).toContainText('Passender Kunde: Emilia Fischer · gleiche E-Mail-Adresse. Mit der Auswahl wird die Anfrage diesem Kunden zugeordnet.')
   await expect(customerSelect.locator('optgroup')).toHaveAttribute('label', 'Passende bestehende Kunden')
   await expect(customerSelect.locator('option[value="c-8"]')).toHaveCount(1)
   await expect(customerSelect.locator('option[value="c-1"]')).toHaveCount(0)
 
   await customerSelect.selectOption('c-8')
-  await emiliaRequest.getByLabel('Zimmer für Anfrage von Emilia Fischer').selectOption('r-1')
-  await emiliaRequest.getByRole('button', { name: 'Annehmen' }).click()
+  await dialog.getByLabel('Zimmer wählen').selectOption('r-1')
+  await dialog.getByRole('button', { name: 'Anfrage annehmen' }).click()
 
   await expect(emiliaRequest).toHaveCount(0)
   await expect(page.locator('.request-history').filter({ hasText: 'Emilia Fischer' })).toContainText('Angenommen')

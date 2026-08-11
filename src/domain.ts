@@ -125,6 +125,7 @@ export interface PensionClosure {
 }
 
 export type NewPensionClosure = Pick<PensionClosure, 'startDate' | 'endDate' | 'reason'>
+export type PensionClosureUpdate = Pick<PensionClosure, 'startDate' | 'endDate' | 'reason'>
 
 export interface RoomPeriodOccupancy {
   roomId: Room['id']

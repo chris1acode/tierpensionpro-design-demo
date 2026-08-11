@@ -1,27 +1,21 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { Cat, Check, CircleAlert, CircleCheck, Dog, Download, Inbox, ThumbsDown, ThumbsUp } from '@lucide/vue'
 import type { BookingRequest } from '../domain'
 import DeclineRequestModal from './DeclineRequestModal.vue'
-import { getCustomerRequestMatch } from '../domain/customerProfile'
+import RequestAssignModal from './RequestAssignModal.vue'
 import { getRequestRoomOptions } from '../domain/roomAvailability'
 import { requestStatusLabels } from '../presentation/requestStatus'
-import { selectRoomOccupancyForPeriod } from '../store/pensionSelectors'
 import { usePensionStore } from '../usePensionStore'
 import { downloadCsv } from '../shared/csvExport'
 
 const store = usePensionStore()
-const roomSelection = reactive<Record<string, string>>(
-  Object.fromEntries(store.pendingRequests.value.map((request) => [request.id, '']))
-)
-const customerSelection = reactive<Record<string, string>>(
-  Object.fromEntries(store.pendingRequests.value.map((request) => [request.id, '']))
-)
-const requestError = reactive<Record<string, string>>({})
 const requestToDecline = ref<BookingRequest | null>(null)
+const requestToAssign = ref<BookingRequest | null>(null)
 
-const pendingRequestDetails = computed(() => store.pendingRequests.value.map((request) => {
-  const roomOptions = getRequestRoomOptions(
+const pendingRequestDetails = computed(() => store.pendingRequests.value.map((request) => ({
+  request,
+  availability: getRequestRoomOptions(
     store.roomViews.value,
     store.bookingViews.value,
     request,
@@ -29,33 +23,8 @@ const pendingRequestDetails = computed(() => store.pendingRequests.value.map((re
     request.arrival,
     request.departure,
     store.pensionClosures
-  )
-  const selectedRoom = store.rooms.find((room) => room.id === roomSelection[request.id])
-  return {
-    request,
-    availableRooms: roomOptions.rooms,
-    availability: roomOptions.availability,
-    matchingCustomers: store.customers.flatMap((customer) => {
-      const match = getCustomerRequestMatch(customer, request)
-      return match ? [{ customer, match }] : []
-    }),
-    selectedRoomOccupancy: selectedRoom
-      ? selectRoomOccupancyForPeriod(selectedRoom, store.bookingViews.value, request.arrivalDate, request.departure)
-      : null
-  }
-}))
-
-function accept(request: BookingRequest) {
-  const roomId = roomSelection[request.id]
-  const customerAssignment = customerSelection[request.id]
-  if (!roomId || !customerAssignment || !store.acceptRequest(request.id, roomId, customerAssignment === 'new' ? 'new' : customerAssignment)) {
-    requestError[request.id] = 'Bitte ordne einen Kunden zu und wähle ein verfügbares Zimmer.'
-    return
-  }
-  delete requestError[request.id]
-  delete roomSelection[request.id]
-  delete customerSelection[request.id]
-}
+  ).availability
+})))
 
 function decline(reason: string) {
   const request = requestToDecline.value
@@ -121,36 +90,10 @@ function exportRequests(scope: 'pending' | 'history') {
               </p>
             </div>
             <div class="request-actions">
-              <select v-model="customerSelection[request.id]" :aria-label="`Kunde für Anfrage von ${request.customerFirstName} ${request.customerLastName}`">
-                <option value="" disabled>Kunde zuordnen</option>
-                <option value="new">Als neuen Kunden anlegen</option>
-                <optgroup v-if="requestDetail.matchingCustomers.length" label="Passende bestehende Kunden">
-                  <option v-for="{ customer } in requestDetail.matchingCustomers" :key="customer.id" :value="customer.id">{{ customer.firstName }} {{ customer.lastName }} · {{ customer.email }}</option>
-                </optgroup>
-              </select>
-              <p v-if="requestDetail.matchingCustomers.length" class="customer-match-hint">
-                Passender Kunde: {{ requestDetail.matchingCustomers.map(({ customer }) => `${customer.firstName} ${customer.lastName}`).join(', ') }}
-                <template v-if="requestDetail.matchingCustomers.some(({ match }) => match === 'email')"> · gleiche E-Mail-Adresse</template><template v-else-if="requestDetail.matchingCustomers.some(({ match }) => match === 'phone')"> · gleiche Telefonnummer</template>.
-                Mit der Auswahl wird die Anfrage diesem Kunden zugeordnet.
-              </p>
-              <select v-model="roomSelection[request.id]" :aria-label="`Zimmer für Anfrage von ${request.customerFirstName} ${request.customerLastName}`">
-                <option value="" disabled>Zimmer wählen</option>
-                <option v-for="room in requestDetail.availableRooms" :key="room.id" :value="room.id">{{ room.name }}</option>
-              </select>
-              <p
-                v-if="requestDetail.selectedRoomOccupancy"
-                class="room-occupancy-hint"
-                :class="{ full: requestDetail.selectedRoomOccupancy.availablePlaces === 0 }"
-              >
-                Auslastung im Zeitraum: {{ requestDetail.selectedRoomOccupancy.peakOccupied }}/{{ requestDetail.selectedRoomOccupancy.capacity }} Plätze
-                <template v-if="requestDetail.selectedRoomOccupancy.peakDate"> · engster Tag {{ requestDetail.selectedRoomOccupancy.peakDate }}</template>
-                <template v-if="requestDetail.selectedRoomOccupancy.availablePlaces === 0"> · bereits ausgebucht</template>
-              </p>
               <div class="request-buttons">
-                <button class="primary-button" :disabled="!roomSelection[request.id] || !customerSelection[request.id]" @click="accept(request)"><ThumbsUp :size="15" /> Annehmen</button>
+                <button class="primary-button" @click="requestToAssign = request"><ThumbsUp :size="15" /> Annehmen</button>
                 <button class="secondary-button" @click="requestToDecline = request"><ThumbsDown :size="15" /> Ablehnen</button>
               </div>
-              <p v-if="requestError[request.id]" class="form-error" role="alert">{{ requestError[request.id] }}</p>
             </div>
             </template>
           </article>
@@ -167,7 +110,7 @@ function exportRequests(scope: 'pending' | 'history') {
               <span>{{ request.petName }} · {{ request.breed }}</span>
             </div>
             <div class="request-history-dates"><small>Aufenthalt</small><span>{{ request.arrivalDate }} – {{ request.departure }}</span></div>
-            <span class="booking-status" :class="request.status === 'accepted' ? 'checked-in' : 'checked-out'">{{ requestStatusLabels[request.status] }}</span>
+            <span class="booking-status" :class="request.status === 'accepted' ? 'accepted' : 'checked-out'">{{ requestStatusLabels[request.status] }}</span>
             <div v-if="request.declineReason || request.declineNotification" class="request-history-notes">
               <span v-if="request.declineReason" class="note-badge">Grund: {{ request.declineReason }}</span>
               <span v-if="request.declineNotification" class="request-notification">E-Mail-Benachrichtigung an {{ request.declineNotification.recipient }} vorgemerkt</span>
@@ -178,5 +121,6 @@ function exportRequests(scope: 'pending' | 'history') {
       </section>
     </template>
     <DeclineRequestModal v-if="requestToDecline" :request="requestToDecline" @close="requestToDecline = null" @confirm="decline" />
+    <RequestAssignModal v-if="requestToAssign" :request="requestToAssign" @close="requestToAssign = null" @accepted="requestToAssign = null" />
   </main>
 </template>

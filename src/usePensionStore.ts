@@ -1,5 +1,5 @@
 import { computed, reactive, ref } from 'vue'
-import type { AccountUpdate, Booking, BookingRequest, BookingReservation, BookingUpdate, CheckInOutEvent, Customer, CustomerUpdate, NewBooking, NewBookingReservation, NewCustomer, NewPet, NewPensionClosure, OccupancyRangeDays, PensionSettingsUpdate, PetUpdate, RoomInput, RoomOperationalStatus, ToastNotification } from './domain'
+import type { AccountUpdate, Booking, BookingRequest, BookingReservation, BookingUpdate, CheckInOutEvent, Customer, CustomerUpdate, NewBooking, NewBookingReservation, NewCustomer, NewPet, NewPensionClosure, OccupancyRangeDays, PensionClosureUpdate, PensionSettingsUpdate, PetUpdate, RoomInput, RoomOperationalStatus, ToastNotification } from './domain'
 import { isValidAccountUpdate } from './domain/account'
 import { isValidBookingNote, normalizeBookingNote } from './domain/bookingNote'
 import { addDaysToIsoDate, buildDateRange, enumerateStayDates, fromLocalIsoDate, isValidBookingPeriod, isValidIsoDate, isValidOptionalTime, toLocalIsoDate } from './domain/bookingPeriod'
@@ -613,6 +613,17 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     return true
   }
 
+  function updatePensionClosure(closureId: string, input: PensionClosureUpdate): boolean {
+    const closure = pensionClosures.find((item) => item.id === closureId)
+    if (!closure || !isValidPensionClosure(input)) return false
+
+    closure.startDate = input.startDate
+    closure.endDate = input.endDate
+    closure.reason = input.reason?.trim() || undefined
+    showToast('Die Schließzeit wurde aktualisiert.')
+    return true
+  }
+
   function deletePensionClosure(closureId: string): boolean {
     const index = pensionClosures.findIndex((closure) => closure.id === closureId)
     if (index < 0) return false
@@ -720,6 +731,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     reactivateAccount,
     setRoomOperationalStatus,
     createPensionClosure,
+    updatePensionClosure,
     deletePensionClosure,
     setOccupancyRangeDays,
     setOccupancyStartDate,

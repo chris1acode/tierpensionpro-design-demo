@@ -2,9 +2,9 @@
 [x] Umbau "Tier anlegen" von Inline-Formular auf Modal in CustomersPage.vue (inkl. Bearbeiten via Modal)
 [x] Umbau "Notfallkontakt hinterlegen". Die Funktion kann weg.
 [x] Umbau "Neue Buchung" von Inline-Formular auf Modal in BookingsPage.vue (inkl. Bearbeiten via Modal)
-[ ] Umbau "Schließzeit anlegen" von Inline-Formular auf Modal in OccupancyPage.vue (inkl. Bearbeiten via Modal)
-[ ] Umbau Offene Anfragen. Kein Inline Formular mehr. Zuordnung über Modal.
-[ ] Gleiche color-concept.md mit den tatsächlichen Farben ab und fixe sie ggf.
+[x] Umbau "Schließzeit anlegen" von Inline-Formular auf Modal in OccupancyPage.vue (inkl. Bearbeiten via Modal)
+[x] Umbau Offene Anfragen. Kein Inline Formular mehr. Zuordnung über Modal.
+[x] Gleiche color-concept.md mit den tatsächlichen Farben ab und fixe sie ggf.
 [ ] Zimmer Einstellungen sieht visuell kacke aus. Geht das nicht übersichtlicher? Außerdem Modal verwenden für Create und Edit.
 [ ] Schriftarten in AccountSettingsPage.vue prüfen und vergrößern
 [ ] Schriftarten in BookingsPage.vue prüfen und vergrößern
@@ -37,4 +37,5 @@
 [ ] Check-in/out: Das kleine Badge mit z.b. 6 offen kann weg.
 [ ] Buchungsliste soll nach Zeitstempel sortiert sein. Zuletzt angelegt oben.
 [ ] Gib seiten mit Zeitachsenansichten eine Mindesthöhe, damit sie bei der navigation nicht springen.
-[ ] Buchungen braucht in der Liste einen Datumsfilter (url parameter). Und von der der Belegung soll man zu den aktuellen Buchungen gelangen können über Datumsklick  
+[ ] Buchungen braucht in der Liste einen Datumsfilter (url parameter). Und von der der Belegung soll man zu den aktuellen Buchungen gelangen können über Datumsklick
+[ ] Der Dropdown bei Anfragen hat einen sehr dunklen Hintergrund.und die Schrift ist kaum lesbar. Mach hellen Hintergrund und passende Schrift. 
