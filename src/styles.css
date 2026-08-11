@@ -237,3 +237,23 @@ body {
 .danger-zone-body strong { font-size: 15px; }
 .danger-zone-body p { font-size: 14px; }
 .account-role-badge { font-size: 12px; }
+
+.info-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  background: #f0f7ff;
+  border: 1px solid #d0e7ff;
+  border-radius: 10px;
+  color: #1e40af;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.info-banner i {
+  margin-top: 2px;
+  color: #3b82f6;
+  flex: none;
+}

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
-import { Banknote, Building2, Cat, Clock3, Dog, Inbox, Pencil, Plus, Save, Trash2 } from '@lucide/vue'
+import { Banknote, Building2, Cat, Clock3, Dog, Inbox, Info, Pencil, Plus, Save, Trash2 } from '@lucide/vue'
 import type { PensionSettingsUpdate, PetSpecies, Room } from '../domain'
 import { useSynchronizedDraft } from '../composables/useSynchronizedDraft'
 import { arePensionSettingsEqual } from '../domain/pensionSettings'
@@ -131,6 +131,10 @@ function updateRate(species: PetSpecies, value: string) {
       </template>
 
       <section v-else class="panel settings-panel">
+        <div class="info-banner">
+          <Info :size="20" />
+          <p>Ein ausführlichere Tarifkonfiguration ist noch in der Entwicklung (Bsp. Rabatt für mehrere Tiere, Einzelzimmer etc)</p>
+        </div>
         <header><span class="settings-icon amber"><Banknote :size="20" /></span><div><h2>Preisliste</h2><p>Grundpreis je Tier und angefangenen Betreuungstag. Alle Beträge inklusive Mehrwertsteuer.</p></div></header>
         <div class="settings-fields price-fields">
           <label>Hund pro Tag

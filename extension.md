@@ -41,5 +41,13 @@
 [x] Buchungen braucht in der Liste einen Datumsfilter (url parameter). Und von der der Belegung soll man zu den aktuellen Buchungen gelangen können über Datumsklick
 [x] Der Dropdown bei Anfragen hat einen sehr dunklen Hintergrund.und die Schrift ist kaum lesbar. Mach hellen Hintergrund und passende Schrift.
 [x] Check-in/out, es muss die Möglichkeit geben das Zimmer zu wechseln.
-[ ] Mach Demodaten button und demodaten icon im menu leicht lila statt blau
-[ ] Tierarztpraxis wird nicht benötigt. Weg damit
+[x] Mach Demodaten button und demodaten icon im menu leicht lila statt blau
+[x] Tierarztpraxis wird nicht benötigt. Weg damit
+[ ] Cross-Links zu Kundenprofilen ergänzen:
+    - [ ] BookingsPage.vue: Kundennamen in der Tabellenansicht (List View) zum Kundenprofil verlinken
+    - [ ] BookingsPage.vue: Kundennamen in der Zeitachsenansicht (Timeline) zum Kundenprofil verlinken
+    - [ ] CheckInOutPage.vue: Kundennamen in der Liste der aktuellen Vorgänge zum Kundenprofil verlinken
+    - [ ] CheckInOutPage.vue: Kundennamen im Verlauf (History) zum Kundenprofil verlinken
+    - [ ] RequestsPage.vue: Kundennamen im Verlauf (History) zum Kundenprofil verlinken
+    - [ ] CheckInModal.vue: Kundennamen im Header zum Kundenprofil verlinken
+    - [ ] CheckoutModal.vue: Kundennamen im Header zum Kundenprofil verlinken

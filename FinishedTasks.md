@@ -4,6 +4,11 @@
 
 - extension.md: Zeitachsenansichten mit stabiler Mindesthöhe versehen: Die Buchungszeitachse (`.booking-calendar`) bleibt auf Desktop bei mindestens 430px, die Belegungs-Zeitachse (`.occupancy-panel-wide`) bei mindestens 460px. Dadurch verschiebt sich nach einem Zeitraumwechsel nur noch der Inhalt innerhalb des reservierten Bereichs; die nachfolgenden Seitenelemente springen nicht mehr. Die Regel ist bewusst auf Viewports ab 681px beschränkt, weil die mobile Belegung keine horizontale Zeitachse, sondern eine vertikale Tagesliste verwendet.
 
+## Session 3a1b2 — 2026-08-11 16:53
+- Preisliste in den Einstellungen um ein Hinweisfeld ergänzt: "Ein ausführlichere Tarifkonfiguration ist noch in der Entwicklung (Bsp. Rabatt für mehrere Tiere, Einzelzimmer etc)".
+- Neue CSS-Klasse `.info-banner` in `src/styles.css` für Hinweismeldungen erstellt.
+- Verifiziert mit `npm run build`.
+
 ## Session 59957 — 2026-08-11 16:38
 - `bugs.md` geprüft: keine offenen Punkte. In `extension.md` den Punkt „Check-in/out: Das kleine Badge mit z. B. 6 offen kann weg.“ umgesetzt und als erledigt markiert.
 - `src/components/CheckInOutPage.vue`: Das Kopfbereichs-Badge für offene Vorgänge entfernt, einschließlich der ausschließlich dafür verwendeten abgeleiteten Zählung und des `ClipboardCheck`-Imports. Die Anreise- und Abreise-Zahlen in den fachlichen Statuskarten bleiben unverändert erhalten.
