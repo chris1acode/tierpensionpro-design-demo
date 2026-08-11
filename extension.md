@@ -43,11 +43,11 @@
 [x] Check-in/out, es muss die Möglichkeit geben das Zimmer zu wechseln.
 [x] Mach Demodaten button und demodaten icon im menu leicht lila statt blau
 [x] Tierarztpraxis wird nicht benötigt. Weg damit
-[ ] Cross-Links zu Kundenprofilen ergänzen:
-    - [ ] BookingsPage.vue: Kundennamen in der Tabellenansicht (List View) zum Kundenprofil verlinken
-    - [ ] BookingsPage.vue: Kundennamen in der Zeitachsenansicht (Timeline) zum Kundenprofil verlinken
-    - [ ] CheckInOutPage.vue: Kundennamen in der Liste der aktuellen Vorgänge zum Kundenprofil verlinken
-    - [ ] CheckInOutPage.vue: Kundennamen im Verlauf (History) zum Kundenprofil verlinken
-    - [ ] RequestsPage.vue: Kundennamen im Verlauf (History) zum Kundenprofil verlinken
-    - [ ] CheckInModal.vue: Kundennamen im Header zum Kundenprofil verlinken
-    - [ ] CheckoutModal.vue: Kundennamen im Header zum Kundenprofil verlinken
+[x] Cross-Links zu Kundenprofilen ergänzt:
+    - [x] BookingsPage.vue: Kundennamen in der Tabellenansicht (List View) zum Kundenprofil verlinkt
+    - [x] BookingsPage.vue: Kundennamen in der Zeitachsenansicht (Timeline) zum Kundenprofil verlinkt
+    - [x] CheckInOutPage.vue: Kundennamen in der Liste der aktuellen Vorgänge zum Kundenprofil verlinkt
+    - [x] CheckInOutPage.vue: Kundennamen im Verlauf (History) zum Kundenprofil verlinkt
+    - [x] RequestsPage.vue: Kundennamen im Verlauf (History) zum Kundenprofil verlinkt
+    - [x] CheckInModal.vue: Kundennamen im Header zum Kundenprofil verlinkt
+    - [x] CheckoutModal.vue: Kundennamen im Header zum Kundenprofil verlinkt

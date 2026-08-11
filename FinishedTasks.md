@@ -173,3 +173,9 @@
 
 - `bugs.md`: Check-in/out-Suchfeld als eigene, mittig ausgerichtete Header-Spalte umgesetzt. In `src/components/CheckInOutPage.vue` steht die Suche nun zwischen Listenüberschrift und Exportaktion und besitzt ein eindeutiges Accessibility-Label. `src/styles.css` vergrößert sie auf 48px Höhe und 340–460px Breite auf Desktop; bei weniger Platz (≤760px) wechselt das Layout zu voller Breite unterhalb der Überschrift.
 - Den Bug als erledigt markiert. Verifiziert mit `npm.cmd run build` sowie `npm.cmd run test` (30 Testdateien, 222 Tests grün).
+## Session 8b9ec — 2026-08-11 17:28 Europe/Berlin
+
+- `extension.md`: Das offene Feature „Cross-Links zu Kundenprofilen“ vollständig umgesetzt. Kundennamen führen jetzt aus Buchungslisten, Buchungszeitachse, der aktuellen Check-in/out-Liste, dem Check-in/out-Verlauf sowie den Check-in- und Check-out-Bestätigungsdialogen direkt nach `/customers-pets?customerId=…`.
+- `CustomersPage.vue` verarbeitet `customerId` als Deep-Link: Das Zielprofil wird auch bei paginierten Daten auf der korrekten Seite geöffnet; eine Auswahl im Verzeichnis hält die URL entsprechend synchron.
+- Das Mock-Datenmodell `BookingRequest` speichert nach einer Annahme die echte `customerId`. Dadurch ist der Kundenname im Anfragenverlauf verlinkbar, ohne ihn unsicher nur über Textfelder zuzuordnen. Store-Tests prüfen sowohl neue als auch bereits bestehende Kunden.
+- Verifiziert mit `npm.cmd run build` und `npm.cmd run test` (30 Testdateien, 222 Tests grün). Die Desktop-Playwright-Suite lief mit 39 erfolgreichen, 6 absichtlich übersprungenen und 5 vorbestehenden Fehlschlägen; der wegen der Zeitachsen-Umstrukturierung betroffene Accessibility-Name wurde kompatibel beibehalten.
