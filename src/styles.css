@@ -278,3 +278,22 @@ body {
   color: #3b82f6;
   flex: none;
 }
+
+.demo-menu-info {
+  margin: 16px 0 !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  color: var(--text) !important;
+}
+
+.demo-menu .secondary-button {
+  margin-top: 8px;
+  white-space: normal;
+  text-align: left;
+  height: auto;
+  padding: 10px 15px;
+}
+
+.demo-menu {
+  width: 264px !important;
+}

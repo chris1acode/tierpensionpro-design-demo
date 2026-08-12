@@ -53,15 +53,11 @@ onBeforeUnmount(() => {
   <aside class="demo-control" aria-label="Demodaten-Steuerung">
     <div v-if="open" ref="demoMenu" class="demo-menu">
       <header>
-        <span class="demo-menu-icon"><Database :size="18" /></span>
+        <span class="demo-menu-icon"><Database :size="20" /></span>
         <div><strong>{{ store.demoEnvironment.label }}</strong><small>{{ store.demoEnvironment.scenario }}</small></div>
-        <button ref="closeButton" class="icon-button" aria-label="Demodaten-Menü schließen" @click="closeMenu(true)"><X :size="18" /></button>
+        <button ref="closeButton" class="icon-button" aria-label="Demodaten-Menü schließen" @click="closeMenu(true)"><X :size="20" /></button>
       </header>
-      <p>Du arbeitest mit einem sicheren Beispieldatensatz. Änderungen betreffen keine echten Kundendaten.</p>
-      <dl>
-        <div><dt>Betriebstag</dt><dd>{{ store.demoEnvironment.businessDate }}</dd></div>
-        <div><dt>Zurücksetzungen</dt><dd>{{ store.demoEnvironment.resetCount }}</dd></div>
-      </dl>
+      <p class="demo-menu-info">Du arbeitest mit einem sicheren Beispieldatensatz. Änderungen betreffen keine echten Kundendaten.</p>
       <button class="secondary-button" @click="store.resetDemo"><RotateCcw :size="16" /> Ausgangsdaten wiederherstellen</button>
     </div>
     <button ref="trigger" class="demo-badge" aria-label="Demodaten-Menü öffnen" :aria-expanded="open" @click="toggleMenu">
