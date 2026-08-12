@@ -95,6 +95,13 @@ function selectPage(page: number) {
   detailsOpen.value = false
 }
 
+function goBack() {
+  detailsOpen.value = false
+  const query = { ...route.query }
+  delete query.customerId
+  void router.replace({ name: 'customers', query })
+}
+
 function selectCustomer(customerId: string) {
   selectedCustomerId.value = customerId
   detailsOpen.value = true
@@ -202,7 +209,7 @@ function exportCustomers() {
       </section>
 
       <section v-if="selectedCustomer" class="panel customer-details">
-        <button class="customer-details-back" @click="detailsOpen = false"><ArrowLeft :size="17" /> Zurück zum Kundenverzeichnis</button>
+        <button class="customer-details-back" @click="goBack"><ArrowLeft :size="17" /> Zurück zum Kundenverzeichnis</button>
         <header class="customer-profile-header">
           <div class="customer-profile-intro">
             <p class="eyebrow">Kundenprofil</p>
@@ -223,7 +230,7 @@ function exportCustomers() {
         </div>
         <div class="detail-section">
           <div class="section-title"><div><h3>Tiere</h3><p>{{ selectedCustomer.pets.length }} hinterlegte Tierprofile</p></div><button class="text-button" type="button" @click="openPetCreate"><Plus :size="15" /> Tier anlegen</button></div>
-          <div class="pet-profile-grid">
+          <div class="grid grid-cols-1 gap-[12px]">
             <article v-for="pet in selectedCustomer.pets" :key="pet.id" class="pet-profile-card" :class="pet.species">
               <span class="pet-profile-avatar" :style="{ background: pet.color }" aria-hidden="true">
                 <Dog v-if="pet.species === 'dog'" :size="20" />
