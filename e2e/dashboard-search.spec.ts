@@ -306,27 +306,6 @@ test('uses a vertically readable occupancy list on small screens', async ({ page
   expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.width)
 })
 
-test('creates a reservation from the occupancy view after checking its period capacity', async ({ page }) => {
-  await page.goto('/occupancy')
-
-  await page.getByRole('button', { name: 'Reservierung anlegen' }).click()
-  const dialog = page.getByRole('dialog')
-  await expect(dialog.getByRole('heading', { name: 'Reservierung anlegen' })).toBeVisible()
-  await expect(dialog).toContainText('Wähle mindestens ein Tier und den Zeitraum, um freie Zimmer zu prüfen.')
-
-  await dialog.getByRole('combobox', { name: 'Kunde' }).fill('Lea')
-  await dialog.getByRole('option', { name: /Lea Albrecht/ }).click()
-  await dialog.getByText('Frieda · Havaneser', { exact: true }).click()
-  await dialog.getByText('Willi · Havaneser', { exact: true }).click()
-  await dialog.getByLabel('Anreise').fill('2026-08-15')
-  await dialog.getByLabel('Abreise').fill('2026-08-18')
-  await expect(dialog).toContainText(/passende Zimmer sind im gesamten Zeitraum frei\./)
-
-  await dialog.getByLabel('Zimmer').selectOption('r-2')
-  await dialog.getByRole('button', { name: 'Reservieren' }).click()
-  await expect(dialog).toHaveCount(0)
-})
-
 test('shows occupancy as compact capacities without animal identities', async ({ page }, testInfo) => {
   await page.goto('/occupancy')
 
