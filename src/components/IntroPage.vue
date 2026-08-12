@@ -24,7 +24,7 @@ import LogoIcon from './LogoIcon.vue'
       </div>
 
       <div class="intro-actions">
-        <RouterLink to="/" class="primary-button large-button">
+        <RouterLink to="/dashboard" class="primary-button large-button">
           Demo ansehen
         </RouterLink>
       </div>

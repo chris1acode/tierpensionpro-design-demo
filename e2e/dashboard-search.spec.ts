@@ -14,7 +14,7 @@ test('opens the global demo data menu and restores its mock scenario', async ({ 
 })
 
 test('keeps the demo data control clear of dashboard actions', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/dashboard')
 
   const demoControl = page.getByRole('button', { name: 'Demodaten-Menü öffnen' })
   const occupancyAction = page.getByRole('link', { name: /Belegung ansehen/ })
@@ -94,7 +94,7 @@ test('exports the data behind every list as CSV', async ({ page }) => {
 })
 
 test('moves focus into the demo data menu and restores it after Escape', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/dashboard')
 
   const trigger = page.getByRole('button', { name: 'Demodaten-Menü öffnen' })
   await trigger.click()
@@ -132,7 +132,7 @@ test('resets open settings and account form drafts with the demo data', async ({
 })
 
 test('uses local searches instead of a global dashboard search', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/dashboard')
   await expect(page.getByRole('searchbox', { name: 'Globale Suche' })).toHaveCount(0)
 
   await page.goto('/customers-pets')
@@ -142,7 +142,7 @@ test('uses local searches instead of a global dashboard search', async ({ page }
 })
 
 test('uses a neutral dashboard heading instead of a personal greeting', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/dashboard')
 
   await expect(page.getByRole('heading', { name: 'Tagesübersicht' })).toBeVisible()
   await expect(page.getByRole('heading', { name: /Guten Morgen/i })).toHaveCount(0)
@@ -150,7 +150,7 @@ test('uses a neutral dashboard heading instead of a personal greeting', async ({
 
 test('aligns arrival metadata and check-in actions despite optional arrival notes', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop', 'Mobile actions intentionally span the complete row.')
-  await page.goto('/')
+  await page.goto('/dashboard')
 
   const baluAction = page.locator('.arrival-row').filter({ hasText: 'Balu' }).getByRole('button', { name: 'Einchecken' })
   const miloAction = page.locator('.arrival-row').filter({ hasText: 'Milo' }).getByRole('button', { name: 'Einchecken' })
@@ -168,7 +168,7 @@ test('aligns arrival metadata and check-in actions despite optional arrival note
 })
 
 test('labels the current occupancy as animals in the house', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/dashboard')
 
   const metrics = page.getByRole('region', { name: 'Tageskennzahlen' })
   await expect(metrics.getByText('Tiere im Haus', { exact: true })).toBeVisible()
@@ -176,27 +176,27 @@ test('labels the current occupancy as animals in the house', async ({ page }) =>
 })
 
 test('navigates from dashboard category widgets to their detail pages', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/dashboard')
 
   await page.getByRole('link', { name: 'Anreisen heute in Check-in und Check-out öffnen' }).click()
   await expect(page).toHaveURL(/\/check-in-out\?view=arrivals$/)
   await expect(page.getByRole('heading', { name: 'Check-in/out' })).toBeVisible()
 
-  await page.goto('/')
+  await page.goto('/dashboard')
   await page.getByRole('link', { name: 'Abreisen heute in Check-in und Check-out öffnen' }).click()
   await expect(page).toHaveURL(/\/check-in-out\?view=departures$/)
   await expect(page.getByRole('heading', { name: 'Geplante Abreisen' })).toBeVisible()
 
-  await page.goto('/')
+  await page.goto('/dashboard')
   await page.getByRole('link', { name: 'Tiere im Haus in Check-in und Check-out öffnen' }).click()
   await expect(page).toHaveURL(/\/check-in-out\?view=checked-in$/)
   await expect(page.getByRole('heading', { name: 'Jetzt eingecheckt' })).toBeVisible()
 
-  await page.goto('/')
+  await page.goto('/dashboard')
   await page.getByRole('link', { name: 'Alle Check-ins und Check-outs' }).click()
   await expect(page).toHaveURL(/\/check-in-out$/)
 
-  await page.goto('/')
+  await page.goto('/dashboard')
   await page.getByRole('link', { name: 'Belegung ansehen' }).click()
   await expect(page).toHaveURL(/\/occupancy$/)
 })
@@ -355,20 +355,20 @@ test('marks fully occupied days and rooms with their own capacity colour', async
 })
 
 test('does not show a redundant main-location control', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/dashboard')
 
   await expect(page.getByText('Hauptstandort', { exact: false })).toHaveCount(0)
   await expect(page.getByText('Inhaber', { exact: true })).toHaveCount(1)
 })
 
 test('does not show the removed room-status control on the dashboard', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/dashboard')
 
   await expect(page.getByRole('button', { name: 'Zimmerstatus verwalten' })).toHaveCount(0)
 })
 
 test('keeps keyboard focus inside an open dialog', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/dashboard')
 
   await page.locator('.arrival-row').filter({ hasText: 'Balu' }).getByRole('button', { name: 'Einchecken' }).click()
 
@@ -455,7 +455,7 @@ test('pages the booking list in groups of ten and resets for a search', async ({
 
 test('only exposes the mobile navigation while its drawer is open', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile', 'The desktop navigation is permanently visible.')
-  await page.goto('/')
+  await page.goto('/dashboard')
 
   const navigation = page.getByRole('navigation', { name: 'Hauptnavigation' })
   await expect(navigation).toBeHidden()
@@ -469,7 +469,7 @@ test('only exposes the mobile navigation while its drawer is open', async ({ pag
 
 test('moves focus into the mobile navigation and closes it with Escape', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile', 'The desktop navigation is permanently visible.')
-  await page.goto('/')
+  await page.goto('/dashboard')
 
   const trigger = page.getByRole('button', { name: 'Navigation öffnen' })
   await trigger.click()
@@ -485,7 +485,7 @@ test('moves focus into the mobile navigation and closes it with Escape', async (
 
 test('keeps keyboard focus inside the mobile navigation', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'mobile', 'The desktop navigation is not a modal drawer.')
-  await page.goto('/')
+  await page.goto('/dashboard')
 
   await page.getByRole('button', { name: 'Navigation öffnen' }).click()
 

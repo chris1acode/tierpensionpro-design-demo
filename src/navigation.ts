@@ -14,7 +14,7 @@ export interface NavigationItem {
 export const navigationItems: readonly NavigationItem[] = [
   {
     name: 'dashboard',
-    path: '/',
+    path: '/dashboard',
     title: 'Dashboard',
     description: 'Der operative Überblick für den heutigen Pensionstag.',
     icon: LayoutDashboard

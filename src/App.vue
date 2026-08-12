@@ -118,7 +118,7 @@ onBeforeUnmount(() => {
   <IntroPage v-if="route.name === 'intro'" />
   <div v-else class="app-shell">
     <aside ref="mobileNavigation" class="sidebar" :class="{ open: mobileNavOpen, collapsed: sidebarCollapsed }" :role="mobileNavOpen ? 'dialog' : undefined" :aria-modal="mobileNavOpen ? 'true' : undefined" aria-label="Seitennavigation">
-      <RouterLink class="brand" to="/" @click="closeMobileNavigation()">
+      <RouterLink class="brand" to="/dashboard" @click="closeMobileNavigation()">
         <span class="brand-mark">
           <LogoIcon :size="24" color="white" />
         </span>
@@ -224,8 +224,8 @@ onBeforeUnmount(() => {
           <p class="eyebrow">{{ route.name === 'not-found' ? 'Fehler 404' : 'Tierpension Pro' }}</p>
           <h1>{{ currentPage.title }}</h1>
           <p>{{ currentPage.description }}</p>
-          <RouterLink v-if="route.name === 'not-found'" class="primary-button" to="/">Zurück zum Dashboard</RouterLink>
-          <RouterLink v-else class="secondary-button" to="/">Zum Tagesdashboard</RouterLink>
+          <RouterLink v-if="route.name === 'not-found'" class="primary-button" to="/dashboard">Zurück zum Dashboard</RouterLink>
+          <RouterLink v-else class="secondary-button" to="/dashboard">Zum Tagesdashboard</RouterLink>
         </div>
       </main>
     </section>
