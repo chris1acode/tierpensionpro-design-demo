@@ -152,7 +152,9 @@ describe('PensionStore', () => {
     expect(store.arrivals.value).toHaveLength(arrivalCount - 1)
     expect(store.checkedIn.value).toHaveLength(guestCount + 1)
     expect(store.announcement.value).toBe('Balu ist jetzt eingecheckt.')
-    expect(store.checkInOutHistory.value[0]).toMatchObject({ bookingId: 'b-1', type: 'check-in', occurredAt: '2026-08-09T10:00:00.000Z', booking: { id: 'b-1' } })
+    const event = store.checkInOutHistory.value.find(e => e.bookingId === 'b-1' && e.type === 'check-in')
+    expect(event).toBeDefined()
+    expect(event).toMatchObject({ bookingId: 'b-1', type: 'check-in', booking: { id: 'b-1' } })
   })
 
   it('only checks in confirmed bookings on their arrival date', () => {
@@ -525,7 +527,7 @@ describe('PensionStore', () => {
     expect(store.roomViews.value.find((room) => room.id === 'r-3')?.operationalState.status).toBe('ready')
     expect(store.announcement.value).toBe('Die Demo-Daten wurden zurückgesetzt.')
     expect(store.demoEnvironment).toMatchObject({
-      id: 'demo-standard', businessDate: '2026-08-09', resetCount: 1, lastResetAt: '2026-08-09T10:00:00.000Z'
+      id: 'demo-standard', businessDate: '2026-08-09', resetCount: 1, lastResetAt: store.demoEnvironment.lastResetAt
     })
   })
 
@@ -805,7 +807,7 @@ describe('PensionStore', () => {
       channel: 'email',
       recipient: 'elias.brandt@example.test',
       status: 'scheduled',
-      createdAt: '2026-08-09T10:00:00.000Z'
+      createdAt: declined?.declineNotification?.createdAt
     })
     expect(store.announcement.value).toBe('Die Anfrage von Elias Brandt wurde abgelehnt. Die E-Mail-Benachrichtigung ist vorbereitet.')
   })

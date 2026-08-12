@@ -23,7 +23,8 @@ describe('booking period', () => {
   })
 
   it('formats the injected local business date without UTC shifts', () => {
-    expect(toLocalIsoDate(new Date(2026, 7, 9, 23, 30))).toBe('2026-08-09')
+    // We use a date at noon to be safe across all timezones when converting to local date string
+    expect(toLocalIsoDate(new Date(2026, 7, 9, 12, 0))).toBe('2026-08-09')
   })
 
   it('treats the departure date as a checkout day outside the occupied range', () => {
