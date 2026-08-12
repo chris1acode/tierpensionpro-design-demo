@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
@@ -39,7 +39,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
@@ -56,13 +56,6 @@ jobs:
     steps:
       - name: Set AWS Account ID
         run: echo "AWS_ACCOUNT_ID=823538119282" >> $GITHUB_ENV
-      - name: Debug OIDC claims (temporary)
-        run: |
-          idtoken=$(curl -sH "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com" | jq -r '.value')
-          b64=$(echo "$idtoken" | cut -d. -f2 | tr '_-' '/+')
-          case $((${#b64} % 4)) in 2) b64="$b64==";; 3) b64="$b64=";; esac
-          echo "$b64" | base64 -d | jq '{sub, aud, repository, repository_owner, ref}'
       - name: Download dist artifact
         uses: actions/download-artifact@v4
         with:
