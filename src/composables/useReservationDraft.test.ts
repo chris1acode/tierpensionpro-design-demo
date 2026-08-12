@@ -5,7 +5,7 @@ import { useReservationDraft } from './useReservationDraft'
 
 const customers: Customer[] = [{ id: 'customer-1', firstName: 'Erika', lastName: 'Muster', email: 'erika@example.de', phone: '01234' }]
 const pets: Pet[] = [{
-  id: 'pet-1', customerId: 'customer-1', name: 'Balu', species: 'dog', breed: 'Mischling', initials: 'B', color: '#fff'
+  id: 'pet-1', customerId: 'customer-1', name: 'Balu', species: 'dog', initials: 'B', color: '#fff'
 }]
 const rooms: RoomView[] = [{
   id: 'room-1', name: 'Hof', category: 'Hundezimmer', capacity: 2,

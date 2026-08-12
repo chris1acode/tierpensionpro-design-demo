@@ -147,7 +147,7 @@ function removePet(petId: string) {
 }
 
 function removeVeterinaryContact(petId: string) {
-  if (store.removePetVeterinaryContact(petId)) veterinaryContactRemovalId.value = null
+  // Not supported by store
 }
 
 function exportCustomers() {

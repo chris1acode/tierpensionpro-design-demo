@@ -53,7 +53,7 @@ describe('getCustomerRequestMatch', () => {
   }
   const request = {
     id: 'r-1', customerFirstName: 'Sofia', customerLastName: 'Berger', contactEmail: 'other@example.de', phone: '+49 (176) 445-21-90',
-    petName: 'Milo', species: 'dog' as const, breed: 'Labrador', arrivalDate: '2026-08-12', arrival: '10:00', departure: '2026-08-15',
+    petName: 'Milo', species: 'dog' as const, arrivalDate: '2026-08-12', arrival: '10:00', departure: '2026-08-15',
     status: 'pending' as const, submittedAt: '2026-08-10T08:00:00.000Z'
   }
 

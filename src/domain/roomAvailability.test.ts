@@ -35,7 +35,7 @@ describe('room availability', () => {
   })
 
   it('selects only operational, species-compatible rooms with capacity for the full stay', () => {
-    const pet: Pet = { id: 'p-1', customerId: 'c-1', name: 'Mika', species: 'cat', breed: 'EKH', initials: 'M', color: '#fff' }
+    const pet: Pet = { id: 'p-1', customerId: 'c-1', name: 'Mika', species: 'cat', initials: 'M', color: '#fff' }
     const rooms: RoomView[] = [
       { id: 'r-ready', name: 'Katzenloft', category: 'Katzenzimmer', capacity: 2, availablePlaces: 2, guests: [], operationalState: { id: 'os-1', roomId: 'r-ready', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' } },
       { id: 'r-full', name: 'Katzennest', category: 'Katzenzimmer', capacity: 1, availablePlaces: 0, guests: [], operationalState: { id: 'os-2', roomId: 'r-full', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' } },
@@ -63,7 +63,7 @@ describe('room availability', () => {
   })
 
   it('retains full compatible rooms as explicitly marked overbooking options', () => {
-    const pet: Pet = { id: 'p-1', customerId: 'c-1', name: 'Mika', species: 'cat', breed: 'EKH', initials: 'M', color: '#fff' }
+    const pet: Pet = { id: 'p-1', customerId: 'c-1', name: 'Mika', species: 'cat', initials: 'M', color: '#fff' }
     const room: RoomView = { id: 'r-full', name: 'Katzennest', category: 'Katzenzimmer', capacity: 1, availablePlaces: 0, guests: [], operationalState: { id: 'os-1', roomId: 'r-full', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' } }
     const bookingViews: BookingView[] = [{
       ...bookings[0], roomId: room.id, pet: { ...pet, id: 'p-booked' },
@@ -81,7 +81,7 @@ describe('room availability', () => {
       operationalState: { id: 'os-1', roomId: 'r-cat', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' }
     }
     const bookedRoom: BookingView = {
-      ...bookings[0], roomId: room.id, pet: { id: 'p-booked', customerId: 'c-1', name: 'Mika', species: 'cat', breed: 'EKH', initials: 'M', color: '#fff' },
+      ...bookings[0], roomId: room.id, pet: { id: 'p-booked', customerId: 'c-1', name: 'Mika', species: 'cat', initials: 'M', color: '#fff' },
       customer: { id: 'c-1', firstName: 'Kim', lastName: 'Muster', email: 'kim@example.de', phone: '123' }, room
     }
 

@@ -26,7 +26,6 @@ const bookingToMove = ref<BookingView | null>(null)
 const searchTerm = computed(() => resolveSearchTerm(localQuery.value))
 const matchesSearch = (booking: BookingView) => matchesSearchTerm(searchTerm.value, [
   booking.pet.name,
-  booking.pet.breed,
   booking.customer.firstName,
   booking.customer.lastName,
   booking.room.name
@@ -67,9 +66,9 @@ function setSelectedDate(event: Event): void {
 function exportOperations() {
   downloadCsv({
     fileName: activeView.value === 'arrivals' ? 'anreisen.csv' : activeView.value === 'departures' ? 'abreisen.csv' : 'eingecheckte-tiere.csv',
-    columns: ['Kunde', 'Tier', 'Rasse', 'Zimmer', activeView.value === 'arrivals' ? 'Ankunftszeit' : activeView.value === 'departures' ? 'Abholung' : 'Geplante Abreise'],
+    columns: ['Kunde', 'Tier', 'Zimmer', activeView.value === 'arrivals' ? 'Ankunftszeit' : activeView.value === 'departures' ? 'Abholung' : 'Geplante Abreise'],
     rows: visibleBookings.value.map((booking) => [
-      `${booking.customer.firstName} ${booking.customer.lastName}`, booking.pet.name, booking.pet.breed,
+      `${booking.customer.firstName} ${booking.customer.lastName}`, booking.pet.name,
       booking.room.name, activeView.value === 'arrivals' ? booking.arrival : activeView.value === 'departures' ? (booking.pickupTime || 'Nicht vereinbart') : booking.departure
     ])
   })
@@ -110,7 +109,7 @@ function exportHistory() {
       <div v-if="visibleBookings.length" class="operation-rows">
         <article v-for="booking in visibleBookings" :key="booking.id" class="operation-row">
           <div class="pet-avatar" :style="{ background: booking.pet.color }">{{ booking.pet.initials }}</div>
-          <div class="pet-info"><RouterLink class="customer-profile-link" :to="{ name: 'customers', query: { customerId: booking.customer.id } }">{{ booking.customer.firstName }} {{ booking.customer.lastName }}</RouterLink><span>{{ booking.pet.name }} · {{ booking.pet.breed }}</span></div>
+          <div class="pet-info"><RouterLink class="customer-profile-link" :to="{ name: 'customers', query: { customerId: booking.customer.id } }">{{ booking.customer.firstName }} {{ booking.customer.lastName }}</RouterLink><span>{{ booking.pet.name }}</span></div>
           <div class="operation-room"><small>Zimmer</small><strong>{{ booking.room.name }}</strong></div>
           <div class="operation-time"><small>{{ activeView === 'arrivals' ? 'Ankunft' : activeView === 'departures' ? 'Abholung' : 'Geplante Abreise' }}</small><strong>{{ activeView === 'arrivals' ? `${booking.arrival} Uhr` : activeView === 'departures' ? (booking.pickupTime ? `${booking.pickupTime} Uhr` : 'Nicht vereinbart') : formatDayAndMonth(booking.departure) }}</strong></div>
           <div v-if="activeView === 'arrivals'" class="operation-actions">

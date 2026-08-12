@@ -379,7 +379,6 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
         customerId: customer.id,
         name: request.petName,
         species: request.species,
-        breed: request.breed,
         note: request.note
       })
       if (!pet) return false

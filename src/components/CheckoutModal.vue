@@ -26,7 +26,7 @@ defineEmits<{
       Mit der Bestätigung wird <strong>{{ departure.room.name }}</strong> wieder als frei geführt.
     </p>
     <dl>
-      <div><dt>Tier</dt><dd>{{ departure.pet.name }} · {{ departure.pet.breed }}</dd></div>
+      <div><dt>Tier</dt><dd>{{ departure.pet.name }}</dd></div>
       <div><dt>Zimmer</dt><dd>{{ departure.room.name }}</dd></div>
       <div v-if="departure.pickupTime"><dt>Vereinbarte Abholung</dt><dd>{{ departure.pickupTime }} Uhr</dd></div>
     </dl>

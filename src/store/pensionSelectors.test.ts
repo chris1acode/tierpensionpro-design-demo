@@ -19,7 +19,7 @@ const customers: Customer[] = [
   { id: 'customer-2', firstName: 'Bea', lastName: 'Albrecht', email: 'bea@example.de', phone: '456' }
 ]
 const pets: Pet[] = [
-  { id: 'pet-1', customerId: 'customer-1', name: 'Balu', species: 'dog', breed: 'Mix', initials: 'BA', color: '#fff' }
+  { id: 'pet-1', customerId: 'customer-1', name: 'Balu', species: 'dog', initials: 'BA', color: '#fff' }
 ]
 const rooms: Room[] = [
   { id: 'room-1', name: 'Zimmer 1', category: 'Hundezimmer', capacity: 1 },

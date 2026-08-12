@@ -130,7 +130,7 @@ function submit() {
       <label>Kunde
         <CustomerAutocomplete v-model="draft.customerId" input-id="booking-form-customer" label="Kunde" :customers="bookingCustomerChoices" :min-query-length="2" @selected="selectCustomer" @cleared="selectCustomer" />
       </label>
-      <fieldset class="pet-selection" :disabled="!draft.customerId"><legend>Tiere</legend><p>{{ draft.customerId ? 'Mehrere Tiere können gemeinsam reserviert werden.' : 'Zuerst Kunde wählen' }}</p><label v-for="pet in customerPets" :key="pet.id" class="pet-choice"><input v-model="draft.petIds" type="checkbox" :value="pet.id" @change="selectPets" /><span>{{ pet.name }} · {{ pet.breed }}</span></label></fieldset>
+      <fieldset class="pet-selection" :disabled="!draft.customerId"><legend>Tiere</legend><p>{{ draft.customerId ? 'Mehrere Tiere können gemeinsam reserviert werden.' : 'Zuerst Kunde wählen' }}</p><label v-for="pet in customerPets" :key="pet.id" class="pet-choice"><input v-model="draft.petIds" type="checkbox" :value="pet.id" @change="selectPets" /><span>{{ pet.name }}</span></label></fieldset>
       <div class="occupancy-reservation-period">
         <label>Anreise<input v-model="draft.arrivalDate" aria-label="Anreisedatum" type="date" required /></label>
         <label>Uhrzeit<input v-model="draft.arrival" aria-label="Ankunftszeit" type="time" required /></label>

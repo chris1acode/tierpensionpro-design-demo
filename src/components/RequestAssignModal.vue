@@ -57,7 +57,7 @@ function confirm() {
   <BaseModal labelled-by="request-assign-title" modal-class="request-assign-modal" @close="emit('close')">
     <p class="eyebrow">Anfrage zuordnen</p>
     <h2 id="request-assign-title">Anfrage von {{ request.customerFirstName }} {{ request.customerLastName }} annehmen</h2>
-    <p>{{ request.petName }} · {{ request.breed }} · {{ request.arrivalDate }} bis {{ request.departure }}</p>
+    <p>{{ request.petName }} · {{ request.arrivalDate }} bis {{ request.departure }}</p>
     <p
       class="request-availability"
       :class="roomOptions.availability.status"

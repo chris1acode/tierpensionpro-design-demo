@@ -172,7 +172,7 @@ onBeforeUnmount(() => {
             <div v-if="scheduleView === 'arrivals' && filteredArrivals.length" class="arrival-list">
               <article v-for="booking in filteredArrivals" :key="booking.id" class="arrival-row">
                 <div class="pet-avatar" :style="{ background: booking.pet.color }">{{ booking.pet.initials }}</div>
-                <div class="pet-info"><strong>{{ booking.customer.firstName }} {{ booking.customer.lastName }}</strong><span>{{ booking.pet.name }} · {{ booking.pet.breed }}</span></div>
+                <div class="pet-info"><strong>{{ booking.customer.firstName }} {{ booking.customer.lastName }}</strong><span>{{ booking.pet.name }}</span></div>
                 <div class="arrival-meta"><strong>{{ booking.arrival }} Uhr</strong><span>{{ booking.room.name }}</span></div>
                 <span class="arrival-note-slot">
                   <span v-if="booking.pet.note" class="note-badge">Hinweis</span>
@@ -183,7 +183,7 @@ onBeforeUnmount(() => {
             <div v-else-if="scheduleView === 'departures' && filteredDepartures.length" class="arrival-list">
               <article v-for="departure in filteredDepartures" :key="departure.id" class="arrival-row departure-row">
                 <div class="pet-avatar" :style="{ background: departure.pet.color }">{{ departure.pet.initials }}</div>
-                <div class="pet-info"><strong>{{ departure.customer.firstName }} {{ departure.customer.lastName }}</strong><span>{{ departure.pet.name }} · {{ departure.pet.breed }}</span></div>
+                <div class="pet-info"><strong>{{ departure.customer.firstName }} {{ departure.customer.lastName }}</strong><span>{{ departure.pet.name }}</span></div>
                 <div class="arrival-meta"><strong>Abreise heute</strong><span>{{ departure.room.name }}</span></div>
                 <button class="link-button" @click="selectedDeparture = departure"><LogOut :size="16" /> Auschecken</button>
               </article>

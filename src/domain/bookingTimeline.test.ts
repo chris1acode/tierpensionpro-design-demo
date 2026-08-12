@@ -5,7 +5,7 @@ import { createBookingTimeline } from './bookingTimeline'
 const room: Room = { id: 'r-1', name: 'Waldzimmer 1', category: 'Hundezimmer', capacity: 2 }
 const booking = (id: string, arrivalDate: string, departure: string, roomId = 'r-1'): BookingView => ({
   id, petId: `p-${id}`, roomId, arrivalDate, departure, arrival: '09:00', createdAt: '2026-08-01T09:00:00.000Z', status: 'confirmed',
-  pet: { id: `p-${id}`, customerId: 'c-1', name: `Tier ${id}`, species: 'dog', breed: 'Mischling', initials: 'TT', color: '#fff' },
+  pet: { id: `p-${id}`, customerId: 'c-1', name: `Tier ${id}`, species: 'dog', initials: 'TT', color: '#fff' },
   customer: { id: 'c-1', firstName: 'Robin', lastName: 'Muster', email: 'robin@example.de', phone: '0123' }, room
 })
 

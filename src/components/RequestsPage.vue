@@ -37,10 +37,10 @@ function exportRequests(scope: 'pending' | 'history') {
   const requests = scope === 'pending' ? store.pendingRequests.value : store.requestHistory.value
   downloadCsv({
     fileName: scope === 'pending' ? 'offene-anfragen.csv' : 'anfragen-verlauf.csv',
-    columns: ['Kunde', 'Telefon', 'Tier', 'Tierart', 'Rasse', 'Anreise', 'Ankunftszeit', 'Abreise', 'Status', 'Hinweis', 'Ablehnungsgrund'],
+    columns: ['Kunde', 'Telefon', 'Tier', 'Tierart', 'Anreise', 'Ankunftszeit', 'Abreise', 'Status', 'Hinweis', 'Ablehnungsgrund'],
     rows: requests.map((request) => [
       `${request.customerFirstName} ${request.customerLastName}`, request.phone, request.petName,
-      request.species === 'dog' ? 'Hund' : 'Katze', request.breed, request.arrivalDate, request.arrival,
+      request.species === 'dog' ? 'Hund' : 'Katze', request.arrivalDate, request.arrival,
       request.departure, requestStatusLabels[request.status], request.note, request.declineReason
     ])
   })
@@ -72,7 +72,7 @@ function exportRequests(scope: 'pending' | 'history') {
               <span class="request-species-icon" :class="{ cat: request.species === 'cat' }"><Cat v-if="request.species === 'cat'" :size="19" /><Dog v-else :size="19" /></span>
               <div class="request-info">
                 <strong>{{ request.customerFirstName }} {{ request.customerLastName }} · {{ request.phone }}</strong>
-                <span>{{ request.petName }} · {{ request.breed }}</span>
+                <span>{{ request.petName }}</span>
                 <span v-if="request.note" class="note-badge">{{ request.note }}</span>
               </div>
               <div class="request-dates"><small>Aufenthalt</small><strong>{{ request.arrivalDate }} · {{ request.arrival }} Uhr – {{ request.departure }}</strong></div>
@@ -109,7 +109,7 @@ function exportRequests(scope: 'pending' | 'history') {
             <div class="request-history-customer">
               <RouterLink v-if="request.customerId" class="customer-profile-link" :to="{ name: 'customers', query: { customerId: request.customerId } }">{{ request.customerFirstName }} {{ request.customerLastName }}</RouterLink>
               <strong v-else>{{ request.customerFirstName }} {{ request.customerLastName }}</strong>
-              <span>{{ request.petName }} · {{ request.breed }}</span>
+              <span>{{ request.petName }}</span>
             </div>
             <div class="request-history-dates"><small>Aufenthalt</small><span>{{ request.arrivalDate }} – {{ request.departure }}</span></div>
             <span class="booking-status" :class="request.status === 'accepted' ? 'accepted' : 'checked-out'">{{ requestStatusLabels[request.status] }}</span>
