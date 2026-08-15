@@ -11,7 +11,8 @@
     "build": "vue-tsc -b && vite build",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "screenshots": "playwright test e2e/screenshots.spec.ts"
   },
   "dependencies": {
     "@lucide/vue": "latest",
