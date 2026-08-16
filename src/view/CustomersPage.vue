@@ -246,11 +246,11 @@ function exportCustomers() {
             <AppButton variant="text" class="gap-[5px] text-[11px] text-primary-dark" type="button" @click="openPetCreate"><Plus :size="15" /> Tier anlegen</AppButton>
           </div>
           <div class="grid grid-cols-1 gap-[12px]">
-            <article v-for="pet in selectedCustomer.pets" :key="pet.id" class="pet-profile-card flex gap-3 rounded-[10px] border border-[#e8e4df] bg-white p-[14px] shadow-[0_1px_0_rgba(36,33,31,.02)]">
-              <span class="pet-profile-avatar grid h-8 w-8 flex-none place-items-center overflow-hidden rounded-[9px] text-[#354847] shadow-[inset_0_0_0_1px_rgba(36,33,31,.08)]" :style="pet.photoUrl ? undefined : { background: pet.color }" aria-hidden="true">
+            <article v-for="pet in selectedCustomer.pets" :key="pet.id" class="pet-profile-card flex gap-4 rounded-[10px] border border-[#e8e4df] bg-white p-[14px] shadow-[0_1px_0_rgba(36,33,31,.02)]">
+              <span class="pet-profile-avatar grid h-20 w-20 flex-none place-items-center overflow-hidden rounded-[12px] text-[#354847] shadow-[inset_0_0_0_1px_rgba(36,33,31,.08)]" :style="pet.photoUrl ? undefined : { background: pet.color }" aria-hidden="true">
                 <img v-if="pet.photoUrl" :src="pet.photoUrl" alt="" class="h-full w-full object-cover" />
-                <Dog v-else-if="pet.species === 'dog'" :size="16" />
-                <Cat v-else :size="16" />
+                <Dog v-else-if="pet.species === 'dog'" :size="28" />
+                <Cat v-else :size="28" />
               </span>
               <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-start justify-between gap-2">
