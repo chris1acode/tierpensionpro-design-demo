@@ -5,6 +5,7 @@ import { addDaysToIsoDate, isValidBookingPeriod } from '../domain/bookingPeriod'
 import { useReservationDraft } from '../composables/useReservationDraft'
 import { usePensionStore } from '../usePensionStore'
 import AppButton from './AppButton.vue'
+import AppFormField from './AppFormField.vue'
 import AppPetSelection from './AppPetSelection.vue'
 import BaseModal from './BaseModal.vue'
 import CustomerAutocomplete from './CustomerAutocomplete.vue'
@@ -56,26 +57,26 @@ function submit(): void {
     <p class="eyebrow">Kapazität prüfen</p>
     <h2 id="occupancy-reservation-heading" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">Reservierung anlegen</h2>
     <p>Die Verfügbarkeit wird für jede Nacht des Aufenthalts geprüft.</p>
-    <form class="occupancy-reservation-form" @submit.prevent="submit">
-      <label>Kunde
+    <form class="mt-5 grid gap-[13px]" @submit.prevent="submit">
+      <label class="grid gap-[6px] text-[11px] font-bold text-[var(--muted)]">Kunde
         <CustomerAutocomplete v-model="draft.customerId" input-id="occupancy-reservation-customer" label="Kunde" :customers="availableCustomers" @selected="selectCustomer" @cleared="selectCustomer" />
       </label>
       <AppPetSelection v-model="draft.petIds" :pets="customerPets" :disabled="!draft.customerId" :description="draft.customerId ? 'Ein oder mehrere Tiere gemeinsam reservieren.' : 'Zuerst Kunde wählen'" />
-      <div class="occupancy-reservation-period">
-        <label>Anreise<input v-model="draft.arrivalDate" aria-label="Anreise" type="date" required /></label>
-        <label>Uhrzeit<input v-model="draft.arrival" aria-label="Uhrzeit" type="time" required /></label>
-        <label>Abreise<input v-model="draft.departure" aria-label="Abreise" type="date" :min="draft.arrivalDate" required /></label>
-        <label>Abholzeit <small>optional</small><input v-model="draft.pickupTime" aria-label="Abholzeit" type="time" /></label>
+      <div class="grid grid-cols-1 gap-[10px] sm:grid-cols-[1.1fr_.8fr_1.1fr]">
+        <AppFormField label="Anreise"><input v-model="draft.arrivalDate" aria-label="Anreise" type="date" required class="h-10 min-w-0 w-full rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" /></AppFormField>
+        <AppFormField label="Uhrzeit"><input v-model="draft.arrival" aria-label="Uhrzeit" type="time" required class="h-10 min-w-0 w-full rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" /></AppFormField>
+        <AppFormField label="Abreise"><input v-model="draft.departure" aria-label="Abreise" type="date" :min="draft.arrivalDate" required class="h-10 min-w-0 w-full rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" /></AppFormField>
+        <AppFormField label="Abholzeit · optional"><input v-model="draft.pickupTime" aria-label="Abholzeit" type="time" class="h-10 min-w-0 w-full rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" /></AppFormField>
       </div>
-      <p class="occupancy-availability-hint" :class="{ unavailable: draft.petIds.length && !roomAvailability.length }" aria-live="polite">{{ availabilityHint }}</p>
-      <label>Zimmer
-        <select v-model="draft.roomId" aria-label="Zimmer" :disabled="!draft.petIds.length || !roomAvailability.length" required>
+      <p class="m-0 rounded-lg bg-[#e7f2eb] p-[10px_12px] text-xs leading-[1.4] text-[#315f48]" :class="{ 'bg-[#f6e5e5] text-[#9b4444]': draft.petIds.length && !roomAvailability.length }" aria-live="polite">{{ availabilityHint }}</p>
+      <label class="grid gap-[6px] text-[11px] font-bold text-[var(--muted)]">Zimmer
+        <select v-model="draft.roomId" aria-label="Zimmer" :disabled="!draft.petIds.length || !roomAvailability.length" required class="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)] disabled:cursor-not-allowed disabled:bg-[#f3f0ec] disabled:text-[#8b847e]">
           <option value="" disabled>Zimmer auswählen</option>
           <option v-for="availability in roomAvailability" :key="availability.room.id" :value="availability.room.id">{{ availability.room.name }} · {{ availability.room.capacity }} Plätze{{ availability.wouldOverbook ? ' · Überbuchung' : '' }}</option>
         </select>
       </label>
       <label v-if="selectedRoomAvailability?.wouldOverbook" class="overbooking-warning"><input v-model="draft.allowOverbooking" type="checkbox" /> <span><strong>Überbuchung bewusst anlegen</strong> · Im gewählten Zeitraum fehlen mindestens {{ Math.max(1, draft.petIds.length - selectedRoomAvailability.availablePlaces) }} Plätze.</span></label>
-      <p v-if="error" class="form-error" role="alert">{{ error }}</p>
+      <p v-if="error" class="m-0 text-xs text-[#9b4444]" role="alert">{{ error }}</p>
       <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto"><AppButton type="button" variant="secondary" @click="$emit('close')">Abbrechen</AppButton><AppButton type="submit" variant="primary" :disabled="!draft.roomId || Boolean(selectedRoomAvailability?.wouldOverbook && !draft.allowOverbooking)">Reservieren</AppButton></div>
     </form>
   </BaseModal>

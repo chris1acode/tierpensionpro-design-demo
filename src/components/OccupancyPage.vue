@@ -119,7 +119,7 @@ function closureLabel(startDate: string, endDate: string): string {
         >{{ option.label }}</AppTab>
       </AppTabs>
 
-      <AppButton variant="primary" class="occupancy-reservation-button" @click="reservationOpen = true"><CalendarPlus :size="17" /> Reservierung anlegen</AppButton>
+      <AppButton variant="primary" class="max-sm:w-full" @click="reservationOpen = true"><CalendarPlus :size="17" /> Reservierung anlegen</AppButton>
     </div>
 
     <section class="panel occupancy-panel-wide">
