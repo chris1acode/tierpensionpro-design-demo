@@ -124,7 +124,7 @@ function closureLabel(startDate: string, endDate: string): string {
       <AppButton variant="primary" class="ml-auto max-[680px]:w-full" @click="reservationOpen = true"><CalendarPlus :size="17" /> Reservierung anlegen</AppButton>
     </div>
 
-    <section class="panel occupancy-panel-wide">
+    <section class="panel max-[680px]:hidden">
       <header class="max-[680px]:!flex-col max-[680px]:!items-start max-[680px]:gap-[10px]">
         <div><h2>Zimmer × Zeitraum</h2><p>{{ store.roomTimelines.value.length }} Zimmer über {{ store.occupancyDates.value.length }} Tage</p></div>
         <div class="flex items-center justify-end gap-[13px] max-[680px]:flex-col max-[680px]:items-start"><AppButton variant="text" type="button" aria-label="Belegung als CSV exportieren" @click="exportOccupancy"><Download :size="15" /> Exportieren</AppButton><AppOccupancyLegend /></div>
@@ -184,51 +184,51 @@ function closureLabel(startDate: string, endDate: string): string {
       </div>
     </section>
 
-    <section class="mobile-occupancy" aria-labelledby="mobile-occupancy-heading">
-      <header>
+    <section class="hidden gap-3 max-[680px]:grid" aria-labelledby="mobile-occupancy-heading">
+      <header class="flex items-start justify-between gap-3 px-0.5">
         <div>
-          <h2 id="mobile-occupancy-heading">Zimmer pro Tag</h2>
-          <p>Für kleine Bildschirme als gut lesbare Tagesliste.</p>
+          <h2 id="mobile-occupancy-heading" class="mb-1 font-[Manrope] text-[17px] font-bold">Zimmer pro Tag</h2>
+          <p class="m-0 text-xs text-[var(--muted)]">Für kleine Bildschirme als gut lesbare Tagesliste.</p>
         </div>
         <AppButton variant="text" type="button" aria-label="Belegung als CSV exportieren" @click="exportOccupancy"><Download :size="15" /> Exportieren</AppButton>
       </header>
       <article
         v-for="day in store.dailyOccupancy.value"
         :key="day.date"
-        class="mobile-occupancy-day"
+        class="overflow-hidden rounded-[10px] border border-[var(--border)] border-l-4 border-l-[#77a88a] bg-white [&.medium]:border-l-[#d2a13c] [&.high]:border-l-[#c77742] [&.full]:border-l-[#bd5a5a] [&.unavailable]:border-l-[#bd5a5a] [&.today]:shadow-[0_0_0_2px_#f2c3a7]"
         :class="[levelClass(day.level), { today: day.date === todayIso }]"
         :data-date="day.date"
         :data-occupancy-level="day.level"
       >
-        <header>
+        <header class="flex items-center justify-between gap-3 border-b border-[#eeeae6] bg-[#fafaf8] px-[14px] py-[13px] [.today_&]:bg-[#fff3eb]">
           <div>
             <button type="button" class="block cursor-pointer border-0 bg-transparent p-0 text-left text-[10px] font-bold uppercase text-[var(--muted)] hover:underline" :aria-label="`Buchungen am ${day.date} anzeigen`" @click="openBookingsForDate(day.date)">{{ formatShortWeekday(day.date) }} · {{ formatDayAndMonth(day.date) }}</button>
-            <strong>{{ occupancyLabel(day) }}</strong>
+            <strong class="mt-[3px] block text-[13px]">{{ occupancyLabel(day) }}</strong>
           </div>
-          <b>{{ day.rate }} %</b>
+          <b class="rounded-full bg-[#e7f2eb] px-[7px] py-1 text-[11px] text-[#315f48] [.medium_&]:bg-[#faf0d9] [.medium_&]:text-[#84601c] [.high_&]:bg-[#fff0e4] [.high_&]:text-[#9b5a31] [.full_&]:bg-[#f6e5e5] [.full_&]:text-[#9b4444] [.unavailable_&]:bg-[#f6e5e5] [.unavailable_&]:text-[#9b4444]">{{ day.rate }} %</b>
         </header>
-        <ul>
-          <li v-for="room in store.roomTimelines.value" :key="room.id">
-            <div>
-              <strong>{{ room.name }}</strong>
-              <span>{{ room.category }} · {{ room.capacity }} {{ room.capacity === 1 ? 'Platz' : 'Plätze' }}</span>
+        <ul class="m-0 grid list-none p-0">
+          <li v-for="room in store.roomTimelines.value" :key="room.id" class="flex items-center justify-between gap-[10px] border-b border-[#eeeae6] px-[14px] py-[11px] last:border-b-0">
+            <div class="min-w-0">
+              <strong class="block text-xs">{{ room.name }}</strong>
+              <span class="mt-0.5 block text-[10px] text-[var(--muted)]">{{ room.category }} · {{ room.capacity }} {{ room.capacity === 1 ? 'Platz' : 'Plätze' }}</span>
             </div>
             <template v-if="room.segments.find((segment) => segment.date === day.date)?.isClosed">
-              <span class="mobile-room-state closed"><CalendarOff :size="13" /> Geschlossen</span>
+              <span class="inline-flex flex-none items-center gap-1 rounded-full bg-[#f7ece8] px-[7px] py-1 text-[10px] font-bold text-[#9a4a35]"><CalendarOff :size="13" /> Geschlossen</span>
             </template>
             <template v-else-if="room.operationalState.status === 'maintenance'">
-              <span class="mobile-room-state maintenance"><Lock :size="13" /> Gesperrt</span>
+              <span class="inline-flex flex-none items-center gap-1 rounded-full bg-[#eeeae6] px-[7px] py-1 text-[10px] font-bold text-[#67615c]"><Lock :size="13" /> Gesperrt</span>
             </template>
             <template v-else>
               <span
                 v-if="room.segments.find((segment) => segment.date === day.date)?.bookings.length"
-                class="mobile-room-count"
+                class="inline-flex flex-none items-center gap-1 rounded-full bg-[#e4eff0] px-[7px] py-1 text-[10px] font-bold text-[var(--text)] [&.full]:bg-[#4c5f99] [&.full]:text-white [&.overbooked]:bg-[#8f2f3c] [&.overbooked]:text-white"
                 :class="levelClass(room.segments.find((segment) => segment.date === day.date)?.level ?? 'low')"
                 :aria-label="`${room.segments.find((segment) => segment.date === day.date)?.bookings.length} von ${room.capacity} Plätzen belegt`"
               >
                 {{ occupancyCount(room.segments.find((segment) => segment.date === day.date)?.bookings.length ?? 0, room.capacity) }} belegt
               </span>
-              <span v-else class="mobile-room-state free">Frei</span>
+              <span v-else class="inline-flex flex-none items-center gap-1 rounded-full bg-[#e7f2eb] px-[7px] py-1 text-[10px] font-bold text-[#315f48]">Frei</span>
             </template>
           </li>
         </ul>
