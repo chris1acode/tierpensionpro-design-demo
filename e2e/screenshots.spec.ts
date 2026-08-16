@@ -13,22 +13,44 @@ const pages = [
   { name: 'Konto', path: '/account' }
 ]
 
+const fullPagePages = [
+  { name: 'Request_Demo', path: '/request-demo' }
+]
+
 test.describe('Capture Screenshots', () => {
   for (const pageInfo of pages) {
     test(`Screenshot for ${pageInfo.name}`, async ({ page }, testInfo) => {
       await page.goto(pageInfo.path)
-      
+
       // Wait for a bit to ensure animations or data loading are finished
       await page.waitForTimeout(1000)
-      
+
       const projectName = testInfo.project.name
       const screenshotPath = `screenshots/${projectName}/${pageInfo.name.toLowerCase()}.png`
-      
+
       // fullPage: false -> Screenshot in exakter Viewport-Größe
       // (desktop 1280x720 = 16:9, mobile 390x844, tablet 768x1024)
       await page.screenshot({
         path: screenshotPath,
         fullPage: false
+      })
+    })
+  }
+
+  for (const pageInfo of fullPagePages) {
+    test(`Screenshot for ${pageInfo.name}`, async ({ page }, testInfo) => {
+      await page.goto(pageInfo.path)
+
+      // Wait for a bit to ensure animations or data loading are finished
+      await page.waitForTimeout(1000)
+
+      const projectName = testInfo.project.name
+      const screenshotPath = `screenshots/${projectName}/${pageInfo.name.toLowerCase()}.png`
+
+      // fullPage: true -> gesamte Seite wird erfasst, nicht nur der Viewport
+      await page.screenshot({
+        path: screenshotPath,
+        fullPage: true
       })
     })
   }
