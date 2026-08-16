@@ -31,13 +31,13 @@ defineEmits<{
       <div class="flex justify-between border-b border-[#eeeae6] py-[10px] text-[13px]"><dt class="text-[var(--muted)]">Zimmer</dt><dd class="m-0 font-bold">{{ departure.room.name }}</dd></div>
       <div v-if="departure.pickupTime" class="flex justify-between border-b border-[#eeeae6] py-[10px] text-[13px]"><dt class="text-[var(--muted)]">Vereinbarte Abholung</dt><dd class="m-0 font-bold">{{ departure.pickupTime }} Uhr</dd></div>
     </dl>
-    <section v-if="props.price" class="checkout-price" aria-label="Preisberechnung">
-      <p>Preisberechnung</p>
-      <span>{{ props.price.billableDays }} {{ props.price.billableDays === 1 ? 'Betreuungstag' : 'Betreuungstage' }} × {{ formatEuroCents(props.price.dailyRateCents) }}</span>
-      <strong>{{ formatEuroCents(props.price.totalCents) }}</strong>
-      <small>Der Abreisetag wird nicht berechnet.</small>
+    <section v-if="props.price" class="mt-[18px] grid grid-cols-[1fr_auto] gap-x-3 gap-y-[5px] rounded-[9px] bg-[#eef6f5] px-[14px] py-[13px] text-[var(--petrol)]" aria-label="Preisberechnung">
+      <p class="col-span-full m-0 text-[11px] font-extrabold uppercase tracking-[.06em]">Preisberechnung</p>
+      <span class="text-[13px]">{{ props.price.billableDays }} {{ props.price.billableDays === 1 ? 'Betreuungstag' : 'Betreuungstage' }} × {{ formatEuroCents(props.price.dailyRateCents) }}</span>
+      <strong class="text-[19px] font-extrabold [font-family:'Manrope',sans-serif]">{{ formatEuroCents(props.price.totalCents) }}</strong>
+      <small class="col-span-full text-[11px] text-[#4a6865]">Der Abreisetag wird nicht berechnet.</small>
     </section>
-    <p v-else class="checkout-price-unavailable leading-[1.55]">Für diesen Aufenthalt ist kein gültiger Tagespreis hinterlegt.</p>
+    <p v-else class="mt-[18px] rounded-lg bg-[#faf0d9] px-3 py-[11px] text-[12px] leading-[1.55] text-[#6f5018]">Für diesen Aufenthalt ist kein gültiger Tagespreis hinterlegt.</p>
     <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto">
       <AppButton variant="secondary" @click="$emit('close')">Abbrechen</AppButton>
       <AppButton variant="primary" @click="$emit('confirm')"><LogOut :size="17" /> Jetzt auschecken</AppButton>

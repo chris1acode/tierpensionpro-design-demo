@@ -19,3 +19,4 @@
 - `CustomerAutocomplete.vue` (Eingabefeld, Vorschlags-Dropdown und aktive Auswahl) auf Tailwind-Utilities umgestellt und die zugehörigen globalen CSS-Regeln entfernt — bcde8, 2026-08-16 12:42
 - Buchungs-Filterleiste (Statuschips, Datumsfilter und Auswahlhinweis) in `BookingsPage.vue` auf responsive Tailwind-Utilities umgestellt und die zugehörigen globalen CSS-/Media-Query-Regeln entfernt — 1eb97, 2026-08-16 12:43
 - Buchungszeitachse in `BookingsPage.vue` auf Tailwind-Grid und responsive Utilities umgestellt (inkl. Wochenraster, Aufenthaltsbahnen sowie Navigation mit `AppButton`/`AppIconButton`); Build und 212 Tests erfolgreich — 413b4, 2026-08-16 13:37
+- Check-out-Preisberechnung in `CheckoutModal.vue` auf lokale Tailwind-Grid-Utilities umgestellt und die globalen `.checkout-price`-/`.checkout-price-unavailable`-Regeln entfernt — ff151, 2026-08-16 13:37
