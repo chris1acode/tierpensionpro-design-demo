@@ -355,3 +355,8 @@ export interface BookingRequest {
   declineReason?: string
   declineNotification?: BookingRequestNotification
 }
+
+/** Fields submitted by a customer through the public, embeddable request form. */
+export type NewBookingRequest = Pick<BookingRequest,
+  'customerFirstName' | 'customerLastName' | 'contactEmail' | 'phone' | 'petName'
+  | 'species' | 'arrivalDate' | 'arrival' | 'departure' | 'note'>

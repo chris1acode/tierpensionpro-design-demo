@@ -1,5 +1,5 @@
 import { computed, reactive, ref } from 'vue'
-import type { AccountUpdate, Booking, BookingRequest, BookingReservation, BookingUpdate, CheckInOutEvent, Customer, CustomerUpdate, NewBooking, NewBookingReservation, NewCustomer, NewPet, NewPensionClosure, OccupancyRangeDays, PensionClosureUpdate, PensionSettingsUpdate, PetUpdate, RegistrationProfile, RoomInput, RoomOperationalStatus, ToastNotification } from './domain'
+import type { AccountUpdate, Booking, BookingRequest, BookingReservation, BookingUpdate, CheckInOutEvent, Customer, CustomerUpdate, NewBooking, NewBookingRequest, NewBookingReservation, NewCustomer, NewPet, NewPensionClosure, OccupancyRangeDays, PensionClosureUpdate, PensionSettingsUpdate, PetUpdate, RegistrationProfile, RoomInput, RoomOperationalStatus, ToastNotification } from './domain'
 import { isValidAccountUpdate } from './domain/account'
 import { isValidEmail } from './domain/email'
 import { isValidBookingNote, normalizeBookingNote } from './domain/bookingNote'
@@ -7,6 +7,7 @@ import { addDaysToIsoDate, buildDateRange, enumerateStayDates, fromLocalIsoDate,
 import { createCustomerProfile, updateCustomerProfile } from './domain/customerProfile'
 import { createPetProfile, updatePetProfile } from './domain/petProfile'
 import { isValidPensionSettingsUpdate } from './domain/pensionSettings'
+import { isValidNewBookingRequest } from './domain/bookingRequest'
 import { isValidRoomInput } from './domain/roomConfiguration'
 import { doesStayOverlapClosure, isValidPensionClosure } from './domain/pensionClosure'
 import { hasRoomCapacityForStay } from './domain/roomAvailability'
@@ -473,6 +474,23 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     return true
   }
 
+  /** Persists a request from the public form into the same queue staff process internally. */
+  function submitBookingRequest(input: NewBookingRequest): boolean {
+    const request: NewBookingRequest = {
+      ...input,
+      customerFirstName: input.customerFirstName.trim(), customerLastName: input.customerLastName.trim(),
+      contactEmail: input.contactEmail.trim().toLocaleLowerCase('de'), phone: input.phone.trim(),
+      petName: input.petName.trim(), note: input.note?.trim() || undefined
+    }
+    if (!settings.requestsEnabled || !isValidNewBookingRequest(request)) return false
+
+    bookingRequests.push({
+      ...request, id: nextEntityId(bookingRequests, 'req'), status: 'pending',
+      submittedAt: dependencies.now().toISOString()
+    })
+    return true
+  }
+
   function createPet(input: NewPet): boolean {
     const customer = customers.find((item) => item.id === input.customerId)
     const id = nextEntityId(pets, 'p')
@@ -815,6 +833,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     checkOut,
     acceptRequest,
     declineRequest,
+    submitBookingRequest,
     updateSettings,
     createRoom,
     updateRoom,

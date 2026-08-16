@@ -22,6 +22,7 @@ const routes: RouteRecordRaw[] = [
   { path: '/register', name: 'register', component: {}, meta: { title: 'Registrieren', description: 'Fordere deinen Registrierungscode an.' } },
   { path: '/register/verify', name: 'register-verify', component: {}, meta: { title: 'Code bestätigen', description: 'Bestätige deinen Registrierungscode.' } },
   { path: '/register/pension', name: 'register-pension', component: {}, meta: { title: 'Pension einrichten', description: 'Vervollständige deine Benutzer- und Pensionsdaten.' } },
+  { path: '/request-demo', name: 'request-demo', component: {}, meta: { title: 'Betreuungsanfrage', description: 'Unverbindliche Anfrage an die Tierpension senden.' } },
   { path: '/', name: 'intro', component: {}, meta: { title: 'Intro', description: 'Willkommen bei Tierpension Pro' } },
   { path: '/intro', redirect: '/' },
   { path: '/:pathMatch(.*)*', name: 'not-found', component: {}, meta: { title: 'Seite nicht gefunden', description: 'Die aufgerufene Adresse gibt es in Tierpension Pro nicht.' } }

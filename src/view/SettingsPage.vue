@@ -135,6 +135,7 @@ function updateRate(species: PetSpecies, value: string) {
           <header class="!justify-start gap-3"><span class="grid size-[42px] flex-none place-items-center rounded-[10px] bg-[#e4eff0] text-petrol"><Inbox :size="20" /></span><div><h2>Anfragen</h2><p>Externe Buchungsanfragen empfangen und im Menü anzeigen.</p></div></header>
           <div class="grid grid-cols-2 gap-[17px] p-[22px] max-[680px]:grid-cols-1 max-[680px]:p-4">
             <AppCheckboxField v-model="draft.requestsEnabled" class="col-span-full">Anfragen aktivieren</AppCheckboxField>
+            <p class="col-span-full m-0 rounded-lg bg-[#f6f3ef] px-3 py-2.5 text-xs leading-relaxed text-app-muted">Link zu deiner persönlichen Anmeldeseite: <a class="font-bold text-primary hover:underline" href="/request-demo" target="_blank" rel="noopener">/request-demo</a></p>
           </div>
         </AppPanel>
       </template>

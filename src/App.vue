@@ -32,6 +32,7 @@ import RegisterPensionPage from './components/RegisterPensionPage.vue'
 import LogoIcon from './components/LogoIcon.vue'
 import OccupancyPage from './view/OccupancyPage.vue'
 import RequestsPage from './view/RequestsPage.vue'
+import RequestDemoPage from './view/RequestDemoPage.vue'
 import SettingsPage from './view/SettingsPage.vue'
 import ToastRegion from './components/ToastRegion.vue'
 import type { BookingView, DepartureView } from './domain'
@@ -146,7 +147,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <IntroPage v-if="route.name === 'intro'" />
+  <RequestDemoPage v-if="route.name === 'request-demo'" />
+  <IntroPage v-else-if="route.name === 'intro'" />
   <RegisterPage v-else-if="route.name === 'register'" />
   <RegisterVerifyPage v-else-if="route.name === 'register-verify'" />
   <RegisterPensionPage v-else-if="route.name === 'register-pension'" />
