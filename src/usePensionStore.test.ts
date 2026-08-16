@@ -3,6 +3,21 @@ import { MAX_PET_NOTE_LENGTH } from './domain/petProfile'
 import { createPensionStore } from './usePensionStore'
 
 describe('PensionStore', () => {
+  it('starts and resets with an authenticated Robin Muster demo session', () => {
+    const store = createPensionStore()
+
+    expect(store.isAuthenticated.value).toBe(true)
+    expect(store.demoSession.accountId).toBe('acc-1')
+    store.logOut()
+    expect(store.isAuthenticated.value).toBe(false)
+    store.logIn()
+    expect(store.isAuthenticated.value).toBe(true)
+    store.logOut()
+    store.resetDemo()
+    expect(store.isAuthenticated.value).toBe(true)
+    expect(store.account).toMatchObject({ firstName: 'Robin', lastName: 'Muster' })
+  })
+
   it('resolves booking references to pet, customer and room', () => {
     const store = createPensionStore()
     const balu = store.bookingViews.value.find((booking) => booking.pet.name === 'Balu')

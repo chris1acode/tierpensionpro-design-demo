@@ -5,6 +5,7 @@ import type {
   BookingReservation,
   CheckInOutEvent,
   Customer,
+  DemoSession,
   DemoEnvironment,
   PensionClosure,
   PensionSettings,
@@ -20,6 +21,7 @@ import {
   initialBookings,
   initialCheckInOutEvents,
   initialDemoEnvironment,
+  initialDemoSession,
   initialPensionClosures,
   initialPensionSettings,
   initialRoomOperationalStates,
@@ -29,6 +31,7 @@ import {
 
 export interface DemoState {
   account: Account
+  demoSession: DemoSession
   bookingRequests: BookingRequest[]
   bookingReservations: BookingReservation[]
   bookings: Booking[]
@@ -51,6 +54,7 @@ export interface DemoState {
 export function createDemoState(): DemoState {
   return {
     account: { ...initialAccount },
+    demoSession: { ...initialDemoSession },
     bookingRequests: initialBookingRequests.map((request) => ({
       ...request,
       declineNotification: request.declineNotification && { ...request.declineNotification }

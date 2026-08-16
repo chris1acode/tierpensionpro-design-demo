@@ -52,11 +52,13 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
   const checkInOutEvents = reactive<CheckInOutEvent[]>(initialState.checkInOutEvents)
   const settings = reactive(initialState.settings)
   const account = reactive(initialState.account)
+  const demoSession = reactive(initialState.demoSession)
   const demoEnvironment = reactive(initialState.demoEnvironment)
   const toastNotifications = reactive<ToastNotification[]>([])
   // Kept as a read-only compatibility projection for existing consumers; presentation uses
   // the structured notification queue above instead of page-bound status text.
   const announcement = computed(() => toastNotifications.at(-1)?.message ?? '')
+  const isAuthenticated = computed(() => demoSession.isAuthenticated)
   const occupancyRangeDays = ref<OccupancyRangeDays>(14)
   const occupancyStartDate = ref(toLocalIsoDate(dependencies.now()))
 
@@ -95,6 +97,16 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
   function dismissToast(toastId: string): void {
     const index = toastNotifications.findIndex((toast) => toast.id === toastId)
     if (index >= 0) toastNotifications.splice(index, 1)
+  }
+
+  /** The demo accepts arbitrary credentials and always opens Robin Muster's account. */
+  function logIn(): void {
+    demoSession.isAuthenticated = true
+    demoSession.accountId = account.id
+  }
+
+  function logOut(): void {
+    demoSession.isAuthenticated = false
   }
 
   function recordCheckInOutEvent(bookingId: string, type: CheckInOutEvent['type']): void {
@@ -697,6 +709,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     Object.assign(settings, initialState.settings)
     Object.assign(account, initialState.account)
     delete account.cancelledAt
+    Object.assign(demoSession, initialState.demoSession)
     occupancyRangeDays.value = 14
     occupancyStartDate.value = businessDate.value
     demoEnvironment.resetCount += 1
@@ -709,6 +722,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     bookingViews,
     customerViews,
     announcement,
+    isAuthenticated,
     toastNotifications,
     businessDate,
     arrivals,
@@ -734,6 +748,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     bookingReservations,
     settings,
     account,
+    demoSession,
     demoEnvironment,
     createBooking,
     createBookingReservation,
@@ -769,6 +784,8 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     shiftOccupancyStartDate,
     jumpOccupancyToToday,
     dismissToast,
+    logIn,
+    logOut,
     resetDemo
   }
 }

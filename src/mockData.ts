@@ -1,4 +1,4 @@
-import type { Account, Booking, BookingRequest, BookingReservation, CheckInOutEvent, Customer, DemoEnvironment, PensionClosure, PensionSettings, Pet, Room, RoomOperationalState } from './domain'
+import type { Account, Booking, BookingRequest, BookingReservation, CheckInOutEvent, Customer, DemoEnvironment, DemoSession, PensionClosure, PensionSettings, Pet, Room, RoomOperationalState } from './domain'
 import { addDaysToIsoDate } from './domain/bookingPeriod'
 
 /** Demo bookings are "created" a plausible lead time before arrival, so the list sorts sensibly by creation time. */
@@ -12,6 +12,13 @@ export const initialAccount: Account = {
   lastName: 'Muster',
   email: 'robin@tierpension-pro.de',
   role: 'root'
+}
+
+// The click dummy begins in an authenticated demo session. A real backend
+// would replace this fixture with a persisted, token-backed session.
+export const initialDemoSession: DemoSession = {
+  accountId: initialAccount.id,
+  isAuthenticated: true
 }
 
 export const initialPensionSettings: PensionSettings = {

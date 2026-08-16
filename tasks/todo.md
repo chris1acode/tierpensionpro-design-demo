@@ -1,5 +1,5 @@
 [x] Baue eine Anmeldeseite, verlinke auf dem Profilbild via dropdown entweder die Einstellungen oder per Logout den Anmeldescreen.
-[ ] Baue die Mockup Daten so, dass man bei einem Reset pauschal angemeldet ist. Auf der Anmeldeseite kann man irgendwas eingeben und wird immer als Robin muster angemeldet. (mach einen Hinwweis: geben sie beliebige Daten ein)
+[x] Baue die Mockup Daten so, dass man bei einem Reset pauschal angemeldet ist. Auf der Anmeldeseite kann man irgendwas eingeben und wird immer als Robin muster angemeldet. (mach einen Hinwweis: geben sie beliebige Daten ein)
 [ ] Baue einen Registriersprozess. Verlinke ihn in der Anmeldung. Schritt ein, nur eine E-Mail eingabe. Nach absenden erhält man den Hinweis, dass man Eine Email zugesendet bekommt. Dann via Router weiter zu Schritt 2. Dort gibt man den Registrierungscode ein. Der kann auch per Parameter an der URL übergeben werden.
 [ ] Baue den Registrierungsprozess Schritt 3: Eigener Router Link. Dort gibt man seine Benutzerdaten ein (Email wurde vorher schon gesetzt) und den Namen und die Adresse der Tierpension
 [ ] Lege das neue Package src/view an, in das die Router-Haupteinstiegspunkte aus src/components verschoben werden (klare Trennung von wiederverwendbaren Komponenten).

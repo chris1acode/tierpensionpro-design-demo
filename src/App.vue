@@ -100,6 +100,7 @@ function closeProfileMenuWithEscape(event: KeyboardEvent) {
 
 function logOut() {
   profileMenuOpen.value = false
+  store.logOut()
   void router.push({ name: 'login' })
 }
 
@@ -143,7 +144,7 @@ onBeforeUnmount(() => {
 
 <template>
   <IntroPage v-if="route.name === 'intro'" />
-  <LoginPage v-else-if="route.name === 'login'" />
+  <LoginPage v-else-if="route.name === 'login' || !store.isAuthenticated" />
   <div v-else class="flex min-h-screen">
     <aside ref="mobileNavigation" class="fixed inset-y-0 left-0 z-20 flex w-[250px] flex-col border-r border-app-border bg-white px-4 pb-[18px] pt-[25px] transition-[width,transform,visibility] duration-[250ms] max-[920px]:invisible max-[920px]:pointer-events-none max-[920px]:-translate-x-full" :class="[{ 'max-[920px]:!visible max-[920px]:!pointer-events-auto max-[920px]:!translate-x-0 shadow-[15px_0_45px_rgba(36,33,31,.15)] max-[920px]:delay-0': mobileNavOpen }, sidebarCollapsed ? 'min-[921px]:w-[72px]' : 'min-[921px]:w-[250px]']" :role="mobileNavOpen ? 'dialog' : undefined" :aria-modal="mobileNavOpen ? 'true' : undefined" aria-label="Seitennavigation">
       <RouterLink class="flex items-center gap-[10px] px-[9px] pb-8 pt-0 text-[19px] font-bold text-app-text no-underline transition-[padding] duration-[250ms] [font-family:'Manrope',sans-serif]" :class="sidebarCollapsed ? 'min-[921px]:justify-center min-[921px]:pb-[22px]' : ''" to="/dashboard" @click="closeMobileNavigation()">

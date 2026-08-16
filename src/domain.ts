@@ -280,6 +280,16 @@ export interface Account {
 
 export type AccountUpdate = Pick<Account, 'firstName' | 'lastName' | 'email'>
 
+/**
+ * Represents the deliberately simple local session used by the click dummy.
+ * It stays separate from account data, so a reset can restore both entities
+ * without treating authentication as a presentation-only concern.
+ */
+export interface DemoSession {
+  accountId: Account['id']
+  isAuthenticated: boolean
+}
+
 export interface DemoEnvironment {
   id: string
   label: string
