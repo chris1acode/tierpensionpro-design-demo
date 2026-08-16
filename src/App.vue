@@ -221,15 +221,15 @@ onBeforeUnmount(() => {
       <RequestsPage v-else-if="route.name === 'requests'" />
       <SettingsPage v-else-if="isSettingsRoute" />
       <AccountSettingsPage v-else-if="route.name === 'account'" />
-      <AppContainer v-else-if="route.name !== 'intro'" class="route-page">
-        <div class="route-page-card">
-          <span class="route-page-icon">
+      <AppContainer v-else-if="route.name !== 'intro'" class="grid min-h-[calc(100vh-70px)] place-items-center">
+        <div class="w-full max-w-[520px] rounded-[14px] border border-[var(--border)] bg-white p-12 text-center">
+          <span class="mx-auto mb-[19px] grid size-[58px] place-items-center rounded-[15px] bg-[#fbe8dd] text-[var(--primary-dark)]">
             <LogoIcon v-if="route.name === 'not-found'" :size="32" />
             <component :is="navigationItems.find((item) => item.name === route.name)?.icon ?? CalendarDays" v-else />
           </span>
           <p class="eyebrow">{{ route.name === 'not-found' ? 'Fehler 404' : 'Tierpension Pro' }}</p>
-          <h1>{{ currentPage.title }}</h1>
-          <p>{{ currentPage.description }}</p>
+          <h1 class="my-[6px] text-[28px] font-bold [font-family:'Manrope',sans-serif]">{{ currentPage.title }}</h1>
+          <p class="mb-[25px] mt-0 text-[var(--muted)]">{{ currentPage.description }}</p>
           <AppButton v-if="route.name === 'not-found'" variant="primary" to="/dashboard">Zurück zum Dashboard</AppButton>
           <AppButton v-else variant="secondary" to="/dashboard">Zum Tagesdashboard</AppButton>
         </div>
