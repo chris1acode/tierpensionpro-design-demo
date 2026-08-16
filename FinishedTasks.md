@@ -1,5 +1,8 @@
 # Erledigte Aufgaben
 
+- 2026-08-16 16:03 | Session e8e3c | Öffentliche Anfrageseite für mehrere Tiere erweitert: Das Formular verwaltet dynamische Tier-Entitäten; Validierung, Zimmerverfügbarkeit und Kapazitätsprüfung berücksichtigen die gesamte Gruppe. Beim Annehmen entstehen einzelne Aufenthalte in einer gemeinsamen Mock-Reservierung. Die Anfragenübersicht, Zuordnung und der CSV-Export zeigen alle Tiere.
+- 2026-08-16 16:03 | Session e8e3c | Kopfbereich der öffentlichen Anfrageseite bereinigt: Das nicht benötigte Tier-Badge wurde entfernt.
+
 - 2026-08-16 15:53 | Session ffdb0 | Check-in-/out-Verlauf stabilisiert: Für die optionale Rückgängig-Aktion bleibt nun in jeder Verlaufszeile ein fester Aktionsslot reserviert; der Buchungslink verschiebt das Layout nicht mehr.
 - 2026-08-16 15:53 | Session ffdb0 | Dashboard-Kennzahlen für mittlere Auflösungen angepasst: Die Symbolfläche steht jetzt bis zur großen Breakpoint-Stufe in einer eigenen Zeile und die Karten bleiben lesbar.
 - 2026-08-16 15:53 | Session ffdb0 | Öffentliche Anfragenseite unter `/request-demo` umgesetzt: Das einbettbare, eigenständige Formular erfasst Kontakt-, Tier- und Termindaten und speichert validierte `NewBookingRequest`-Mock-Entitäten in der bestehenden Anfrage-Warteschlange. In den Einstellungen ist der persönliche Link neben der Aktivierung hinterlegt. Build und 214 Tests erfolgreich.

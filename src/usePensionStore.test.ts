@@ -786,6 +786,24 @@ describe('PensionStore', () => {
     expect(store.requestHistory.value.find((request) => request.id === 'req-1')).toMatchObject({ status: 'accepted', customerId: 'c-101' })
   })
 
+  it('turns a public multi-animal request into one shared reservation', () => {
+    const store = createPensionStore()
+    const bookingCount = store.bookingViews.value.length
+
+    expect(store.submitBookingRequest({
+      customerFirstName: 'Mara', customerLastName: 'Beispiel', contactEmail: 'mara@example.test', phone: '01701234567',
+      petName: 'Luna', species: 'dog', animals: [{ name: 'Luna', species: 'dog' }, { name: 'Milo', species: 'dog' }],
+      arrivalDate: '2026-09-20', arrival: '10:00', departure: '2026-09-23'
+    })).toBe(true)
+    const request = store.pendingRequests.value.find((item) => item.contactEmail === 'mara@example.test')!
+
+    expect(store.acceptRequest(request.id, 'r-2', 'new')).toBe(true)
+    expect(store.bookingViews.value).toHaveLength(bookingCount + 2)
+    expect(store.bookingReservations).toHaveLength(1)
+    expect(store.bookingReservations[0]).toMatchObject({ petIds: expect.any(Array), roomId: 'r-2' })
+    expect(store.bookingReservations[0].petIds).toHaveLength(2)
+  })
+
   it('accepts a pending request for an explicitly selected known customer and reuses the existing pet', () => {
     const store = createPensionStore()
     const customerCount = store.customers.length

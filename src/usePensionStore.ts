@@ -403,11 +403,12 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     const request = bookingRequests.find((item) => item.id === requestId)
     const room = rooms.find((item) => item.id === roomId)
     const roomIsReady = roomOperationalStates.some((state) => state.roomId === roomId && state.status === 'ready')
+    const requestAnimals = request?.animals?.length ? request.animals : request ? [{ name: request.petName, species: request.species }] : []
     if (!request || request.status !== 'pending' || !room || !roomIsReady
-      || !isRoomCompatibleWithSpecies(room, request.species)
+      || !requestAnimals.every((animal) => isRoomCompatibleWithSpecies(room, animal.species))
       || !isValidBookingPeriod(request.arrivalDate, request.arrival, request.departure)
       || doesStayOverlapClosure(request.arrivalDate, request.departure, pensionClosures)
-      || !hasRoomCapacityForStay(bookings, room.id, room.capacity, request.arrivalDate, request.departure)) return false
+      || !hasRoomCapacityForStay(bookings, room.id, room.capacity, request.arrivalDate, request.departure, requestAnimals.length)) return false
 
     let customer: Customer | undefined
     if (customerAssignment === 'new') {
@@ -424,33 +425,18 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       if (!customer) return false
     }
 
-    let pet = pets.find((item) => item.customerId === customer.id
-      && item.species === request.species
-      && item.name.localeCompare(request.petName, 'de', { sensitivity: 'base' }) === 0)
-    if (!pet) {
-      pet = createPetProfile(nextEntityId(pets, 'p'), {
-        customerId: customer.id,
-        name: request.petName,
-        species: request.species,
-        note: request.note
-      })
-      if (!pet) return false
-      pets.push(pet)
-    }
-
-    const hasActiveBooking = bookings.some((item) => item.petId === pet!.id && item.status !== 'checked-out')
-    if (hasActiveBooking) return false
-
-    bookings.push({
-      id: nextEntityId(bookings, 'b'),
-      petId: pet.id,
-      roomId: room.id,
-      arrivalDate: request.arrivalDate,
-      arrival: request.arrival,
-      departure: request.departure,
-      createdAt: dependencies.now().toISOString(),
-      status: 'confirmed'
-    })
+    const assignedPets = requestAnimals.map((animal) => pets.find((item) => item.customerId === customer!.id
+      && item.species === animal.species && item.name.localeCompare(animal.name, 'de', { sensitivity: 'base' }) === 0))
+    if (assignedPets.some((pet) => pet && bookings.some((item) => item.petId === pet.id && item.status !== 'checked-out'))) return false
+    const resolvedPets = requestAnimals.map((animal, index) => assignedPets[index] ?? createPetProfile(nextEntityId(pets, 'p'), {
+      customerId: customer!.id, name: animal.name, species: animal.species, note: request.note
+    }))
+    if (resolvedPets.some((pet) => !pet)) return false
+    const createdAt = dependencies.now().toISOString()
+    resolvedPets.forEach((pet, index) => { if (!assignedPets[index]) pets.push(pet!) })
+    const reservationId = requestAnimals.length > 1 ? nextEntityId(bookingReservations, 'res') : undefined
+    if (reservationId) bookingReservations.push({ id: reservationId, customerId: customer.id, petIds: resolvedPets.map((pet) => pet!.id), roomId: room.id, arrivalDate: request.arrivalDate, arrival: request.arrival, departure: request.departure, bookingNote: request.note, createdAt })
+    resolvedPets.forEach((pet) => bookings.push({ id: nextEntityId(bookings, 'b'), petId: pet!.id, roomId: room.id, arrivalDate: request.arrivalDate, arrival: request.arrival, departure: request.departure, createdAt, status: 'confirmed', reservationId }))
     request.customerId = customer.id
     request.status = 'accepted'
     showToast(`Die Anfrage von ${request.customerFirstName} ${request.customerLastName} wurde als Reservierung angelegt.`)
@@ -480,7 +466,8 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       ...input,
       customerFirstName: input.customerFirstName.trim(), customerLastName: input.customerLastName.trim(),
       contactEmail: input.contactEmail.trim().toLocaleLowerCase('de'), phone: input.phone.trim(),
-      petName: input.petName.trim(), note: input.note?.trim() || undefined
+      petName: input.petName.trim(), note: input.note?.trim() || undefined,
+      animals: input.animals?.map((animal) => ({ name: animal.name.trim(), species: animal.species }))
     }
     if (!settings.requestsEnabled || !isValidNewBookingRequest(request)) return false
 

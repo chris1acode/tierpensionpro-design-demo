@@ -28,7 +28,7 @@ const error = ref(false)
 const roomOptions = computed(() => getRequestRoomOptions(
   store.roomViews.value,
   store.bookingViews.value,
-  props.request,
+  props.request.animals?.length ? props.request.animals : props.request,
   props.request.arrivalDate,
   props.request.arrival,
   props.request.departure,
@@ -60,7 +60,7 @@ function confirm() {
   <BaseModal labelled-by="request-assign-title" modal-class="request-assign-modal max-w-[480px]" @close="emit('close')">
     <AppEyebrow>Anfrage zuordnen</AppEyebrow>
     <h2 id="request-assign-title" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">Anfrage von {{ request.customerFirstName }} {{ request.customerLastName }} annehmen</h2>
-    <p>{{ request.petName }} · {{ request.arrivalDate }} bis {{ request.departure }}</p>
+    <p>{{ request.animals?.length ? request.animals.map((animal) => animal.name).join(', ') : request.petName }} · {{ request.arrivalDate }} bis {{ request.departure }}</p>
     <p
       class="request-availability my-4 flex items-center gap-[5px] rounded-[7px] px-[9px] py-[7px] text-xs font-bold leading-[1.35]"
       :class="roomOptions.availability.status === 'available' ? 'bg-[#e7f2eb] text-[#315f48]' : 'bg-[#fdf2f2] text-[#9b4444]'"
@@ -98,7 +98,7 @@ function confirm() {
         class="m-0 rounded-[7px] px-[10px] py-[6px] text-left text-[13px]"
         :class="selectedRoomOccupancy.availablePlaces === 0 ? 'bg-[#fdf2f2] text-[#9b4444]' : 'bg-[#f4f6f5] text-app-muted'"
       >
-        Auslastung im Zeitraum: {{ selectedRoomOccupancy.peakOccupied }}/{{ selectedRoomOccupancy.capacity }} Plätze
+        Auslastung im Zeitraum: {{ selectedRoomOccupancy.peakOccupied }}/{{ selectedRoomOccupancy.capacity }} Plätze <template v-if="request.animals?.length">· benötigt {{ request.animals.length }}</template>
         <template v-if="selectedRoomOccupancy.peakDate"> · engster Tag {{ selectedRoomOccupancy.peakDate }}</template>
         <template v-if="selectedRoomOccupancy.availablePlaces === 0"> · bereits ausgebucht</template>
       </p>

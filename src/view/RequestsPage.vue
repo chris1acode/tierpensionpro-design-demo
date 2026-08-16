@@ -26,7 +26,7 @@ const pendingRequestDetails = computed(() => store.pendingRequests.value.map((re
   availability: getRequestRoomOptions(
     store.roomViews.value,
     store.bookingViews.value,
-    request,
+    request.animals?.length ? request.animals : request,
     request.arrivalDate,
     request.arrival,
     request.departure,
@@ -46,8 +46,8 @@ function exportRequests(scope: 'pending' | 'history') {
     fileName: scope === 'pending' ? 'offene-anfragen.csv' : 'anfragen-verlauf.csv',
     columns: ['Kunde', 'Telefon', 'Tier', 'Tierart', 'Anreise', 'Ankunftszeit', 'Abreise', 'Status', 'Hinweis', 'Ablehnungsgrund'],
     rows: requests.map((request) => [
-      `${request.customerFirstName} ${request.customerLastName}`, request.phone, request.petName,
-      request.species === 'dog' ? 'Hund' : 'Katze', request.arrivalDate, request.arrival,
+      `${request.customerFirstName} ${request.customerLastName}`, request.phone, request.animals?.map((animal) => animal.name).join(', ') || request.petName,
+      request.animals?.map((animal) => animal.species === 'dog' ? 'Hund' : 'Katze').join(', ') || (request.species === 'dog' ? 'Hund' : 'Katze'), request.arrivalDate, request.arrival,
       request.departure, requestStatusLabels[request.status], request.note, request.declineReason
     ])
   })
@@ -81,7 +81,7 @@ function exportRequests(scope: 'pending' | 'history') {
               ><Cat v-if="request.species === 'cat'" :size="19" /><Dog v-else :size="19" /></span>
               <div class="row-start-1 col-start-2 min-w-0">
                 <strong class="block text-sm">{{ request.customerFirstName }} {{ request.customerLastName }} · {{ request.phone }}</strong>
-                <span class="block text-[13px] text-app-muted mt-[3px]">{{ request.petName }}</span>
+                <span class="block text-[13px] text-app-muted mt-[3px]">{{ request.animals?.map((animal) => animal.name).join(', ') || request.petName }}</span>
                 <AppNoteBadge v-if="request.note" class="mt-1.5 inline-block">{{ request.note }}</AppNoteBadge>
               </div>
               <div class="row-start-2 col-start-2 min-[900px]:row-start-1 min-[900px]:col-start-3">
@@ -129,7 +129,7 @@ function exportRequests(scope: 'pending' | 'history') {
             <div>
               <AppCustomerLink v-if="request.customerId" :customer-id="request.customerId">{{ request.customerFirstName }} {{ request.customerLastName }}</AppCustomerLink>
               <strong v-else class="block text-[15px]">{{ request.customerFirstName }} {{ request.customerLastName }}</strong>
-              <span class="block text-[13px] text-app-muted mt-0.5">{{ request.petName }}</span>
+              <span class="block text-[13px] text-app-muted mt-0.5">{{ request.animals?.map((animal) => animal.name).join(', ') || request.petName }}</span>
             </div>
             <div class="col-start-1 row-start-2 min-[900px]:col-start-2 min-[900px]:row-start-1">
               <small class="block text-[10px] text-app-muted mb-[3px]">Aufenthalt</small>

@@ -346,6 +346,9 @@ export interface BookingRequest {
   phone: string
   petName: string
   species: PetSpecies
+  /** All animals submitted together through the public request form. The
+   * single-animal fields above remain the primary animal for older requests. */
+  animals?: BookingRequestAnimal[]
   arrivalDate: string
   arrival: string
   departure: string
@@ -356,7 +359,13 @@ export interface BookingRequest {
   declineNotification?: BookingRequestNotification
 }
 
+/** One animal belonging to a public booking request. */
+export interface BookingRequestAnimal {
+  name: string
+  species: PetSpecies
+}
+
 /** Fields submitted by a customer through the public, embeddable request form. */
 export type NewBookingRequest = Pick<BookingRequest,
   'customerFirstName' | 'customerLastName' | 'contactEmail' | 'phone' | 'petName'
-  | 'species' | 'arrivalDate' | 'arrival' | 'departure' | 'note'>
+  | 'species' | 'animals' | 'arrivalDate' | 'arrival' | 'departure' | 'note'>

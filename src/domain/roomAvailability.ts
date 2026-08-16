@@ -70,7 +70,7 @@ export function selectAvailableRoomsForBooking(
 export function getRequestAvailability(
   rooms: readonly RoomView[],
   bookings: readonly BookingView[],
-  pet: ReservablePet,
+  pet: ReservablePet | readonly ReservablePet[],
   arrivalDate: string,
   arrivalTime: string,
   departureDate: string,
@@ -87,14 +87,15 @@ export function getRequestAvailability(
 export function getRequestRoomOptions(
   rooms: readonly RoomView[],
   bookings: readonly BookingView[],
-  pet: ReservablePet,
+  pet: ReservablePet | readonly ReservablePet[],
   arrivalDate: string,
   arrivalTime: string,
   departureDate: string,
   closures: readonly PensionClosure[] = []
 ): RequestRoomOptions {
+  const pets = Array.isArray(pet) ? pet : [pet]
   const compatibleRoomCount = rooms.filter((room) =>
-    room.operationalState.status === 'ready' && isRoomCompatibleWithSpecies(room, pet.species)).length
+    room.operationalState.status === 'ready' && pets.every((item) => isRoomCompatibleWithSpecies(room, item.species))).length
 
   if (doesStayOverlapClosure(arrivalDate, departureDate, closures)) {
     return {
