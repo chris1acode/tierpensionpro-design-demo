@@ -47,6 +47,11 @@ const hasUnsavedSettings = computed(() => !arePensionSettingsEqual(draft.value, 
 
 function save() {
   error.value = ''
+  const roomWithMissingTariff = store.rooms.find((room) => !draft.value.tariffs.some((tariff) => tariff.id === room.tariffId))
+  if (roomWithMissingTariff) {
+    error.value = `Tarif kann nicht entfernt werden: „${roomWithMissingTariff.name}“ ist ihm noch zugeordnet.`
+    return
+  }
   if (!store.updateSettings(draft.value)) {
     error.value = 'Bitte prüfe Kontaktdaten und Zeiten. Das Check-in-Fenster muss vor der Check-out-Zeit liegen.'
   }
@@ -81,6 +86,10 @@ function removeRoom(room: Room): void {
 
 function roomHasBookings(roomId: string): boolean {
   return store.bookingViews.value.some((booking) => booking.roomId === roomId)
+}
+
+function tariffName(tariffId: string): string {
+  return store.settings.tariffs.find((tariff) => tariff.id === tariffId)?.name ?? '–'
 }
 
 function dailyRate(species: PetSpecies) {
@@ -197,7 +206,7 @@ function removeTariff(index: number): void { if (draft.value.tariffs.length > 1)
       <ul v-else class="m-0 list-none p-0">
         <li v-for="room in store.rooms" :key="room.id" class="flex items-center gap-[14px] border-t border-t-app-border px-[22px] py-[14px] first:border-t-0">
           <AppRoomIcon :category="room.category" :size="18" />
-          <div class="min-w-0 flex-1"><strong class="block">{{ room.name }}</strong><span class="mt-[3px] block text-xs text-app-muted">{{ room.category === 'Katzenzimmer' ? 'Katzen' : 'Hunde' }} · {{ room.capacity }} {{ room.capacity === 1 ? 'Platz' : 'Plätze' }}</span></div>
+          <div class="min-w-0 flex-1"><strong class="block">{{ room.name }}</strong><span class="mt-[3px] block text-xs text-app-muted">{{ room.category === 'Katzenzimmer' ? 'Katzen' : 'Hunde' }} · {{ room.capacity }} {{ room.capacity === 1 ? 'Platz' : 'Plätze' }} · {{ tariffName(room.tariffId) }}</span></div>
           <div class="flex items-center gap-[6px] max-[680px]:flex-col">
             <AppIconButton type="button" :aria-label="`${room.name} bearbeiten`" @click="openRoomEdit(room)"><Pencil :size="15" /></AppIconButton>
             <AppIconButton variant="danger" type="button" :aria-label="`${room.name} entfernen`" :disabled="roomHasBookings(room.id)" @click="removeRoom(room)"><Trash2 :size="15" /></AppIconButton>

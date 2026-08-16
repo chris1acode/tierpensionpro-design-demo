@@ -8,7 +8,7 @@ const pets: Pet[] = [{
   id: 'pet-1', customerId: 'customer-1', name: 'Balu', species: 'dog', initials: 'B', color: '#fff'
 }]
 const rooms: RoomView[] = [{
-  id: 'room-1', name: 'Hof', category: 'Hundezimmer', capacity: 2,
+  id: 'room-1', name: 'Hof', category: 'Hundezimmer', capacity: 2, tariffId: 'tariff-standard',
   operationalState: { id: 'state-1', roomId: 'room-1', status: 'ready', updatedAt: '2026-08-09T08:00:00.000Z' },
   guests: [], availablePlaces: 2
 }]

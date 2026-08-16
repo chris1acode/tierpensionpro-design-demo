@@ -139,10 +139,10 @@ export const customers: Customer[] = [...coreCustomers, ...additionalCustomers]
 export const pets: Pet[] = [...corePets, ...additionalPets]
 
 export const rooms: Room[] = [
-  { id: 'r-1', name: 'Waldzimmer 1', category: 'Hundezimmer', capacity: 2 },
-  { id: 'r-2', name: 'Gartenzimmer 2', category: 'Hundezimmer', capacity: 2 },
-  { id: 'r-3', name: 'Katzenloft 1', category: 'Katzenzimmer', capacity: 2 },
-  { id: 'r-4', name: 'Katzenloft 2', category: 'Katzenzimmer', capacity: 1 }
+  { id: 'r-1', name: 'Waldzimmer 1', category: 'Hundezimmer', capacity: 2, tariffId: 'tariff-standard' },
+  { id: 'r-2', name: 'Gartenzimmer 2', category: 'Hundezimmer', capacity: 2, tariffId: 'tariff-standard' },
+  { id: 'r-3', name: 'Katzenloft 1', category: 'Katzenzimmer', capacity: 2, tariffId: 'tariff-standard' },
+  { id: 'r-4', name: 'Katzenloft 2', category: 'Katzenzimmer', capacity: 1, tariffId: 'tariff-single' }
 ]
 
 export const initialRoomOperationalStates: RoomOperationalState[] = rooms.map((room, index) => ({

@@ -21,8 +21,8 @@ const emit = defineEmits<{
 const store = usePensionStore()
 const error = ref(false)
 const form = ref<RoomInput>(props.mode === 'edit' && props.room
-  ? { name: props.room.name, category: props.room.category, capacity: props.room.capacity }
-  : { name: '', category: 'Hundezimmer', capacity: 1 })
+  ? { name: props.room.name, category: props.room.category, capacity: props.room.capacity, tariffId: props.room.tariffId }
+  : { name: '', category: 'Hundezimmer', capacity: 1, tariffId: store.settings.tariffs[0]?.id ?? '' })
 
 function submit() {
   const saved = props.mode === 'edit' && props.room
@@ -47,6 +47,12 @@ function submit() {
       </label>
       <small v-if="categoryLocked" class="-mt-[6px] text-[10px] text-app-muted">Tierart durch bestehende Buchungen geschützt</small>
       <label class="grid gap-[6px] text-[11px] font-bold text-app-muted">Plätze<input v-model.number="form.capacity" class="h-10 min-w-0 rounded-lg border border-app-border bg-white px-[10px] text-app-text" aria-label="Plätze" min="1" max="20" step="1" type="number" required /></label>
+      <label class="grid gap-[6px] text-[11px] font-bold text-app-muted">Tarif
+        <select v-model="form.tariffId" class="h-10 min-w-0 rounded-lg border border-app-border bg-white px-[10px] text-app-text" aria-label="Tarif" required>
+          <option value="" disabled>Tarif auswählen</option>
+          <option v-for="tariff in store.settings.tariffs" :key="tariff.id" :value="tariff.id">{{ tariff.name }}</option>
+        </select>
+      </label>
       <AppFormError v-if="error">Zimmer konnte nicht gespeichert werden. Namen müssen eindeutig sein; Kapazität und bestehende Buchungen müssen weiterhin zusammenpassen.</AppFormError>
       <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto"><AppButton type="button" variant="secondary" @click="$emit('close')">Abbrechen</AppButton><AppButton variant="primary" type="submit">{{ mode === 'edit' ? 'Änderungen speichern' : 'Zimmer anlegen' }}</AppButton></div>
     </form>

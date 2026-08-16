@@ -9,4 +9,5 @@ export function isValidRoomInput(room: RoomInput): boolean {
     && Number.isInteger(room.capacity)
     && room.capacity >= 1
     && room.capacity <= 20
+    && room.tariffId.trim().length > 0
 }

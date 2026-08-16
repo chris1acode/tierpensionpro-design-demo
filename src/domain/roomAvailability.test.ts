@@ -37,10 +37,10 @@ describe('room availability', () => {
   it('selects only operational, species-compatible rooms with capacity for the full stay', () => {
     const pet: Pet = { id: 'p-1', customerId: 'c-1', name: 'Mika', species: 'cat', initials: 'M', color: '#fff' }
     const rooms: RoomView[] = [
-      { id: 'r-ready', name: 'Katzenloft', category: 'Katzenzimmer', capacity: 2, availablePlaces: 2, guests: [], operationalState: { id: 'os-1', roomId: 'r-ready', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' } },
-      { id: 'r-full', name: 'Katzennest', category: 'Katzenzimmer', capacity: 1, availablePlaces: 0, guests: [], operationalState: { id: 'os-2', roomId: 'r-full', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' } },
-      { id: 'r-maintenance', name: 'Katzenruhe', category: 'Katzenzimmer', capacity: 2, availablePlaces: 2, guests: [], operationalState: { id: 'os-3', roomId: 'r-maintenance', status: 'maintenance', updatedAt: '2026-08-09T00:00:00.000Z' } },
-      { id: 'r-dog', name: 'Hundehof', category: 'Hundezimmer', capacity: 2, availablePlaces: 2, guests: [], operationalState: { id: 'os-4', roomId: 'r-dog', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' } }
+      { id: 'r-ready', name: 'Katzenloft', category: 'Katzenzimmer', capacity: 2, tariffId: 'tariff-standard', availablePlaces: 2, guests: [], operationalState: { id: 'os-1', roomId: 'r-ready', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' } },
+      { id: 'r-full', name: 'Katzennest', category: 'Katzenzimmer', capacity: 1, tariffId: 'tariff-single', availablePlaces: 0, guests: [], operationalState: { id: 'os-2', roomId: 'r-full', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' } },
+      { id: 'r-maintenance', name: 'Katzenruhe', category: 'Katzenzimmer', capacity: 2, tariffId: 'tariff-standard', availablePlaces: 2, guests: [], operationalState: { id: 'os-3', roomId: 'r-maintenance', status: 'maintenance', updatedAt: '2026-08-09T00:00:00.000Z' } },
+      { id: 'r-dog', name: 'Hundehof', category: 'Hundezimmer', capacity: 2, tariffId: 'tariff-standard', availablePlaces: 2, guests: [], operationalState: { id: 'os-4', roomId: 'r-dog', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' } }
     ]
     const bookingViews: BookingView[] = [{
       ...bookings[0], roomId: 'r-full',
@@ -54,8 +54,8 @@ describe('room availability', () => {
   it('requires only species information, so booking requests reuse the central availability policy', () => {
     const catRequest = { species: 'cat' as const }
     const rooms: RoomView[] = [
-      { id: 'r-cat', name: 'Katzenloft', category: 'Katzenzimmer', capacity: 1, availablePlaces: 1, guests: [], operationalState: { id: 'os-1', roomId: 'r-cat', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' } },
-      { id: 'r-dog', name: 'Hundehof', category: 'Hundezimmer', capacity: 1, availablePlaces: 1, guests: [], operationalState: { id: 'os-2', roomId: 'r-dog', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' } }
+      { id: 'r-cat', name: 'Katzenloft', category: 'Katzenzimmer', capacity: 1, tariffId: 'tariff-single', availablePlaces: 1, guests: [], operationalState: { id: 'os-1', roomId: 'r-cat', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' } },
+      { id: 'r-dog', name: 'Hundehof', category: 'Hundezimmer', capacity: 1, tariffId: 'tariff-single', availablePlaces: 1, guests: [], operationalState: { id: 'os-2', roomId: 'r-dog', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' } }
     ]
 
     expect(selectAvailableRoomsForBooking(rooms, [], catRequest, '2026-08-11', '09:00', '2026-08-12')
@@ -64,7 +64,7 @@ describe('room availability', () => {
 
   it('retains full compatible rooms as explicitly marked overbooking options', () => {
     const pet: Pet = { id: 'p-1', customerId: 'c-1', name: 'Mika', species: 'cat', initials: 'M', color: '#fff' }
-    const room: RoomView = { id: 'r-full', name: 'Katzennest', category: 'Katzenzimmer', capacity: 1, availablePlaces: 0, guests: [], operationalState: { id: 'os-1', roomId: 'r-full', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' } }
+    const room: RoomView = { id: 'r-full', name: 'Katzennest', category: 'Katzenzimmer', capacity: 1, tariffId: 'tariff-single', availablePlaces: 0, guests: [], operationalState: { id: 'os-1', roomId: 'r-full', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' } }
     const bookingViews: BookingView[] = [{
       ...bookings[0], roomId: room.id, pet: { ...pet, id: 'p-booked' },
       customer: { id: 'c-1', firstName: 'Kim', lastName: 'Muster', email: 'kim@example.de', phone: '123' }, room
@@ -77,7 +77,7 @@ describe('room availability', () => {
   it('derives a request status from the same period capacity and closure policies', () => {
     const pet = { species: 'cat' as const }
     const room: RoomView = {
-      id: 'r-cat', name: 'Katzenloft', category: 'Katzenzimmer', capacity: 1, availablePlaces: 1, guests: [],
+      id: 'r-cat', name: 'Katzenloft', category: 'Katzenzimmer', capacity: 1, tariffId: 'tariff-single', availablePlaces: 1, guests: [],
       operationalState: { id: 'os-1', roomId: 'r-cat', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' }
     }
     const bookedRoom: BookingView = {
@@ -99,7 +99,7 @@ describe('room availability', () => {
   it('returns the status and its selectable rooms from one request decision', () => {
     const pet = { species: 'cat' as const }
     const room: RoomView = {
-      id: 'r-cat', name: 'Katzenloft', category: 'Katzenzimmer', capacity: 1, availablePlaces: 1, guests: [],
+      id: 'r-cat', name: 'Katzenloft', category: 'Katzenzimmer', capacity: 1, tariffId: 'tariff-single', availablePlaces: 1, guests: [],
       operationalState: { id: 'os-1', roomId: 'r-cat', status: 'ready', updatedAt: '2026-08-09T00:00:00.000Z' }
     }
 

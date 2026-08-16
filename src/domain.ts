@@ -46,11 +46,13 @@ export interface Room {
   name: string
   category: RoomCategory
   capacity: number
+  /** The accommodation tariff permanently linked to this room; every stay in it bills through this tariff. */
+  tariffId: PriceTierTariff['id']
 }
 
 /** Editable room master data. Rooms remain separate from pension settings because
  * bookings reference them directly. */
-export type RoomInput = Pick<Room, 'name' | 'category' | 'capacity'>
+export type RoomInput = Pick<Room, 'name' | 'category' | 'capacity' | 'tariffId'>
 
 export type RoomOperationalStatus = 'ready' | 'maintenance'
 

@@ -606,8 +606,13 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     return true
   }
 
+  function tariffsCoverRoomAssignments(input: PensionSettingsUpdate): boolean {
+    const tariffIds = new Set(input.tariffs.map((tariff) => tariff.id))
+    return rooms.every((room) => tariffIds.has(room.tariffId))
+  }
+
   function updateSettings(input: PensionSettingsUpdate): boolean {
-    if (!isValidPensionSettingsUpdate(input)) return false
+    if (!isValidPensionSettingsUpdate(input) || !tariffsCoverRoomAssignments(input)) return false
 
     Object.assign(settings, {
       ...input,
@@ -635,14 +640,19 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     return [...occupiedByDate.values()].every((occupied) => occupied <= capacity)
   }
 
+  function tariffExists(tariffId: string): boolean {
+    return settings.tariffs.some((tariff) => tariff.id === tariffId)
+  }
+
   function createRoom(input: RoomInput): boolean {
-    if (!isValidRoomInput(input) || !roomNameIsUnique(input.name)) return false
+    if (!isValidRoomInput(input) || !roomNameIsUnique(input.name) || !tariffExists(input.tariffId)) return false
 
     const room = {
       id: nextEntityId(rooms, 'r'),
       name: input.name.trim(),
       category: input.category,
-      capacity: input.capacity
+      capacity: input.capacity,
+      tariffId: input.tariffId
     }
     rooms.push(room)
     roomOperationalStates.push({
@@ -658,7 +668,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
   function updateRoom(roomId: string, input: RoomInput): boolean {
     const room = rooms.find((item) => item.id === roomId)
     if (!room || !isValidRoomInput(input) || !roomNameIsUnique(input.name, roomId)
-      || !capacitySupportsExistingStays(roomId, input.capacity)) return false
+      || !capacitySupportsExistingStays(roomId, input.capacity) || !tariffExists(input.tariffId)) return false
 
     // Changing the species category would invalidate the historical booking relation.
     if (room.category !== input.category && bookings.some((booking) => booking.roomId === roomId)) return false
@@ -666,6 +676,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     room.name = input.name.trim()
     room.category = input.category
     room.capacity = input.capacity
+    room.tariffId = input.tariffId
     showToast(`${room.name} wurde aktualisiert.`)
     return true
   }

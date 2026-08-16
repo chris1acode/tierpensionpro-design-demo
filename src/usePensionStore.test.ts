@@ -512,7 +512,7 @@ describe('PensionStore', () => {
 
   it('moves a checked-in stay into a different available, species-compatible room', () => {
     const store = createPensionStore({ now: () => new Date(2026, 7, 9, 12, 0) })
-    expect(store.createRoom({ name: 'Waldzimmer 3', category: 'Hundezimmer', capacity: 1 })).toBe(true)
+    expect(store.createRoom({ name: 'Waldzimmer 3', category: 'Hundezimmer', capacity: 1, tariffId: 'tariff-standard' })).toBe(true)
     const newRoom = store.rooms.find((room) => room.name === 'Waldzimmer 3')!
 
     expect(store.changeCheckedInBookingRoom('b-3', newRoom.id)).toBe(true)
@@ -543,7 +543,7 @@ describe('PensionStore', () => {
 
   it('only allows changing the room of a stay that is currently checked in', () => {
     const store = createPensionStore({ now: () => new Date(2026, 7, 9, 12, 0) })
-    expect(store.createRoom({ name: 'Waldzimmer 3', category: 'Hundezimmer', capacity: 1 })).toBe(true)
+    expect(store.createRoom({ name: 'Waldzimmer 3', category: 'Hundezimmer', capacity: 1, tariffId: 'tariff-standard' })).toBe(true)
     const newRoom = store.rooms.find((room) => room.name === 'Waldzimmer 3')!
 
     expect(store.changeCheckedInBookingRoom('b-1', newRoom.id)).toBe(false)
@@ -703,16 +703,27 @@ describe('PensionStore', () => {
   it('configures room master data while preserving existing booking relations', () => {
     const store = createPensionStore({ now: () => new Date('2026-08-09T10:00:00.000Z') })
 
-    expect(store.createRoom({ name: '  Waldzimmer 3 ', category: 'Hundezimmer', capacity: 3 })).toBe(true)
-    expect(store.rooms.at(-1)).toMatchObject({ id: 'r-5', name: 'Waldzimmer 3', category: 'Hundezimmer', capacity: 3 })
+    expect(store.createRoom({ name: '  Waldzimmer 3 ', category: 'Hundezimmer', capacity: 3, tariffId: 'tariff-standard' })).toBe(true)
+    expect(store.rooms.at(-1)).toMatchObject({ id: 'r-5', name: 'Waldzimmer 3', category: 'Hundezimmer', capacity: 3, tariffId: 'tariff-standard' })
     expect(store.roomOperationalStates.at(-1)).toMatchObject({ roomId: 'r-5', status: 'ready' })
-    expect(store.updateRoom('r-5', { name: 'Gartenhaus', category: 'Katzenzimmer', capacity: 2 })).toBe(true)
+    expect(store.updateRoom('r-5', { name: 'Gartenhaus', category: 'Katzenzimmer', capacity: 2, tariffId: 'tariff-single' })).toBe(true)
+    expect(store.rooms.find((room) => room.id === 'r-5')).toMatchObject({ tariffId: 'tariff-single' })
     expect(store.deleteRoom('r-5')).toBe(true)
 
-    expect(store.updateRoom('r-1', { name: 'Waldzimmer 1', category: 'Katzenzimmer', capacity: 2 })).toBe(false)
-    expect(store.updateRoom('r-1', { name: 'Waldzimmer 1', category: 'Hundezimmer', capacity: 1 })).toBe(false)
+    expect(store.updateRoom('r-1', { name: 'Waldzimmer 1', category: 'Katzenzimmer', capacity: 2, tariffId: 'tariff-standard' })).toBe(false)
+    expect(store.updateRoom('r-1', { name: 'Waldzimmer 1', category: 'Hundezimmer', capacity: 1, tariffId: 'tariff-standard' })).toBe(false)
+    expect(store.updateRoom('r-1', { name: 'Waldzimmer 1', category: 'Hundezimmer', capacity: 2, tariffId: 'does-not-exist' })).toBe(false)
     expect(store.deleteRoom('r-1')).toBe(false)
-    expect(store.createRoom({ name: 'Gartenzimmer 2', category: 'Hundezimmer', capacity: 2 })).toBe(false)
+    expect(store.createRoom({ name: 'Gartenzimmer 2', category: 'Hundezimmer', capacity: 2, tariffId: 'tariff-standard' })).toBe(false)
+    expect(store.createRoom({ name: 'Seezimmer', category: 'Hundezimmer', capacity: 2, tariffId: 'does-not-exist' })).toBe(false)
+  })
+
+  it('keeps every tariff that is still linked to a room when saving settings', () => {
+    const store = createPensionStore()
+    const { id: _id, ...update } = store.settings
+
+    expect(store.updateSettings({ ...update, tariffs: update.tariffs.filter((tariff) => tariff.id !== 'tariff-standard') })).toBe(false)
+    expect(store.settings.tariffs.some((tariff) => tariff.id === 'tariff-standard')).toBe(true)
   })
 
   it('validates and saves personal account data', () => {

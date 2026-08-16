@@ -22,8 +22,8 @@ const pets: Pet[] = [
   { id: 'pet-1', customerId: 'customer-1', name: 'Balu', species: 'dog', initials: 'BA', color: '#fff' }
 ]
 const rooms: Room[] = [
-  { id: 'room-1', name: 'Zimmer 1', category: 'Hundezimmer', capacity: 1 },
-  { id: 'room-2', name: 'Zimmer 2', category: 'Hundezimmer', capacity: 2 }
+  { id: 'room-1', name: 'Zimmer 1', category: 'Hundezimmer', capacity: 1, tariffId: 'tariff-standard' },
+  { id: 'room-2', name: 'Zimmer 2', category: 'Hundezimmer', capacity: 2, tariffId: 'tariff-standard' }
 ]
 const bookings: Booking[] = [
   { id: 'booking-1', petId: 'pet-1', roomId: 'room-1', arrivalDate: '2026-08-09', arrival: '09:00', departure: '2026-08-10', createdAt: '2026-08-01T09:00:00.000Z', status: 'confirmed' }
