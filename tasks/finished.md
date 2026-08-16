@@ -20,3 +20,4 @@
 - Buchungs-Filterleiste (Statuschips, Datumsfilter und Auswahlhinweis) in `BookingsPage.vue` auf responsive Tailwind-Utilities umgestellt und die zugehörigen globalen CSS-/Media-Query-Regeln entfernt — 1eb97, 2026-08-16 12:43
 - Buchungszeitachse in `BookingsPage.vue` auf Tailwind-Grid und responsive Utilities umgestellt (inkl. Wochenraster, Aufenthaltsbahnen sowie Navigation mit `AppButton`/`AppIconButton`); Build und 212 Tests erfolgreich — 413b4, 2026-08-16 13:37
 - Check-out-Preisberechnung in `CheckoutModal.vue` auf lokale Tailwind-Grid-Utilities umgestellt und die globalen `.checkout-price`-/`.checkout-price-unavailable`-Regeln entfernt — ff151, 2026-08-16 13:37
+- Tierauswahl der Buchungs- und Auslastungsreservierungsdialoge als wiederverwendbare Tailwind-Komponente `AppPetSelection` mit `v-model` und Change-Event umgesetzt; doppelte Markup-Blöcke sowie globale `.pet-selection`-/`.pet-choice`-Regeln mit `!important` entfernt — 5a47b, 2026-08-16 13:39
