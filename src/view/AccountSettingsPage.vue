@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppPanel from './AppPanel.vue'
+import AppPanel from '../components/AppPanel.vue'
 import { computed, ref } from 'vue'
 import { AlertTriangle, Save, ShieldCheck, Undo2, UserRound } from '@lucide/vue'
 import type { AccountUpdate } from '../domain'
@@ -7,11 +7,11 @@ import { useSynchronizedDraft } from '../composables/useSynchronizedDraft'
 import { areAccountUpdatesEqual } from '../domain/account'
 import { formatCancellationDate } from '../presentation/dateFormat'
 import { usePensionStore } from '../usePensionStore'
-import AppButton from './AppButton.vue'
-import AppContainer from './AppContainer.vue'
-import AppFormError from './AppFormError.vue'
-import AppPageHeading from './AppPageHeading.vue'
-import CancelAccountModal from './CancelAccountModal.vue'
+import AppButton from '../components/AppButton.vue'
+import AppContainer from '../components/AppContainer.vue'
+import AppFormError from '../components/AppFormError.vue'
+import AppPageHeading from '../components/AppPageHeading.vue'
+import CancelAccountModal from '../components/CancelAccountModal.vue'
 
 const store = usePensionStore()
 const error = ref('')

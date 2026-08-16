@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
-import AppButton from './AppButton.vue'
-import LogoIcon from './LogoIcon.vue'
+import AppButton from '../components/AppButton.vue'
+import LogoIcon from '../components/LogoIcon.vue'
 </script>
 
 <template>
