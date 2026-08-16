@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import AppPanel from './components/AppPanel.vue'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import {
-  ArrowRight, CalendarDays, Check, ChevronLeft, ChevronRight, Dog, Inbox, LogOut, Menu, X
+  ArrowRight, CalendarDays, Check, ChevronLeft, ChevronRight, Dog, Inbox, LogOut, Menu, Settings, X
 } from '@lucide/vue'
 import AccountSettingsPage from './components/AccountSettingsPage.vue'
 import AppButton from './components/AppButton.vue'
@@ -25,6 +25,7 @@ import CheckoutModal from './components/CheckoutModal.vue'
 import CustomersPage from './components/CustomersPage.vue'
 import DemoDataControl from './components/DemoDataControl.vue'
 import IntroPage from './components/IntroPage.vue'
+import LoginPage from './components/LoginPage.vue'
 import LogoIcon from './components/LogoIcon.vue'
 import OccupancyPage from './components/OccupancyPage.vue'
 import RequestsPage from './components/RequestsPage.vue'
@@ -39,7 +40,9 @@ import { usePensionStore } from './usePensionStore'
 
 const store = usePensionStore()
 const route = useRoute()
+const router = useRouter()
 const mobileNavOpen = ref(false)
+const profileMenuOpen = ref(false)
 const sidebarCollapsed = ref(localStorage.getItem('sidebarCollapsed') === 'true')
 const selectedBooking = ref<BookingView | null>(null)
 const selectedDeparture = ref<DepartureView | null>(null)
@@ -91,6 +94,15 @@ function closeMobileNavigationWithEscape(event: KeyboardEvent) {
   closeMobileNavigation(true)
 }
 
+function closeProfileMenuWithEscape(event: KeyboardEvent) {
+  if (event.key === 'Escape') profileMenuOpen.value = false
+}
+
+function logOut() {
+  profileMenuOpen.value = false
+  void router.push({ name: 'login' })
+}
+
 function keepFocusInMobileNavigation(event: KeyboardEvent) {
   if (event.key !== 'Tab' || !mobileNavOpen.value || !mobileNavigation.value) return
 
@@ -120,15 +132,18 @@ watch(sidebarCollapsed, (collapsed) => {
 onMounted(() => {
   window.addEventListener('keydown', closeMobileNavigationWithEscape)
   window.addEventListener('keydown', keepFocusInMobileNavigation)
+  window.addEventListener('keydown', closeProfileMenuWithEscape)
 })
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', closeMobileNavigationWithEscape)
   window.removeEventListener('keydown', keepFocusInMobileNavigation)
+  window.removeEventListener('keydown', closeProfileMenuWithEscape)
 })
 </script>
 
 <template>
   <IntroPage v-if="route.name === 'intro'" />
+  <LoginPage v-else-if="route.name === 'login'" />
   <div v-else class="flex min-h-screen">
     <aside ref="mobileNavigation" class="fixed inset-y-0 left-0 z-20 flex w-[250px] flex-col border-r border-app-border bg-white px-4 pb-[18px] pt-[25px] transition-[width,transform,visibility] duration-[250ms] max-[920px]:invisible max-[920px]:pointer-events-none max-[920px]:-translate-x-full" :class="[{ 'max-[920px]:!visible max-[920px]:!pointer-events-auto max-[920px]:!translate-x-0 shadow-[15px_0_45px_rgba(36,33,31,.15)] max-[920px]:delay-0': mobileNavOpen }, sidebarCollapsed ? 'min-[921px]:w-[72px]' : 'min-[921px]:w-[250px]']" :role="mobileNavOpen ? 'dialog' : undefined" :aria-modal="mobileNavOpen ? 'true' : undefined" aria-label="Seitennavigation">
       <RouterLink class="flex items-center gap-[10px] px-[9px] pb-8 pt-0 text-[19px] font-bold text-app-text no-underline transition-[padding] duration-[250ms] [font-family:'Manrope',sans-serif]" :class="sidebarCollapsed ? 'min-[921px]:justify-center min-[921px]:pb-[22px]' : ''" to="/dashboard" @click="closeMobileNavigation()">
@@ -159,7 +174,20 @@ onBeforeUnmount(() => {
       <header class="flex h-[70px] items-center gap-2 border-b border-app-border bg-white px-[15px] sm:gap-[18px] sm:px-[28px]">
         <AppIconButton ref="mobileNavTrigger" class="hidden max-[920px]:grid" aria-label="Navigation öffnen" @click="openMobileNavigation"><Menu /></AppIconButton>
         <DemoDataControl />
-        <RouterLink class="grid size-[35px] flex-none place-items-center rounded-full bg-[#dceae7] text-xs font-bold text-petrol no-underline sm:size-[38px]" to="/account" aria-label="Zu den Kontoeinstellungen">{{ accountInitials(store.account) }}</RouterLink>
+        <div class="relative ml-auto">
+          <button class="flex size-[35px] items-center justify-center rounded-full border-0 bg-[#dceae7] text-xs font-bold text-petrol transition hover:bg-[#c9dfda] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:size-[38px]" type="button" aria-label="Profilmenü öffnen" :aria-expanded="profileMenuOpen" aria-controls="profile-menu" @click="profileMenuOpen = !profileMenuOpen">
+            {{ accountInitials(store.account) }}
+          </button>
+          <div v-if="profileMenuOpen" id="profile-menu" class="absolute right-0 top-[calc(100%+10px)] z-30 w-[216px] rounded-xl border border-app-border bg-white p-2 shadow-[0_12px_30px_rgba(36,33,31,.16)]" role="menu" aria-label="Profilmenü">
+            <div class="flex items-center gap-3 px-3 py-2.5">
+              <span class="grid size-9 place-items-center rounded-full bg-[#dceae7] text-xs font-bold text-petrol">{{ accountInitials(store.account) }}</span>
+              <span class="min-w-0"><strong class="block truncate text-[13px]">{{ store.account.firstName }} {{ store.account.lastName }}</strong><small class="block truncate text-[11px] text-app-muted">{{ store.account.email }}</small></span>
+            </div>
+            <div class="my-1 border-t border-app-border" />
+            <RouterLink class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-app-text no-underline hover:bg-[#f5f2ee]" to="/account" role="menuitem" @click="profileMenuOpen = false"><Settings :size="16" /> Einstellungen</RouterLink>
+            <button class="flex w-full items-center gap-2 rounded-lg border-0 bg-transparent px-3 py-2 text-left text-sm font-semibold text-[#9f391b] hover:bg-[#fff3eb]" type="button" role="menuitem" @click="logOut"><LogOut :size="16" /> Abmelden</button>
+          </div>
+        </div>
       </header>
 
       <AppContainer v-if="route.name === 'dashboard'">
