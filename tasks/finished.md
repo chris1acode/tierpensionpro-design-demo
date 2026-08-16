@@ -30,6 +30,7 @@
 - Überbuchungswarnungen als wiederverwendbare Tailwind-Komponente `AppOverbookingWarning` gebündelt, in vier Dialogen eingesetzt und die globale `!important`-Regel entfernt; Build erfolgreich — Session d87d9, 2026-08-16 14:33
 - Fallback-/404-Ansicht in `App.vue` auf lokale Tailwind-Utilities umgestellt und die globalen `.route-page`-/`.route-page-card`-/`.route-page-icon`-Regeln entfernt — Session 71e79, 2026-08-16 14:34
 
+- Desktop-Datumssteuerung des Belegungsrasters in `OccupancyPage.vue` auf lokale Tailwind-Utilities umgestellt (inklusive Auslastungs-, Heute-, Hover- und Fokuszuständen) und die zugehörigen globalen `.occupancy-day-header`-Regeln entfernt; Produktionsbuild erfolgreich — Session 5a7bb, 2026-08-16 15:02
 - Belegungslegende als Tailwind-basierte `AppOccupancyLegend`-Komponente gekapselt und die globalen Legenden- sowie Header-Media-Query-Regeln entfernt; Build erfolgreich — Session ea430, 2026-08-16 14:39
 - Consolidated recurring form error messages in the Tailwind-based `AppFormError` component, used it in five form views, and removed the global `.form-error` rule; build successful — Session 56eec, 2026-08-16 14:38
 - Wiederkehrende Eyebrow-Überschriften als Tailwind-Komponente `AppEyebrow` gebündelt, in Seiten- und Modalüberschriften verwendet und die globalen `.eyebrow`-Regeln entfernt; Build und Typprüfung erfolgreich — Session 18de5, 2026-08-16 14:36
