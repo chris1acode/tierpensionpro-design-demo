@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { Check } from '@lucide/vue'
 import { usePensionStore } from '../usePensionStore'
 import AppButton from './AppButton.vue'
@@ -8,6 +8,7 @@ import LogoIcon from './LogoIcon.vue'
 
 const store = usePensionStore()
 const route = useRoute()
+const router = useRouter()
 const queryEmail = computed(() => typeof route.query.email === 'string' ? route.query.email : '')
 const code = ref(typeof route.query.code === 'string' ? route.query.code : '')
 const error = ref('')
@@ -24,6 +25,7 @@ function confirmCode() {
   }
   error.value = ''
   verified.value = true
+  void router.push({ name: 'register-pension' })
 }
 </script>
 

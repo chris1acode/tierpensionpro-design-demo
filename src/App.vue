@@ -28,6 +28,7 @@ import IntroPage from './components/IntroPage.vue'
 import LoginPage from './components/LoginPage.vue'
 import RegisterPage from './components/RegisterPage.vue'
 import RegisterVerifyPage from './components/RegisterVerifyPage.vue'
+import RegisterPensionPage from './components/RegisterPensionPage.vue'
 import LogoIcon from './components/LogoIcon.vue'
 import OccupancyPage from './components/OccupancyPage.vue'
 import RequestsPage from './components/RequestsPage.vue'
@@ -148,6 +149,7 @@ onBeforeUnmount(() => {
   <IntroPage v-if="route.name === 'intro'" />
   <RegisterPage v-else-if="route.name === 'register'" />
   <RegisterVerifyPage v-else-if="route.name === 'register-verify'" />
+  <RegisterPensionPage v-else-if="route.name === 'register-pension'" />
   <LoginPage v-else-if="route.name === 'login' || !store.isAuthenticated" />
   <div v-else class="flex min-h-screen">
     <aside ref="mobileNavigation" class="fixed inset-y-0 left-0 z-20 flex w-[250px] flex-col border-r border-app-border bg-white px-4 pb-[18px] pt-[25px] transition-[width,transform,visibility] duration-[250ms] max-[920px]:invisible max-[920px]:pointer-events-none max-[920px]:-translate-x-full" :class="[{ 'max-[920px]:!visible max-[920px]:!pointer-events-auto max-[920px]:!translate-x-0 shadow-[15px_0_45px_rgba(36,33,31,.15)] max-[920px]:delay-0': mobileNavOpen }, sidebarCollapsed ? 'min-[921px]:w-[72px]' : 'min-[921px]:w-[250px]']" :role="mobileNavOpen ? 'dialog' : undefined" :aria-modal="mobileNavOpen ? 'true' : undefined" aria-label="Seitennavigation">

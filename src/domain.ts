@@ -295,7 +295,16 @@ export interface DemoSession {
  * separate from the authenticated account, because a registration has no
  * account until all onboarding steps are complete.
  */
-export type RegistrationStatus = 'idle' | 'email-sent' | 'code-verified'
+export type RegistrationStatus = 'idle' | 'email-sent' | 'code-verified' | 'completed'
+
+export interface RegistrationProfile {
+  firstName: string
+  lastName: string
+  businessName: string
+  street: string
+  postalCode: string
+  city: string
+}
 
 export interface RegistrationRequest {
   id: string
@@ -304,6 +313,8 @@ export interface RegistrationRequest {
   verificationCode?: string
   requestedAt?: string
   verifiedAt?: string
+  profile?: RegistrationProfile
+  completedAt?: string
 }
 
 export interface DemoEnvironment {

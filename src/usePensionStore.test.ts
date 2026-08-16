@@ -30,6 +30,8 @@ describe('PensionStore', () => {
     })
     expect(store.verifyRegistrationCode(' TP-2026 ')).toBe(true)
     expect(store.registrationRequest).toMatchObject({ status: 'code-verified', verificationCode: 'TP-2026' })
+    expect(store.completeRegistration({ firstName: 'Tina', lastName: 'Test', businessName: 'Pension Pfote', street: 'Parkweg 4', postalCode: '10115', city: 'Berlin' })).toBe(true)
+    expect(store.registrationRequest).toMatchObject({ status: 'completed', profile: { businessName: 'Pension Pfote', postalCode: '10115' } })
     expect(store.startRegistration('ungueltig')).toBe(false)
 
     store.resetDemo()

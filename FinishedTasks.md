@@ -1,5 +1,7 @@
 # Erledigte Aufgaben
 
+- 2026-08-16 16:05 | Session b45cc | Registrierungsprozess Schritt 3 umgesetzt: Route `/register/pension`, Validierung und Abschlussseite für Benutzer- sowie Pensionsdaten ergänzt. Der eigenständige Mock-Onboarding-Datensatz speichert Namen, Pensionsadresse und Abschlusszeitpunkt, ohne das bestehende Demokonto zu verändern.
+
 - 2026-08-16 16:00 | Session f1f8e | Registrierungsprozess für E-Mail und Bestätigungscode umgesetzt: eigene Mock-Registrierungsentität mit Reset-Verhalten, Anmeldelink sowie Routen `/register` und `/register/verify`; E-Mail und Code können über URL-Parameter vorausgefüllt werden.
 
 - 2026-08-16 15:36 | Session 2a340 | Demo-Anmeldung mit eigenem Mock-Sitzungsmodell umgesetzt: Start und Daten-Reset melden automatisch Robin Muster an; beliebige Login-Eingaben führen als Robin Muster zum Dashboard, inklusive Hinweis und Logout-Zustand.

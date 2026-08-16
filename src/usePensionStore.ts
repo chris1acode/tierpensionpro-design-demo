@@ -1,5 +1,5 @@
 import { computed, reactive, ref } from 'vue'
-import type { AccountUpdate, Booking, BookingRequest, BookingReservation, BookingUpdate, CheckInOutEvent, Customer, CustomerUpdate, NewBooking, NewBookingReservation, NewCustomer, NewPet, NewPensionClosure, OccupancyRangeDays, PensionClosureUpdate, PensionSettingsUpdate, PetUpdate, RoomInput, RoomOperationalStatus, ToastNotification } from './domain'
+import type { AccountUpdate, Booking, BookingRequest, BookingReservation, BookingUpdate, CheckInOutEvent, Customer, CustomerUpdate, NewBooking, NewBookingReservation, NewCustomer, NewPet, NewPensionClosure, OccupancyRangeDays, PensionClosureUpdate, PensionSettingsUpdate, PetUpdate, RegistrationProfile, RoomInput, RoomOperationalStatus, ToastNotification } from './domain'
 import { isValidAccountUpdate } from './domain/account'
 import { isValidEmail } from './domain/email'
 import { isValidBookingNote, normalizeBookingNote } from './domain/bookingNote'
@@ -120,6 +120,8 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     registrationRequest.verificationCode = undefined
     registrationRequest.requestedAt = dependencies.now().toISOString()
     delete registrationRequest.verifiedAt
+    delete registrationRequest.profile
+    delete registrationRequest.completedAt
     return true
   }
 
@@ -130,6 +132,20 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     registrationRequest.verificationCode = normalizedCode
     registrationRequest.status = 'code-verified'
     registrationRequest.verifiedAt = dependencies.now().toISOString()
+    return true
+  }
+
+  function completeRegistration(profile: RegistrationProfile): boolean {
+    const normalizedProfile: RegistrationProfile = {
+      firstName: profile.firstName.trim(), lastName: profile.lastName.trim(),
+      businessName: profile.businessName.trim(), street: profile.street.trim(),
+      postalCode: profile.postalCode.trim(), city: profile.city.trim()
+    }
+    if (registrationRequest.status !== 'code-verified' || !Object.values(normalizedProfile).every(Boolean)
+      || !/^\d{5}$/.test(normalizedProfile.postalCode)) return false
+    registrationRequest.profile = normalizedProfile
+    registrationRequest.status = 'completed'
+    registrationRequest.completedAt = dependencies.now().toISOString()
     return true
   }
 
@@ -738,6 +754,8 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     delete registrationRequest.verificationCode
     delete registrationRequest.requestedAt
     delete registrationRequest.verifiedAt
+    delete registrationRequest.profile
+    delete registrationRequest.completedAt
     occupancyRangeDays.value = 14
     occupancyStartDate.value = businessDate.value
     demoEnvironment.resetCount += 1
@@ -817,6 +835,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     logOut,
     startRegistration,
     verifyRegistrationCode,
+    completeRegistration,
     resetDemo
   }
 }
