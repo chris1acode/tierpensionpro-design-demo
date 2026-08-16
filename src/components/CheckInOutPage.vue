@@ -11,6 +11,7 @@ import AppButton from './AppButton.vue'
 import AppCustomerLink from './AppCustomerLink.vue'
 import AppContainer from './AppContainer.vue'
 import AppEmptyState from './AppEmptyState.vue'
+import AppMetricIcon from './AppMetricIcon.vue'
 import AppPageHeading from './AppPageHeading.vue'
 import AppPagination from './AppPagination.vue'
 import AppPetAvatar from './AppPetAvatar.vue'
@@ -118,17 +119,17 @@ function exportHistory() {
         class="flex items-center gap-[14px] rounded-xl border border-[var(--border)] bg-white p-[18px] text-left text-[var(--text)] hover:border-[#e3a27d] hover:shadow-[0_3px_12px_rgba(90,56,36,.08)]"
         :class="{ 'border-[#e3a27d] shadow-[0_3px_12px_rgba(90,56,36,.08)]': activeView === 'checked-in' }"
         :aria-pressed="activeView === 'checked-in'" @click="activeView = 'checked-in'"
-      ><span class="metric-icon rose"><Check /></span><span class="grid flex-1 grid-cols-[1fr_auto] items-center"><small class="font-bold text-[var(--muted)]">Jetzt eingecheckt</small><strong class="col-start-2 row-start-1 row-span-2 text-[25px] font-bold [font-family:'Manrope',sans-serif]">{{ checkedIn.length }}</strong><em class="mt-[3px] text-[11px] not-italic text-[var(--muted)]">jederzeit auscheckbar</em></span></button>
+      ><AppMetricIcon variant="rose"><Check /></AppMetricIcon><span class="grid flex-1 grid-cols-[1fr_auto] items-center"><small class="font-bold text-[var(--muted)]">Jetzt eingecheckt</small><strong class="col-start-2 row-start-1 row-span-2 text-[25px] font-bold [font-family:'Manrope',sans-serif]">{{ checkedIn.length }}</strong><em class="mt-[3px] text-[11px] not-italic text-[var(--muted)]">jederzeit auscheckbar</em></span></button>
       <button
         class="flex items-center gap-[14px] rounded-xl border border-[var(--border)] bg-white p-[18px] text-left text-[var(--text)] hover:border-[#e3a27d] hover:shadow-[0_3px_12px_rgba(90,56,36,.08)]"
         :class="{ 'border-[#e3a27d] shadow-[0_3px_12px_rgba(90,56,36,.08)]': activeView === 'arrivals' }"
         :aria-pressed="activeView === 'arrivals'" @click="activeView = 'arrivals'"
-      ><span class="metric-icon orange"><ArrowDownToLine /></span><span class="grid flex-1 grid-cols-[1fr_auto] items-center"><small class="font-bold text-[var(--muted)]">Geplante Anreisen</small><strong class="col-start-2 row-start-1 row-span-2 text-[25px] font-bold [font-family:'Manrope',sans-serif]">{{ arrivals.length }}</strong><em class="mt-[3px] text-[11px] not-italic text-[var(--muted)]">noch einzuchecken</em></span></button>
+      ><AppMetricIcon variant="orange"><ArrowDownToLine /></AppMetricIcon><span class="grid flex-1 grid-cols-[1fr_auto] items-center"><small class="font-bold text-[var(--muted)]">Geplante Anreisen</small><strong class="col-start-2 row-start-1 row-span-2 text-[25px] font-bold [font-family:'Manrope',sans-serif]">{{ arrivals.length }}</strong><em class="mt-[3px] text-[11px] not-italic text-[var(--muted)]">noch einzuchecken</em></span></button>
       <button
         class="flex items-center gap-[14px] rounded-xl border border-[var(--border)] bg-white p-[18px] text-left text-[var(--text)] hover:border-[#e3a27d] hover:shadow-[0_3px_12px_rgba(90,56,36,.08)]"
         :class="{ 'border-[#e3a27d] shadow-[0_3px_12px_rgba(90,56,36,.08)]': activeView === 'departures' }"
         :aria-pressed="activeView === 'departures'" @click="activeView = 'departures'"
-      ><span class="metric-icon teal"><ArrowUpFromLine /></span><span class="grid flex-1 grid-cols-[1fr_auto] items-center"><small class="font-bold text-[var(--muted)]">Geplante Abreisen</small><strong class="col-start-2 row-start-1 row-span-2 text-[25px] font-bold [font-family:'Manrope',sans-serif]">{{ departures.length }}</strong><em class="mt-[3px] text-[11px] not-italic text-[var(--muted)]">heute auszuchecken</em></span></button>
+      ><AppMetricIcon><ArrowUpFromLine /></AppMetricIcon><span class="grid flex-1 grid-cols-[1fr_auto] items-center"><small class="font-bold text-[var(--muted)]">Geplante Abreisen</small><strong class="col-start-2 row-start-1 row-span-2 text-[25px] font-bold [font-family:'Manrope',sans-serif]">{{ departures.length }}</strong><em class="mt-[3px] text-[11px] not-italic text-[var(--muted)]">heute auszuchecken</em></span></button>
     </section>
     <section class="panel">
       <header class="!grid grid-cols-[minmax(0,1fr)_minmax(340px,460px)_minmax(0,1fr)] items-center gap-[18px] border-b border-b-[#e8e4df] px-[22px] py-[21px] max-[760px]:grid-cols-1 max-[760px]:items-stretch"><div><h2>{{ activeViewTitle }}</h2><p>{{ activeViewDescription }}</p></div><label class="flex h-12 w-full items-center gap-2 rounded-[10px] border border-[var(--border)] bg-[#faf9f7] px-[14px] text-[15px] text-[var(--muted)]"><Search :size="19" /><input v-model="localQuery" class="w-full border-0 bg-transparent text-[15px] outline-none" aria-label="Aktuelle Vorgänge durchsuchen" placeholder="Tier, Kunde oder Zimmer suchen …" /></label><div class="flex items-center justify-end gap-[13px] max-[760px]:justify-start max-[680px]:flex-col max-[680px]:items-stretch"><AppButton variant="text" type="button" aria-label="Aktuelle Vorgänge als CSV exportieren" @click="exportOperations"><Download :size="15" /> Exportieren</AppButton></div></header>

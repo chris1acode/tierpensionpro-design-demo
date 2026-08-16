@@ -41,3 +41,4 @@
 - Wiederkehrende Header-Aktionsleisten in Buchungen, Check-in/out, Kunden und Belegung durch lokale Tailwind-Flex-Utilities ersetzt und die globale `.list-header-actions`- inklusive Mobile-Media-Query-Regeln entfernt; Produktionsbuild erfolgreich — Session ef996, 2026-08-16 15:01
 - Klickbarer Datumstitel der mobilen Belegungsansicht in `OccupancyPage.vue` auf lokale Tailwind-Utilities umgestellt und die globale `.mobile-occupancy-date`-Regel entfernt; Produktionsbuild erfolgreich - Session 6ee4e, 2026-08-16 15:02
 - Die klickbare Tierzeile in der Buchungszeitachse lokal mit Tailwind-Utilities gestylt und die verbleibende globale `.booking-timeline-lane article button`-CSS-Regel entfernt — Session 91bf4, 2026-08-16 15:03
+- Die Check-in/out-Kennzahl-Icons als Tailwind-basierte `AppMetricIcon`-Komponente gekapselt, die drei Varianten eingebunden und die globalen `.metric-icon`-/Farbregeln entfernt; Produktionsbuild erfolgreich - Session 762e0, 2026-08-16 15:04
