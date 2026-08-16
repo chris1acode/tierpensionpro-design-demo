@@ -5,6 +5,7 @@ import type { BookingView } from '../domain'
 import { selectRoomBookingAvailability } from '../domain/roomAvailability'
 import { usePensionStore } from '../usePensionStore'
 import AppButton from './AppButton.vue'
+import AppOverbookingWarning from './AppOverbookingWarning.vue'
 import BaseModal from './BaseModal.vue'
 
 const props = defineProps<{
@@ -57,7 +58,7 @@ function confirm() {
         <option value="" disabled>Zimmer auswählen</option>
         <option v-for="availability in roomOptions" :key="availability.room.id" :value="availability.room.id">{{ availability.room.name }} · {{ availability.availablePlaces }} {{ availability.availablePlaces === 1 ? 'Platz frei' : 'Plätze frei' }}{{ availability.wouldOverbook ? ' · Überbuchung' : '' }}</option>
       </select>
-      <label v-if="selectedRoomAvailability?.wouldOverbook" class="overbooking-warning"><input v-model="allowOverbooking" type="checkbox" /> <span><strong>Überbuchung bewusst durchführen</strong> · Im gewählten Zimmer fehlen mindestens {{ Math.max(1, 1 - selectedRoomAvailability.availablePlaces) }} Plätze.</span></label>
+      <AppOverbookingWarning v-if="selectedRoomAvailability?.wouldOverbook" v-model="allowOverbooking"><template #title>Überbuchung bewusst durchführen</template>· Im gewählten Zimmer fehlen mindestens {{ Math.max(1, 1 - selectedRoomAvailability.availablePlaces) }} Plätze.</AppOverbookingWarning>
       <p v-if="!roomOptions.length" class="form-error" role="alert">Aktuell ist kein anderes passendes Zimmer verfügbar.</p>
       <p v-else-if="error" class="form-error" role="alert">Bitte wähle ein Zimmer und bestätige eine notwendige Überbuchung.</p>
       <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto">

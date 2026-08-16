@@ -6,6 +6,7 @@ import { useReservationDraft } from '../composables/useReservationDraft'
 import { usePensionStore } from '../usePensionStore'
 import AppButton from './AppButton.vue'
 import AppFormField from './AppFormField.vue'
+import AppOverbookingWarning from './AppOverbookingWarning.vue'
 import AppPetSelection from './AppPetSelection.vue'
 import BaseModal from './BaseModal.vue'
 import CustomerAutocomplete from './CustomerAutocomplete.vue'
@@ -75,7 +76,7 @@ function submit(): void {
           <option v-for="availability in roomAvailability" :key="availability.room.id" :value="availability.room.id">{{ availability.room.name }} · {{ availability.room.capacity }} Plätze{{ availability.wouldOverbook ? ' · Überbuchung' : '' }}</option>
         </select>
       </label>
-      <label v-if="selectedRoomAvailability?.wouldOverbook" class="overbooking-warning"><input v-model="draft.allowOverbooking" type="checkbox" /> <span><strong>Überbuchung bewusst anlegen</strong> · Im gewählten Zeitraum fehlen mindestens {{ Math.max(1, draft.petIds.length - selectedRoomAvailability.availablePlaces) }} Plätze.</span></label>
+      <AppOverbookingWarning v-if="selectedRoomAvailability?.wouldOverbook" v-model="draft.allowOverbooking"><template #title>Überbuchung bewusst anlegen</template>· Im gewählten Zeitraum fehlen mindestens {{ Math.max(1, draft.petIds.length - selectedRoomAvailability.availablePlaces) }} Plätze.</AppOverbookingWarning>
       <p v-if="error" class="m-0 text-xs text-[#9b4444]" role="alert">{{ error }}</p>
       <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto"><AppButton type="button" variant="secondary" @click="$emit('close')">Abbrechen</AppButton><AppButton type="submit" variant="primary" :disabled="!draft.roomId || Boolean(selectedRoomAvailability?.wouldOverbook && !draft.allowOverbooking)">Reservieren</AppButton></div>
     </form>

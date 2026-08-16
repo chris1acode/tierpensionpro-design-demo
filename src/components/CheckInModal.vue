@@ -6,6 +6,7 @@ import { toTelephoneHref } from '../presentation/phoneLink'
 import { usePensionStore } from '../usePensionStore'
 import AppButton from './AppButton.vue'
 import AppCustomerLink from './AppCustomerLink.vue'
+import AppOverbookingWarning from './AppOverbookingWarning.vue'
 import BaseModal from './BaseModal.vue'
 
 const props = defineProps<{
@@ -58,10 +59,7 @@ const isRoomFull = computed(() => roomOccupancy.value.occupied >= roomOccupancy.
       <div class="flex justify-between border-b border-[#eeeae6] py-[10px] text-[13px]"><dt class="text-[var(--muted)]">Tier</dt><dd class="m-0 font-bold">{{ booking.pet.name }}</dd></div>
       <div class="flex justify-between border-b border-[#eeeae6] py-[10px] text-[13px]"><dt class="text-[var(--muted)]">Abreise</dt><dd class="m-0 font-bold">{{ booking.departure }}</dd></div>
     </dl>
-    <label v-if="isRoomFull" class="overbooking-warning">
-      <input v-model="allowOverbooking" type="checkbox" />
-      <span><strong>Überbuchung bewusst durchführen</strong> · Das Zimmer {{ booking.room.name }} ist bereits mit {{ roomOccupancy.occupied }} Tieren voll belegt.</span>
-    </label>
+    <AppOverbookingWarning v-if="isRoomFull" v-model="allowOverbooking"><template #title>Überbuchung bewusst durchführen</template>· Das Zimmer {{ booking.room.name }} ist bereits mit {{ roomOccupancy.occupied }} Tieren voll belegt.</AppOverbookingWarning>
     <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto">
       <AppButton variant="secondary" @click="$emit('close')">Abbrechen</AppButton>
       <AppButton variant="primary" :disabled="isRoomFull && !allowOverbooking" @click="$emit('confirm', allowOverbooking)"><Check :size="17" /> Jetzt einchecken</AppButton>

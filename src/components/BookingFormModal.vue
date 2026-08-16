@@ -9,6 +9,7 @@ import { calculateReservationPrice, calculateStayPrice } from '../domain/stayPri
 import { formatEuroCents } from '../presentation/currencyFormat'
 import AppButton from './AppButton.vue'
 import AppFormField from './AppFormField.vue'
+import AppOverbookingWarning from './AppOverbookingWarning.vue'
 import AppPetSelection from './AppPetSelection.vue'
 import BaseModal from './BaseModal.vue'
 import CustomerAutocomplete from './CustomerAutocomplete.vue'
@@ -146,7 +147,7 @@ function submit() {
           <option v-for="availability in roomAvailability" :key="availability.room.id" :value="availability.room.id">{{ availability.room.name }} · {{ availability.room.capacity }} {{ availability.room.capacity === 1 ? 'Platz' : 'Plätze' }}{{ availability.wouldOverbook ? ' · Überbuchung' : '' }}</option>
         </select>
       </label>
-      <label v-if="selectedRoomAvailability?.wouldOverbook" class="overbooking-warning"><input v-model="draft.allowOverbooking" type="checkbox" /> <span><strong>Überbuchung bewusst anlegen</strong> · Im gewählten Zeitraum fehlen mindestens {{ Math.max(1, draft.petIds.length - selectedRoomAvailability.availablePlaces) }} Plätze.</span></label>
+      <AppOverbookingWarning v-if="selectedRoomAvailability?.wouldOverbook" v-model="draft.allowOverbooking"><template #title>Überbuchung bewusst anlegen</template>· Im gewählten Zeitraum fehlen mindestens {{ Math.max(1, draft.petIds.length - selectedRoomAvailability.availablePlaces) }} Plätze.</AppOverbookingWarning>
       <label class="grid gap-[6px] text-[11px] font-bold text-[var(--muted)]">Hinweis <small>optional, max. 300 Zeichen</small><textarea v-model="draft.bookingNote" maxlength="300" placeholder="z. B. Medikament mittags geben" class="min-h-16 min-w-0 w-full resize-y rounded-lg border border-[var(--border)] bg-white p-[10px] text-[var(--text)]" /></label>
       <p v-if="reservationPricePreview" class="m-0 grid min-w-[205px] grid-cols-[1fr_auto] gap-x-[10px] gap-y-[3px] rounded-lg border border-[#c9e1dc] bg-[#f2f9f7] p-[10px_12px] text-[11px] leading-[1.35] text-[#285953]"><strong class="text-xs">Preisvorschau</strong><span>{{ reservationPricePreview.stays[0]?.billableDays }} Betreuungstage · {{ draft.petIds.length }} {{ draft.petIds.length === 1 ? 'Tier' : 'Tiere' }}</span><b class="col-start-2 row-span-2 row-start-1 self-center text-[15px]">{{ formatEuroCents(reservationPricePreview.totalCents) }}</b><small class="col-span-full text-[10px] text-[#4a6865]">unverbindlich, Abrechnung beim Check-out</small></p>
       <p v-if="error" class="m-0 text-xs text-[#9b4444]" role="alert">{{ error }}</p>
@@ -168,7 +169,7 @@ function submit() {
       </div>
       <label class="grid gap-[6px] text-[11px] font-bold text-[var(--muted)]">Hinweis <small>optional, max. 300 Zeichen</small><textarea v-model="editDraft.bookingNote" maxlength="300" placeholder="z. B. Medikament mittags geben" class="min-h-16 min-w-0 w-full resize-y rounded-lg border border-[var(--border)] bg-white p-[10px] text-[var(--text)]" /></label>
       <p v-if="editPricePreview" class="m-0 grid min-w-[205px] grid-cols-[1fr_auto] gap-x-[10px] gap-y-[3px] rounded-lg border border-[#c9e1dc] bg-[#f2f9f7] p-[10px_12px] text-[11px] leading-[1.35] text-[#285953]"><strong class="text-xs">Preisvorschau</strong><span>{{ editPricePreview.billableDays }} Betreuungstage</span><b class="col-start-2 row-span-2 row-start-1 self-center text-[15px]">{{ formatEuroCents(editPricePreview.totalCents) }}</b><small class="col-span-full text-[10px] text-[#4a6865]">unverbindlich, Abrechnung beim Check-out</small></p>
-      <label v-if="selectedEditRoomAvailability?.wouldOverbook" class="overbooking-warning"><input v-model="editDraft.allowOverbooking" type="checkbox" /> <span><strong>Überbuchung bewusst übernehmen</strong> · Im gewählten Zeitraum fehlen Plätze.</span></label>
+      <AppOverbookingWarning v-if="selectedEditRoomAvailability?.wouldOverbook" v-model="editDraft.allowOverbooking"><template #title>Überbuchung bewusst übernehmen</template>· Im gewählten Zeitraum fehlen Plätze.</AppOverbookingWarning>
       <p v-if="error" class="m-0 text-xs text-[#9b4444]" role="alert">{{ error }}</p>
       <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto"><AppButton type="button" variant="secondary" @click="$emit('close')">Abbrechen</AppButton><AppButton type="submit" variant="primary"><Pencil :size="16" /> Änderungen speichern</AppButton></div>
     </form>
