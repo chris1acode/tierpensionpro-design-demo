@@ -13,3 +13,5 @@
 [x] Ergänze auf der Anfrageseite unten einen link, zurück zur Demo Startseite
 [x] Entferne den hinweis "Ein ausführlichere Tarifkonfiguration ist noch in der Entwicklung..."
 [x] Baue Tierfotos in die Detailansicht ein (nicht in die Liste)
+[ ] Baue Tierfotos in die Detailansicht ein (nicht in die Liste). Nutze dafür die Bilder aus public/assets. Mach das Vorschaubild größer
+[ ] Die Preisübersicht in der Anfrage Seite soll keine Berechnung sein, sondern eine Auflistung der Tarifkonditionen.
