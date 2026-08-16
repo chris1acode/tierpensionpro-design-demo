@@ -369,3 +369,6 @@ export interface BookingRequestAnimal {
 export type NewBookingRequest = Pick<BookingRequest,
   'customerFirstName' | 'customerLastName' | 'contactEmail' | 'phone' | 'petName'
   | 'species' | 'animals' | 'arrivalDate' | 'arrival' | 'departure' | 'note'>
+
+/** Explicit staff decision for each animal submitted with an external request. */
+export type RequestPetAssignment = Pet['id'] | 'new'

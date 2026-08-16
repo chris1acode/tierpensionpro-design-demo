@@ -1,5 +1,5 @@
 import { computed, reactive, ref } from 'vue'
-import type { AccountUpdate, Booking, BookingRequest, BookingReservation, BookingUpdate, CheckInOutEvent, Customer, CustomerUpdate, NewBooking, NewBookingRequest, NewBookingReservation, NewCustomer, NewPet, NewPensionClosure, OccupancyRangeDays, PensionClosureUpdate, PensionSettingsUpdate, PetUpdate, RegistrationProfile, RoomInput, RoomOperationalStatus, ToastNotification } from './domain'
+import type { AccountUpdate, Booking, BookingRequest, BookingReservation, BookingUpdate, CheckInOutEvent, Customer, CustomerUpdate, NewBooking, NewBookingRequest, NewBookingReservation, NewCustomer, NewPet, NewPensionClosure, OccupancyRangeDays, PensionClosureUpdate, PensionSettingsUpdate, PetUpdate, RegistrationProfile, RequestPetAssignment, RoomInput, RoomOperationalStatus, ToastNotification } from './domain'
 import { isValidAccountUpdate } from './domain/account'
 import { isValidEmail } from './domain/email'
 import { isValidBookingNote, normalizeBookingNote } from './domain/bookingNote'
@@ -399,7 +399,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     return true
   }
 
-  function acceptRequest(requestId: string, roomId: string, customerAssignment: Customer['id'] | 'new'): boolean {
+  function acceptRequest(requestId: string, roomId: string, customerAssignment: Customer['id'] | 'new', petAssignments?: readonly RequestPetAssignment[]): boolean {
     const request = bookingRequests.find((item) => item.id === requestId)
     const room = rooms.find((item) => item.id === roomId)
     const roomIsReady = roomOperationalStates.some((state) => state.roomId === roomId && state.status === 'ready')
@@ -425,15 +425,30 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       if (!customer) return false
     }
 
-    const assignedPets = requestAnimals.map((animal) => pets.find((item) => item.customerId === customer!.id
-      && item.species === animal.species && item.name.localeCompare(animal.name, 'de', { sensitivity: 'base' }) === 0))
-    if (assignedPets.some((pet) => pet && bookings.some((item) => item.petId === pet.id && item.status !== 'checked-out'))) return false
-    const resolvedPets = requestAnimals.map((animal, index) => assignedPets[index] ?? createPetProfile(nextEntityId(pets, 'p'), {
-      customerId: customer!.id, name: animal.name, species: animal.species, note: request.note
-    }))
+    if (petAssignments && petAssignments.length !== requestAnimals.length) return false
+    const usedPetIds = new Set<string>()
+    const existingPets = requestAnimals.map((animal, index) => {
+      const assignment = petAssignments?.[index]
+      const pet = assignment && assignment !== 'new'
+        ? pets.find((item) => item.id === assignment && item.customerId === customer!.id && item.species === animal.species)
+        : assignment === 'new' ? undefined : pets.find((item) => item.customerId === customer!.id && item.species === animal.species
+          && item.name.localeCompare(animal.name, 'de', { sensitivity: 'base' }) === 0 && !usedPetIds.has(item.id))
+      if (pet) usedPetIds.add(pet.id)
+      return pet
+    })
+    if (petAssignments?.some((assignment, index) => assignment !== 'new' && existingPets[index]?.id !== assignment)
+      || existingPets.some((pet) => pet && bookings.some((item) => item.petId === pet.id && item.status !== 'checked-out'))) return false
+    const createdPets = [] as NonNullable<ReturnType<typeof createPetProfile>>[]
+    const resolvedPets = requestAnimals.map((animal, index) => {
+      const existingPet = existingPets[index]
+      if (existingPet) return existingPet
+      const pet = createPetProfile(nextEntityId([...pets, ...createdPets], 'p'), { customerId: customer!.id, name: animal.name, species: animal.species, note: request.note })
+      if (pet) createdPets.push(pet)
+      return pet
+    })
     if (resolvedPets.some((pet) => !pet)) return false
     const createdAt = dependencies.now().toISOString()
-    resolvedPets.forEach((pet, index) => { if (!assignedPets[index]) pets.push(pet!) })
+    pets.push(...createdPets)
     const reservationId = requestAnimals.length > 1 ? nextEntityId(bookingReservations, 'res') : undefined
     if (reservationId) bookingReservations.push({ id: reservationId, customerId: customer.id, petIds: resolvedPets.map((pet) => pet!.id), roomId: room.id, arrivalDate: request.arrivalDate, arrival: request.arrival, departure: request.departure, bookingNote: request.note, createdAt })
     resolvedPets.forEach((pet) => bookings.push({ id: nextEntityId(bookings, 'b'), petId: pet!.id, roomId: room.id, arrivalDate: request.arrivalDate, arrival: request.arrival, departure: request.departure, createdAt, status: 'confirmed', reservationId }))

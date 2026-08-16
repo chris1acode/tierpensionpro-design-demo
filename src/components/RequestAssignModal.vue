@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { CircleAlert, CircleCheck, ThumbsUp } from '@lucide/vue'
-import type { BookingRequest } from '../domain'
+import type { BookingRequest, RequestPetAssignment } from '../domain'
 import { getCustomerRequestMatch } from '../domain/customerProfile'
 import { getRequestRoomOptions } from '../domain/roomAvailability'
 import { selectRoomOccupancyForPeriod } from '../store/pensionSelectors'
@@ -23,7 +23,16 @@ const emit = defineEmits<{
 const store = usePensionStore()
 const customerId = ref('')
 const roomId = ref('')
+const petAssignments = ref<RequestPetAssignment[]>([])
 const error = ref(false)
+
+const requestAnimals = computed(() => props.request.animals?.length
+  ? props.request.animals
+  : [{ name: props.request.petName, species: props.request.species }])
+
+const selectedCustomerPets = computed(() => customerId.value && customerId.value !== 'new'
+  ? store.pets.filter((pet) => pet.customerId === customerId.value)
+  : [])
 
 const roomOptions = computed(() => getRequestRoomOptions(
   store.roomViews.value,
@@ -48,11 +57,17 @@ const selectedRoomOccupancy = computed(() => {
 })
 
 function confirm() {
-  if (!roomId.value || !customerId.value || !store.acceptRequest(props.request.id, roomId.value, customerId.value === 'new' ? 'new' : customerId.value)) {
+  const assignments = requestAnimals.value.map((_, index) => petAssignments.value[index] ?? 'new')
+  if (!roomId.value || !customerId.value || !store.acceptRequest(props.request.id, roomId.value, customerId.value === 'new' ? 'new' : customerId.value, assignments)) {
     error.value = true
     return
   }
   emit('accepted')
+}
+
+function resetPetAssignments(): void {
+  petAssignments.value = requestAnimals.value.map(() => 'new')
+  error.value = false
 }
 </script>
 
@@ -76,7 +91,7 @@ function confirm() {
     </p>
     <form class="grid gap-2 mt-2" @submit.prevent="confirm">
       <label for="request-assign-customer" class="text-[11px] font-bold text-app-muted">Kunde zuordnen</label>
-      <select id="request-assign-customer" v-model="customerId" class="h-[38px] w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text [font:inherit]">
+      <select id="request-assign-customer" v-model="customerId" class="h-[38px] w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text [font:inherit]" @change="resetPetAssignments">
         <option value="" disabled>Kunde zuordnen</option>
         <option value="new">Als neuen Kunden anlegen</option>
         <optgroup v-if="matchingCustomers.length" label="Passende bestehende Kunden">
@@ -88,6 +103,18 @@ function confirm() {
         <template v-if="matchingCustomers.some(({ match }) => match === 'email')"> · gleiche E-Mail-Adresse</template><template v-else-if="matchingCustomers.some(({ match }) => match === 'phone')"> · gleiche Telefonnummer</template>.
         Mit der Auswahl wird die Anfrage diesem Kunden zugeordnet.
       </p>
+      <fieldset v-if="customerId" class="mt-2 grid gap-2 rounded-lg border border-app-border p-3">
+        <legend class="px-1 text-[11px] font-bold text-app-muted">Tiere zuordnen</legend>
+        <p class="m-0 text-xs leading-relaxed text-app-muted">Ordne jedes angefragte Tier einem bestehenden Profil zu oder lege es beim Annehmen neu an.</p>
+        <label v-for="(animal, index) in requestAnimals" :key="`${animal.name}-${index}`" class="grid gap-1 text-[11px] font-bold text-app-muted">
+          {{ animal.name }} · {{ animal.species === 'dog' ? 'Hund' : 'Katze' }}
+          <select v-model="petAssignments[index]" class="h-[38px] w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text [font:inherit]">
+            <option value="new">Als neues Tier anlegen</option>
+            <option v-for="pet in selectedCustomerPets.filter((pet) => pet.species === animal.species && !petAssignments.includes(pet.id))" :key="pet.id" :value="pet.id">Bestehendes Tier: {{ pet.name }}</option>
+            <option v-if="petAssignments[index] && petAssignments[index] !== 'new'" :value="petAssignments[index]">Bestehendes Tier: {{ selectedCustomerPets.find((pet) => pet.id === petAssignments[index])?.name }}</option>
+          </select>
+        </label>
+      </fieldset>
       <label for="request-assign-room" class="text-[11px] font-bold text-app-muted">Zimmer wählen</label>
       <select id="request-assign-room" v-model="roomId" class="h-[38px] w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text [font:inherit]">
         <option value="" disabled>Zimmer wählen</option>

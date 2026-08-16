@@ -816,6 +816,31 @@ describe('PensionStore', () => {
     expect(store.requestHistory.value.find((request) => request.id === 'req-2')?.customerId).toBe('c-8')
   })
 
+  it('uses the explicitly assigned existing animal when accepting a request', () => {
+    const store = createPensionStore()
+    const petCount = store.pets.length
+
+    expect(store.acceptRequest('req-2', 'r-1', 'c-8', ['p-8'])).toBe(true)
+    expect(store.pets).toHaveLength(petCount)
+    expect(store.bookingViews.value.at(-1)).toMatchObject({ pet: { id: 'p-8', name: 'Oskar' } })
+  })
+
+  it('creates separate animal profiles for a multi-animal request when explicitly requested', () => {
+    const store = createPensionStore()
+    expect(store.submitBookingRequest({
+      customerFirstName: 'Mara', customerLastName: 'Beispiel', contactEmail: 'mara@example.test', phone: '01701234567',
+      petName: 'Luna', species: 'dog', animals: [{ name: 'Luna', species: 'dog' }, { name: 'Milo', species: 'dog' }],
+      arrivalDate: '2026-09-20', arrival: '10:00', departure: '2026-09-23'
+    })).toBe(true)
+    const request = store.pendingRequests.value.find((item) => item.contactEmail === 'mara@example.test')!
+
+    expect(store.acceptRequest(request.id, 'r-2', 'new', ['new', 'new'])).toBe(true)
+    const newCustomer = store.customers.at(-1)!
+    const createdPets = store.pets.filter((pet) => pet.customerId === newCustomer.id)
+    expect(createdPets.map((pet) => pet.name)).toEqual(['Luna', 'Milo'])
+    expect(new Set(createdPets.map((pet) => pet.id)).size).toBe(2)
+  })
+
   it('rejects accepting a request into a room that does not match the requested species', () => {
     const store = createPensionStore()
 

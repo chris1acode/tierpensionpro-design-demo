@@ -1,5 +1,7 @@
 # Erledigte Aufgaben
 
+- 2026-08-16 16:07 | Session abaeb | Anfrageannahme um eine explizite Tierzuordnung erweitert: Mitarbeitende können nun für jedes angefragte Tier ein passendes bestehendes Tierprofil des gewählten Kunden wählen oder ein neues Mock-Tierprofil anlegen. Die Store-Logik validiert Besitzer und Tierart, verhindert Doppelzuordnungen und erzeugt für mehrere neue Tiere eindeutige Entitäten samt gemeinsamer Reservierung. Die öffentliche Anfrageseite persistiert ihre validierten `NewBookingRequest`-Mock-Entitäten bereits in derselben Warteschlange; beide offenen Aufgaben in `tasks/todo.md` sind als erledigt markiert. Produktionsbuild erfolgreich; die Tests enthalten einen bereits bestehenden, unabhängigen Erwartungsfehler beim Namen der Demopension.
+
 - 2026-08-16 16:03 | Session e8e3c | Öffentliche Anfrageseite für mehrere Tiere erweitert: Das Formular verwaltet dynamische Tier-Entitäten; Validierung, Zimmerverfügbarkeit und Kapazitätsprüfung berücksichtigen die gesamte Gruppe. Beim Annehmen entstehen einzelne Aufenthalte in einer gemeinsamen Mock-Reservierung. Die Anfragenübersicht, Zuordnung und der CSV-Export zeigen alle Tiere.
 - 2026-08-16 16:03 | Session e8e3c | Kopfbereich der öffentlichen Anfrageseite bereinigt: Das nicht benötigte Tier-Badge wurde entfernt.
 

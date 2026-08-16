@@ -2,7 +2,6 @@
 import { reactive, ref } from 'vue'
 import { CheckCircle2, Plus, Trash2 } from '@lucide/vue'
 import type { NewBookingRequest } from '../domain'
-import LogoIcon from '../components/LogoIcon.vue'
 import { usePensionStore } from '../usePensionStore'
 
 const store = usePensionStore()
@@ -41,7 +40,7 @@ function submit(): void {
 <template>
   <main class="min-h-screen bg-[#f7f5f2] px-4 py-8 sm:px-6 sm:py-12">
     <div class="mx-auto max-w-[720px]">
-      <header class="mb-6 flex items-center gap-3 text-app-text"><span class="grid size-11 place-items-center rounded-xl bg-primary"><LogoIcon :size="26" color="white" /></span><span><strong class="block text-lg">{{ store.settings.businessName }}</strong><small class="text-app-muted">Unverbindliche Betreuungsanfrage</small></span></header>
+      <header class="mb-6 flex items-center gap-3 text-app-text"><span><strong class="block text-lg">{{ store.settings.businessName }}</strong><small class="text-app-muted">Unverbindliche Betreuungsanfrage</small></span></header>
       <section class="overflow-hidden rounded-2xl border border-app-border bg-white shadow-[0_12px_32px_rgba(36,33,31,.08)]">
         <div class="px-6 py-6 sm:px-9"><h1 class="mb-2 mt-1 text-[28px] font-bold [font-family:'Manrope',sans-serif]">Wir freuen uns auf euch.</h1><p class="m-0 text-sm leading-relaxed text-app-muted">Sende uns deinen Wunschtermin. Wir prüfen die Verfügbarkeit und melden uns persönlich bei dir.</p></div>
         <div v-if="sent" class="px-6 py-12 text-center sm:px-9"><CheckCircle2 class="mx-auto mb-4 text-[#3b776d]" :size="46" /><h2 class="m-0 text-xl font-bold">Anfrage erfolgreich gesendet</h2><p class="mx-auto mb-0 mt-3 max-w-md text-sm leading-relaxed text-app-muted">Vielen Dank! {{ store.settings.businessName }} meldet sich mit einer Rückmeldung bei dir.</p></div>
