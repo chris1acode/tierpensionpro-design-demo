@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Database, RotateCcw, X } from '@lucide/vue'
+import { Database, ExternalLink, RotateCcw, X } from '@lucide/vue'
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { RouterLink } from 'vue-router'
 import { usePensionStore } from '../usePensionStore'
 import AppButton from './AppButton.vue'
 import AppIconButton from './AppIconButton.vue'
@@ -52,7 +53,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <aside class="relative z-40 ml-auto grid flex-none justify-items-end gap-[10px]" aria-label="Demodaten-Steuerung">
+  <aside class="relative z-40 ml-auto flex flex-none items-center gap-[10px]" aria-label="Demodaten-Steuerung">
     <div v-if="open" ref="demoMenu" class="absolute right-0 top-[calc(100%+8px)] w-[264px] rounded-[13px] border border-app-border bg-white p-[17px] shadow-[0_14px_40px_rgba(36,33,31,0.18)]">
       <header class="grid grid-cols-[auto_1fr_auto] items-center gap-[10px]">
         <span class="inline-grid h-9 w-9 place-items-center rounded-[9px] bg-[#f3efff] text-[#5b4a8c]"><Database :size="20" /></span>
@@ -65,5 +66,8 @@ onBeforeUnmount(() => {
     <button ref="trigger" class="relative flex min-h-[42px] w-11 items-center justify-center gap-2 rounded-full border border-[#b6a1e5] bg-[#f3efff] p-0 text-xs font-bold text-[#5b4a8c] shadow-[0_4px_14px_rgba(91,74,140,0.2)] transition-[transform,box-shadow] duration-150 hover:-translate-y-px hover:shadow-[0_6px_18px_rgba(91,74,140,0.28)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[rgba(147,112,219,0.35)] sm:w-auto sm:justify-start sm:px-[14px]" aria-label="Demodaten-Menü öffnen" :aria-expanded="open" @click="toggleMenu">
       <Database :size="17" /><span class="hidden sm:inline">Demodaten</span><i aria-hidden="true" class="absolute right-px top-px h-[7px] w-[7px] shrink-0 rounded-full bg-[#8a74cc] shadow-[0_0_0_3px_#e5dcfb] sm:static sm:right-auto sm:top-auto" />
     </button>
+    <RouterLink :to="{ name: 'request-demo' }" class="inline-flex items-center gap-1 text-xs font-bold text-[#5b4a8c] underline decoration-[#b6a1e5] underline-offset-2 transition-colors duration-150 hover:text-[#4a3b73] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[rgba(147,112,219,0.35)]">
+      <ExternalLink :size="14" /><span>Beispiel Integration in deine Webseite</span>
+    </RouterLink>
   </aside>
 </template>
