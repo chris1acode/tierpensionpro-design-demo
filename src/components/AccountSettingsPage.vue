@@ -8,6 +8,7 @@ import { formatCancellationDate } from '../presentation/dateFormat'
 import { usePensionStore } from '../usePensionStore'
 import AppButton from './AppButton.vue'
 import AppContainer from './AppContainer.vue'
+import AppFormError from './AppFormError.vue'
 import AppPageHeading from './AppPageHeading.vue'
 import CancelAccountModal from './CancelAccountModal.vue'
 
@@ -71,7 +72,7 @@ function confirmCancellation() {
         </div>
       </section>
 
-      <p v-if="error" class="form-error rounded-lg border border-[#ebcaca] bg-[#fdf2f2] p-[12px_14px]" role="alert">{{ error }}</p>
+      <AppFormError v-if="error" class="rounded-lg border border-[#ebcaca] bg-[#fdf2f2] p-[12px_14px]">{{ error }}</AppFormError>
       <div class="flex justify-end gap-[9px] max-[680px]:flex-col-reverse max-[680px]:[&>*]:w-full"><AppButton variant="secondary" :disabled="!hasUnsavedChanges" type="button" @click="discard">Änderungen verwerfen</AppButton><AppButton variant="primary" :disabled="!hasUnsavedChanges" type="submit"><Save :size="16" /> Konto speichern</AppButton></div>
     </form>
 

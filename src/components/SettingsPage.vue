@@ -10,6 +10,7 @@ import AppButton from './AppButton.vue'
 import AppCheckboxField from './AppCheckboxField.vue'
 import AppContainer from './AppContainer.vue'
 import AppEmptyState from './AppEmptyState.vue'
+import AppFormError from './AppFormError.vue'
 import AppIconButton from './AppIconButton.vue'
 import AppPageHeading from './AppPageHeading.vue'
 import AppTab from './AppTab.vue'
@@ -152,7 +153,7 @@ function updateRate(species: PetSpecies, value: string) {
         </div>
       </section>
 
-      <p v-if="error" class="form-error rounded-lg border border-[#ebcaca] bg-[#fdf2f2] p-[12px_14px]" role="alert">{{ error }}</p>
+      <AppFormError v-if="error" class="rounded-lg border border-[#ebcaca] bg-[#fdf2f2] p-[12px_14px]">{{ error }}</AppFormError>
       <div class="flex justify-end gap-[9px] max-[680px]:flex-col-reverse max-[680px]:[&>*]:w-full"><AppButton variant="secondary" :disabled="!hasUnsavedSettings" type="button" @click="discard">Änderungen verwerfen</AppButton><AppButton variant="primary" :disabled="!hasUnsavedSettings" type="submit"><Save :size="16" /> Einstellungen speichern</AppButton></div>
     </form>
 
@@ -172,7 +173,7 @@ function updateRate(species: PetSpecies, value: string) {
           </div>
         </li>
       </ul>
-      <p v-if="roomError" class="form-error px-[22px] py-[12px]" role="alert">{{ roomError }}</p>
+      <AppFormError v-if="roomError" class="px-[22px] py-[12px]">{{ roomError }}</AppFormError>
     </section>
 
     <RoomFormModal

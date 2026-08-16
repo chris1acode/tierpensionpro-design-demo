@@ -6,6 +6,7 @@ import { selectRoomBookingAvailability } from '../domain/roomAvailability'
 import { usePensionStore } from '../usePensionStore'
 import AppButton from './AppButton.vue'
 import AppEyebrow from './AppEyebrow.vue'
+import AppFormError from './AppFormError.vue'
 import AppOverbookingWarning from './AppOverbookingWarning.vue'
 import BaseModal from './BaseModal.vue'
 
@@ -60,8 +61,8 @@ function confirm() {
         <option v-for="availability in roomOptions" :key="availability.room.id" :value="availability.room.id">{{ availability.room.name }} · {{ availability.availablePlaces }} {{ availability.availablePlaces === 1 ? 'Platz frei' : 'Plätze frei' }}{{ availability.wouldOverbook ? ' · Überbuchung' : '' }}</option>
       </select>
       <AppOverbookingWarning v-if="selectedRoomAvailability?.wouldOverbook" v-model="allowOverbooking"><template #title>Überbuchung bewusst durchführen</template>· Im gewählten Zimmer fehlen mindestens {{ Math.max(1, 1 - selectedRoomAvailability.availablePlaces) }} Plätze.</AppOverbookingWarning>
-      <p v-if="!roomOptions.length" class="form-error" role="alert">Aktuell ist kein anderes passendes Zimmer verfügbar.</p>
-      <p v-else-if="error" class="form-error" role="alert">Bitte wähle ein Zimmer und bestätige eine notwendige Überbuchung.</p>
+      <AppFormError v-if="!roomOptions.length">Aktuell ist kein anderes passendes Zimmer verfügbar.</AppFormError>
+      <AppFormError v-else-if="error">Bitte wähle ein Zimmer und bestätige eine notwendige Überbuchung.</AppFormError>
       <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto">
         <AppButton variant="secondary" type="button" @click="emit('close')">Abbrechen</AppButton>
         <AppButton variant="primary" type="submit" :disabled="!roomOptions.length"><DoorOpen :size="16" /> Zimmer wechseln</AppButton>

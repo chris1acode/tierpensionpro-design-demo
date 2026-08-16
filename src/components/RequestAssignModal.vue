@@ -8,6 +8,7 @@ import { selectRoomOccupancyForPeriod } from '../store/pensionSelectors'
 import { usePensionStore } from '../usePensionStore'
 import AppButton from './AppButton.vue'
 import AppEyebrow from './AppEyebrow.vue'
+import AppFormError from './AppFormError.vue'
 import BaseModal from './BaseModal.vue'
 
 const props = defineProps<{
@@ -101,7 +102,7 @@ function confirm() {
         <template v-if="selectedRoomOccupancy.peakDate"> · engster Tag {{ selectedRoomOccupancy.peakDate }}</template>
         <template v-if="selectedRoomOccupancy.availablePlaces === 0"> · bereits ausgebucht</template>
       </p>
-      <p v-if="error" class="form-error" role="alert">Bitte ordne einen Kunden zu und wähle ein verfügbares Zimmer.</p>
+      <AppFormError v-if="error">Bitte ordne einen Kunden zu und wähle ein verfügbares Zimmer.</AppFormError>
       <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto">
         <AppButton variant="secondary" type="button" @click="emit('close')">Abbrechen</AppButton>
         <AppButton variant="primary" type="submit" :disabled="!roomId || !customerId"><ThumbsUp :size="16" /> Anfrage annehmen</AppButton>

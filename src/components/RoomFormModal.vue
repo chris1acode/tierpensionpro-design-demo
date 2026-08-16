@@ -4,6 +4,7 @@ import type { Room, RoomInput } from '../domain'
 import { usePensionStore } from '../usePensionStore'
 import AppButton from './AppButton.vue'
 import AppEyebrow from './AppEyebrow.vue'
+import AppFormError from './AppFormError.vue'
 import BaseModal from './BaseModal.vue'
 
 const props = defineProps<{
@@ -46,7 +47,7 @@ function submit() {
       </label>
       <small v-if="categoryLocked" class="-mt-[6px] text-[10px] text-[var(--muted)]">Tierart durch bestehende Buchungen geschützt</small>
       <label class="grid gap-[6px] text-[11px] font-bold text-[var(--muted)]">Plätze<input v-model.number="form.capacity" class="h-10 min-w-0 rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" aria-label="Plätze" min="1" max="20" step="1" type="number" required /></label>
-      <p v-if="error" class="form-error" role="alert">Zimmer konnte nicht gespeichert werden. Namen müssen eindeutig sein; Kapazität und bestehende Buchungen müssen weiterhin zusammenpassen.</p>
+      <AppFormError v-if="error">Zimmer konnte nicht gespeichert werden. Namen müssen eindeutig sein; Kapazität und bestehende Buchungen müssen weiterhin zusammenpassen.</AppFormError>
       <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto"><AppButton type="button" variant="secondary" @click="$emit('close')">Abbrechen</AppButton><AppButton variant="primary" type="submit">{{ mode === 'edit' ? 'Änderungen speichern' : 'Zimmer anlegen' }}</AppButton></div>
     </form>
   </BaseModal>
