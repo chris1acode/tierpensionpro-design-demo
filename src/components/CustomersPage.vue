@@ -275,7 +275,7 @@ function exportCustomers() {
             <div><h3 class="m-0 mb-[3px] font-['Manrope'] text-[15px] font-bold">Aufenthalte</h3><p class="m-0 text-[11px] text-[var(--muted)]">Aktuelle und vergangene Buchungen</p></div>
             <AppButton variant="text" class="whitespace-nowrap gap-[5px] text-[11px] text-[var(--primary-dark)]" :to="{ path: '/bookings', query: { customerId: selectedCustomer.id } }"><Plus :size="15" /> Jetzt Buchung anlegen</AppButton>
           </div>
-          <article v-for="booking in selectedCustomer.bookings" :key="booking.id" class="grid grid-cols-[1fr_1fr_auto] items-center gap-3 border-t border-[#eeeae6] py-3">
+          <article v-for="booking in selectedCustomer.bookings" :key="booking.id" class="grid grid-cols-[1fr_1fr_auto] items-center gap-3 border-t border-[#eeeae6] py-3 max-[680px]:grid-cols-[1fr_auto] max-[680px]:[&>div:nth-child(2)]:col-start-1">
             <div><strong class="block text-[12px]">{{ booking.pet.name }}</strong><span class="block text-[10px] text-[var(--muted)]">{{ booking.room.name }}</span></div>
             <div><strong class="block text-[12px]">{{ booking.arrival }} Uhr</strong><span class="mt-[2px] block text-[10px] text-[var(--muted)]">bis {{ booking.departure }}</span></div>
             <AppBookingStatus class="self-center justify-self-end" :status="booking.status">{{ bookingStatusLabels[booking.status] }}</AppBookingStatus>
