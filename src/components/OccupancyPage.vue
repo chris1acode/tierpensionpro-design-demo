@@ -127,7 +127,7 @@ function closureLabel(startDate: string, endDate: string): string {
     <section class="panel occupancy-panel-wide">
       <header class="max-[680px]:!flex-col max-[680px]:!items-start max-[680px]:gap-[10px]">
         <div><h2>Zimmer × Zeitraum</h2><p>{{ store.roomTimelines.value.length }} Zimmer über {{ store.occupancyDates.value.length }} Tage</p></div>
-        <div class="list-header-actions"><AppButton variant="text" type="button" aria-label="Belegung als CSV exportieren" @click="exportOccupancy"><Download :size="15" /> Exportieren</AppButton><AppOccupancyLegend /></div>
+        <div class="flex items-center justify-end gap-[13px] max-[680px]:flex-col max-[680px]:items-start"><AppButton variant="text" type="button" aria-label="Belegung als CSV exportieren" @click="exportOccupancy"><Download :size="15" /> Exportieren</AppButton><AppOccupancyLegend /></div>
       </header>
 
       <div class="occupancy-scroll">

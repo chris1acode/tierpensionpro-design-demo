@@ -189,7 +189,7 @@ function exportCustomers() {
       <section class="panel customer-directory max-h-none min-[1050px]:max-h-[680px]" :class="{ 'hidden min-[1050px]:block': detailsOpen }">
         <header>
           <div><h2>Kundenverzeichnis</h2><p>{{ filteredCustomers.length }} Treffer</p></div>
-          <div class="list-header-actions"><AppButton variant="text" type="button" aria-label="Kunden und Tiere als CSV exportieren" @click="exportCustomers"><Download :size="15" /> Exportieren</AppButton></div>
+          <div class="flex items-center justify-end gap-[13px] max-[680px]:flex-col max-[680px]:items-stretch"><AppButton variant="text" type="button" aria-label="Kunden und Tiere als CSV exportieren" @click="exportCustomers"><Download :size="15" /> Exportieren</AppButton></div>
         </header>
         <label class="m-[15px] flex h-10 items-center gap-2 rounded-lg border border-[var(--border)] bg-[#faf9f7] px-[11px] text-[var(--muted)]"><Search :size="17" /><input v-model="localQuery" class="w-full border-0 bg-transparent outline-none" placeholder="Kundenname oder Tiername suchen …" /></label>
         <div v-if="filteredCustomers.length" class="max-h-none overflow-auto min-[1050px]:max-h-[540px]">
