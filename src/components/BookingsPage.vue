@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppPanel from './AppPanel.vue'
 import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { CalendarDays, Check, ChevronLeft, ChevronRight, Download, List, LogOut, Pencil, Plus, Search, Trash2 } from '@lucide/vue'
@@ -151,7 +152,7 @@ function openBookingFromTimeline(bookingId: string) {
       <AppButton variant="primary" class="w-full sm:w-auto" @click="openCreateBooking"><Plus :size="17" />Neue Buchung</AppButton>
     </AppPageHeading>
 
-    <section class="panel bookings-list">
+    <AppPanel class="bookings-list">
       <header class="max-[680px]:!items-stretch max-[680px]:!flex-col"><div><h2>{{ focusedBooking ? 'Ausgewählter Aufenthalt' : (view === 'list' ? 'Alle Aufenthalte' : 'Buchungszeitachse') }}</h2><p>{{ focusedBooking ? 'Details und Aktionen für die gewählte Buchung' : (view === 'list' ? `${visibleBookings.length} passende Buchungen` : 'Zimmer und zusammenhängende Aufenthalte im Wochenüberblick') }}</p></div><div class="flex items-center justify-end gap-[13px] max-[680px]:flex-col max-[680px]:items-stretch"><AppTabs class="max-sm:w-full max-sm:justify-center"><AppTab :active="view === 'list'" aria-label="Listenansicht" @click="view = 'list'"><List :size="15" /> Liste</AppTab><AppTab :active="view === 'calendar'" aria-label="Zeitachsenansicht" :disabled="!!focusedBooking" @click="view = 'calendar'"><CalendarDays :size="15" /> Zeitachse</AppTab></AppTabs><AppButton variant="text" type="button" aria-label="Buchungen als CSV exportieren" :disabled="!!focusedBooking" @click="exportBookings"><Download :size="15" /> Exportieren</AppButton><label class="m-0 flex h-10 w-full items-center gap-2 rounded-lg border border-[var(--border)] bg-[#faf9f7] px-[11px] text-[var(--muted)] sm:w-[min(340px,45%)]" :class="{ 'pointer-events-none opacity-50': !!focusedBooking }"><Search :size="17" /><input v-model="localQuery" class="w-full border-0 bg-transparent outline-none" :disabled="!!focusedBooking" placeholder="Tier, Kunde oder Zimmer suchen …" /></label></div></header>
       <div class="booking-filters flex gap-[7px] overflow-x-auto border-b border-[#eeeae6] px-4 py-3 sm:px-[22px] sm:py-[13px]" :class="{ 'pointer-events-none opacity-50': !!focusedBooking }" aria-label="Buchungsstatus">
         <button v-for="option in bookingStatusFilters" :key="option.value" class="shrink-0 rounded-full border border-[var(--border)] bg-white px-[11px] py-[7px] text-[11px] font-bold text-[var(--muted)]" :class="{ 'border-[#e3a27d] bg-[#fff3eb] text-[#a74613]': status === option.value }" :disabled="!!focusedBooking" @click="status = option.value">{{ option.label }}</button>
@@ -214,7 +215,7 @@ function openBookingFromTimeline(bookingId: string) {
         <template #title>Keine Buchungen gefunden.</template>
         <template #description>Ändere Suche oder Statusfilter.</template>
       </AppEmptyState>
-    </section>
+    </AppPanel>
     <DeleteBookingModal v-if="bookingPendingDeletion" :booking="bookingPendingDeletion" @close="bookingPendingDeletion = null" @confirm="confirmDeletion" />
     <BookingFormModal
       v-if="bookingModalMode"

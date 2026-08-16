@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppPanel from './AppPanel.vue'
 import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUpFromLine, Check, ChevronLeft, ChevronRight, DoorOpen, Download, ExternalLink, History, RotateCcw, Search } from '@lucide/vue'
@@ -131,7 +132,7 @@ function exportHistory() {
         :aria-pressed="activeView === 'departures'" @click="activeView = 'departures'"
       ><AppMetricIcon><ArrowUpFromLine /></AppMetricIcon><span class="grid flex-1 grid-cols-[1fr_auto] items-center"><small class="font-bold text-[var(--muted)]">Geplante Abreisen</small><strong class="col-start-2 row-start-1 row-span-2 text-[25px] font-bold [font-family:'Manrope',sans-serif]">{{ departures.length }}</strong><em class="mt-[3px] text-[11px] not-italic text-[var(--muted)]">heute auszuchecken</em></span></button>
     </section>
-    <section class="panel">
+    <AppPanel >
       <header class="!grid grid-cols-[minmax(0,1fr)_minmax(340px,460px)_minmax(0,1fr)] items-center gap-[18px] border-b border-b-[#e8e4df] px-[22px] py-[21px] max-[760px]:grid-cols-1 max-[760px]:items-stretch"><div><h2>{{ activeViewTitle }}</h2><p>{{ activeViewDescription }}</p></div><label class="flex h-12 w-full items-center gap-2 rounded-[10px] border border-[var(--border)] bg-[#faf9f7] px-[14px] text-[15px] text-[var(--muted)]"><Search :size="19" /><input v-model="localQuery" class="w-full border-0 bg-transparent text-[15px] outline-none" aria-label="Aktuelle Vorgänge durchsuchen" placeholder="Tier, Kunde oder Zimmer suchen …" /></label><div class="flex items-center justify-end gap-[13px] max-[760px]:justify-start max-[680px]:flex-col max-[680px]:items-stretch"><AppButton variant="text" type="button" aria-label="Aktuelle Vorgänge als CSV exportieren" @click="exportOperations"><Download :size="15" /> Exportieren</AppButton></div></header>
       <div v-if="visibleBookings.length">
         <article v-for="booking in visibleBookings" :key="booking.id" class="grid grid-cols-[auto_minmax(190px,1.4fr)_minmax(130px,1fr)_105px_auto] items-center gap-4 border-b border-b-[#eeeae6] px-[22px] py-4 last:border-b-0 max-[680px]:grid-cols-[auto_1fr] max-[680px]:p-[15px]">
@@ -154,9 +155,9 @@ function exportHistory() {
         <template #title>{{ searchTerm ? 'Keine passenden Vorgänge.' : activeView === 'checked-in' ? 'Keine Tiere eingecheckt.' : 'Alles erledigt.' }}</template>
         <template #description>{{ searchTerm ? 'Versuche einen anderen Suchbegriff.' : activeView === 'checked-in' ? 'Aktuell befindet sich kein Tier in der Pension.' : 'In diesem Bereich sind keine Vorgänge mehr offen.' }}</template>
       </AppEmptyState>
-    </section>
+    </AppPanel>
     <RoomChangeModal v-if="bookingToMove" :booking="bookingToMove" @close="bookingToMove = null" />
-    <section class="panel mt-[22px]">
+    <AppPanel class="mt-[22px]">
       <header><div><h2>Letzte Vorgänge</h2><p>Zuletzt ein- und ausgecheckte Tiere · {{ store.checkInOutHistory.value.length }} insgesamt</p></div><div class="flex items-center justify-end gap-[13px] max-[680px]:flex-col max-[680px]:items-stretch"><AppButton variant="text" type="button" aria-label="Check-in-out-Verlauf als CSV exportieren" @click="exportHistory"><Download :size="15" /> Exportieren</AppButton><History :size="20" /></div></header>
       <div>
         <article v-for="event in pagedHistory" :key="event.id" class="grid grid-cols-[auto_minmax(150px,1fr)_minmax(170px,.7fr)_auto_auto] items-center gap-[14px] border-b border-b-[#eeeae6] px-[22px] py-[14px] last:border-b-0 max-sm:grid-cols-[auto_1fr] max-sm:px-4">
@@ -176,6 +177,6 @@ function exportHistory() {
         <template #prev><ArrowLeft :size="15" /></template>
         <template #next><ArrowRight :size="15" /></template>
       </AppPagination>
-    </section>
+    </AppPanel>
   </AppContainer>
 </template>

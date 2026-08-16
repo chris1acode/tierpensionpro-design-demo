@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppPanel from './AppPanel.vue'
 import { computed, ref } from 'vue'
 import { Cat, Check, CircleAlert, CircleCheck, Dog, Download, Inbox, ThumbsDown, ThumbsUp } from '@lucide/vue'
 import type { BookingRequest } from '../domain'
@@ -59,16 +60,16 @@ function exportRequests(scope: 'pending' | 'history') {
       <span class="inline-flex items-center gap-[7px] rounded-lg border border-[var(--border)] bg-white px-3 py-[9px] text-xs font-bold text-[var(--muted)]"><Inbox :size="17" /> {{ store.pendingRequests.value.length }} offen</span>
     </AppPageHeading>
 
-    <div v-if="!store.settings.requestsEnabled" class="panel">
+    <AppPanel as="div" v-if="!store.settings.requestsEnabled" >
       <AppEmptyState>
         <template #icon><Inbox /></template>
         <template #title>Anfragen ist derzeit deaktiviert.</template>
         <template #description>Aktiviere das Feature unter Einstellungen, um externe Buchungsanfragen zu empfangen.</template>
       </AppEmptyState>
-    </div>
+    </AppPanel>
 
     <template v-else>
-      <section class="panel mb-[22px]">
+      <AppPanel class="mb-[22px]">
         <header><div><h2>Offene Anfragen</h2><p>{{ store.pendingRequests.value.length }} Anfragen warten auf eine Entscheidung</p></div><AppButton variant="text" type="button" aria-label="Offene Anfragen als CSV exportieren" @click="exportRequests('pending')"><Download :size="15" /> Exportieren</AppButton></header>
         <div v-if="store.pendingRequests.value.length" class="grid gap-px bg-[#eeeae6]">
           <article v-for="requestDetail in pendingRequestDetails" :key="requestDetail.request.id" class="request-card grid grid-cols-1 items-stretch gap-6 bg-white p-4 min-[900px]:grid-cols-[minmax(0,1fr)_minmax(270px,340px)] min-[900px]:p-[18px_22px]">
@@ -115,9 +116,9 @@ function exportRequests(scope: 'pending' | 'history') {
           <template #title>Keine offenen Anfragen.</template>
           <template #description>Neue externe Anfragen erscheinen automatisch hier.</template>
         </AppEmptyState>
-      </section>
+      </AppPanel>
 
-      <section class="panel">
+      <AppPanel >
         <header><div><h2>Verlauf</h2><p>Bereits entschiedene Anfragen</p></div><AppButton variant="text" type="button" aria-label="Anfragenverlauf als CSV exportieren" @click="exportRequests('history')"><Download :size="15" /> Exportieren</AppButton></header>
         <div v-if="store.requestHistory.value.length" class="request-history">
           <article
@@ -149,7 +150,7 @@ function exportRequests(scope: 'pending' | 'history') {
           <template #title>Noch keine entschiedenen Anfragen.</template>
           <template #description>Angenommene und abgelehnte Anfragen erscheinen hier.</template>
         </AppEmptyState>
-      </section>
+      </AppPanel>
     </template>
     <DeclineRequestModal v-if="requestToDecline" :request="requestToDecline" @close="requestToDecline = null" @confirm="decline" />
     <RequestAssignModal v-if="requestToAssign" :request="requestToAssign" @close="requestToAssign = null" @accepted="requestToAssign = null" />

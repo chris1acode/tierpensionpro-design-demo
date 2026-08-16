@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppPanel from './AppPanel.vue'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { CalendarOff, CalendarPlus, ChevronLeft, ChevronRight, Download, Lock, LockKeyhole, Pencil, Trash2 } from '@lucide/vue'
@@ -139,7 +140,7 @@ function closureLabel(startDate: string, endDate: string): string {
       <AppButton variant="primary" class="ml-auto max-[680px]:w-full" @click="reservationOpen = true"><CalendarPlus :size="17" /> Reservierung anlegen</AppButton>
     </div>
 
-    <section class="panel max-[680px]:hidden">
+    <AppPanel class="max-[680px]:hidden">
       <header class="max-[680px]:!flex-col max-[680px]:!items-start max-[680px]:gap-[10px]">
         <div><h2>Zimmer × Zeitraum</h2><p>{{ store.roomTimelines.value.length }} Zimmer über {{ store.occupancyDates.value.length }} Tage</p></div>
         <div class="flex items-center justify-end gap-[13px] max-[680px]:flex-col max-[680px]:items-start"><AppButton variant="text" type="button" aria-label="Belegung als CSV exportieren" @click="exportOccupancy"><Download :size="15" /> Exportieren</AppButton><AppOccupancyLegend /></div>
@@ -197,7 +198,7 @@ function closureLabel(startDate: string, endDate: string): string {
           </template>
         </div>
       </div>
-    </section>
+    </AppPanel>
 
     <section class="hidden gap-3 max-[680px]:grid" aria-labelledby="mobile-occupancy-heading">
       <header class="flex items-start justify-between gap-3 px-0.5">
@@ -249,7 +250,7 @@ function closureLabel(startDate: string, endDate: string): string {
         </ul>
       </article>
     </section>
-    <section class="panel mt-[22px]" aria-labelledby="closures-heading">
+    <AppPanel class="mt-[22px]" aria-labelledby="closures-heading">
       <header>
         <div><h2 id="closures-heading">Schließzeiten</h2><p>Während einer Schließzeit stehen keine Plätze für Reservierungen zur Verfügung.</p></div>
         <AppButton variant="secondary" type="button" @click="openClosureCreate"><LockKeyhole :size="15" /> Schließzeit anlegen</AppButton>
@@ -267,7 +268,7 @@ function closureLabel(startDate: string, endDate: string): string {
           </div>
         </li>
       </ul>
-    </section>
+    </AppPanel>
     <OccupancyReservationModal v-if="reservationOpen" :start-date="store.occupancyStartDate.value" @close="reservationOpen = false" />
     <ClosureFormModal
       v-if="closureModalMode"

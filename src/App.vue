@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppPanel from './components/AppPanel.vue'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import {
@@ -177,7 +178,7 @@ onBeforeUnmount(() => {
         </section>
 
         <div class="grid grid-cols-1 gap-[22px] min-[921px]:grid-cols-[minmax(0,1.75fr)_minmax(280px,.75fr)]">
-          <section class="panel">
+          <AppPanel >
             <header><div><h2>{{ scheduleView === 'arrivals' ? 'Heutige Anreisen' : 'Heutige Abreisen' }}</h2><p>{{ scheduleView === 'arrivals' ? `${filteredArrivals.length} Tiere warten auf ihren Check-in` : `${filteredDepartures.length} Tiere sind abholbereit` }}</p></div><AppTabs><AppTab :active="scheduleView === 'arrivals'" @click="scheduleView = 'arrivals'">Anreisen</AppTab><AppTab :active="scheduleView === 'departures'" @click="scheduleView = 'departures'">Abreisen</AppTab></AppTabs></header>
             <div v-if="scheduleView === 'arrivals' && filteredArrivals.length">
               <article v-for="booking in filteredArrivals" :key="booking.id" class="grid grid-cols-[auto_minmax(155px,1fr)_110px_61px_max-content] items-center gap-[13px] border-b border-b-[#eeeae6] px-[22px] py-4 last:border-b-0 max-[680px]:grid-cols-[auto_1fr_auto] max-[680px]:p-[15px]">
@@ -204,9 +205,9 @@ onBeforeUnmount(() => {
               <template #description>{{ scheduleView === 'arrivals' ? 'Für heute steht kein weiterer Check-in an.' : 'Für heute steht kein weiterer Check-out an.' }}</template>
             </AppEmptyState>
             <RouterLink class="flex items-center justify-end gap-[7px] border-t border-t-[#eeeae6] px-[22px] py-[13px] text-xs font-bold text-[var(--primary)] hover:underline" to="/check-in-out">Alle Check-ins und Check-outs <ArrowRight :size="16" /></RouterLink>
-          </section>
+          </AppPanel>
 
-          <aside class="panel">
+          <AppPanel as="aside" >
             <header><div><h2><RouterLink class="text-inherit no-underline hover:text-[var(--primary)] hover:underline" to="/occupancy">Belegung ansehen</RouterLink></h2><p>Aktueller Stand</p></div><span class="text-[20px] font-bold [font-family:'Manrope',sans-serif] text-[var(--primary)]">{{ store.occupancyRate.value }} %</span></header>
             <div class="mx-[22px] mt-[23px] h-2 overflow-hidden rounded-full bg-[#eeeae6]"><span class="block h-full rounded-[inherit] bg-[var(--primary)] transition-[width] duration-[350ms]" :style="{ width: `${store.occupancyRate.value}%` }" /></div>
             <div class="px-[22px] py-[10px]">
@@ -215,7 +216,7 @@ onBeforeUnmount(() => {
                 <p class="m-0"><strong class="block text-xs">{{ summary.category }}</strong><small class="mt-[2px] block text-[10px] text-[var(--muted)]">{{ summary.occupied }} von {{ summary.capacity }} belegt</small></p><span class="mt-[2px] block text-[10px] text-[var(--muted)]">{{ summary.capacity }} Plätze</span>
               </div>
             </div>
-          </aside>
+          </AppPanel>
         </div>
       </AppContainer>
       <CustomersPage v-else-if="route.name === 'customers'" />

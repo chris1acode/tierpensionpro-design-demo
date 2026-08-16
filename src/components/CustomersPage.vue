@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AppPanel from './AppPanel.vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Cat, Dog, Download, Mail, Pencil, Phone, Plus, Search, Trash2, Utensils } from '@lucide/vue'
@@ -186,7 +187,7 @@ function exportCustomers() {
     </AppPageHeading>
 
     <div class="grid grid-cols-1 items-start gap-[22px] min-[1050px]:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
-      <section class="panel customer-directory max-h-none min-[1050px]:max-h-[680px]" :class="{ 'hidden min-[1050px]:block': detailsOpen }">
+      <AppPanel class="customer-directory max-h-none min-[1050px]:max-h-[680px]" :class="{ 'hidden min-[1050px]:block': detailsOpen }">
         <header>
           <div><h2>Kundenverzeichnis</h2><p>{{ filteredCustomers.length }} Treffer</p></div>
           <div class="flex items-center justify-end gap-[13px] max-[680px]:flex-col max-[680px]:items-stretch"><AppButton variant="text" type="button" aria-label="Kunden und Tiere als CSV exportieren" @click="exportCustomers"><Download :size="15" /> Exportieren</AppButton></div>
@@ -217,9 +218,9 @@ function exportCustomers() {
           ariaLabel="Seiten im Kundenverzeichnis"
           @select="selectPage"
         />
-      </section>
+      </AppPanel>
 
-      <section v-if="selectedCustomer" class="panel customer-details" :class="{ 'hidden min-[1050px]:block': !detailsOpen }">
+      <AppPanel v-if="selectedCustomer" class="customer-details" :class="{ 'hidden min-[1050px]:block': !detailsOpen }">
         <button class="flex w-full items-center gap-[7px] border-0 border-b border-b-[#e8e4df] bg-[#faf9f7] px-4 py-[13px] text-left font-bold text-[var(--petrol)] min-[1050px]:hidden" @click="goBack"><ArrowLeft :size="17" /> Zurück zum Kundenverzeichnis</button>
         <header class="flex flex-col items-center justify-start gap-[14px] pb-[21px] sm:flex-row">
           <div class="grid min-w-0 gap-[4px]">
@@ -284,7 +285,7 @@ function exportCustomers() {
             <template #title>Noch keine Aufenthalte.</template>
           </AppEmptyState>
         </div>
-      </section>
+      </AppPanel>
     </div>
 
     <CustomerFormModal
