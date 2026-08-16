@@ -14,6 +14,7 @@ import AppMetricCard from './components/AppMetricCard.vue'
 import AppNoteBadge from './components/AppNoteBadge.vue'
 import AppPetAvatar from './components/AppPetAvatar.vue'
 import AppPageHeading from './components/AppPageHeading.vue'
+import AppRoomIcon from './components/AppRoomIcon.vue'
 import AppTab from './components/AppTab.vue'
 import AppTabs from './components/AppTabs.vue'
 import CheckInModal from './components/CheckInModal.vue'
@@ -210,7 +211,7 @@ onBeforeUnmount(() => {
             <div class="mx-[22px] mt-[23px] h-2 overflow-hidden rounded-full bg-[#eeeae6]"><span class="block h-full rounded-[inherit] bg-[var(--primary)] transition-[width] duration-[350ms]" :style="{ width: `${store.occupancyRate.value}%` }" /></div>
             <div class="px-[22px] py-[10px]">
               <div v-for="summary in store.occupancyByCategory.value" :key="summary.category" class="grid grid-cols-[auto_1fr_auto] items-center gap-[10px] border-b border-b-[#eeeae6] py-[15px]">
-                <span class="room-icon" :class="{ cat: summary.category === 'Katzenzimmer' }"><Dog v-if="summary.category === 'Hundezimmer'" :size="19" /><template v-else>K</template></span>
+                <AppRoomIcon :category="summary.category" />
                 <p class="m-0"><strong class="block text-xs">{{ summary.category }}</strong><small class="mt-[2px] block text-[10px] text-[var(--muted)]">{{ summary.occupied }} von {{ summary.capacity }} belegt</small></p><span class="mt-[2px] block text-[10px] text-[var(--muted)]">{{ summary.capacity }} Plätze</span>
               </div>
             </div>

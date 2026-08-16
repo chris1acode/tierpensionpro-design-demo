@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { Banknote, Building2, Cat, Clock3, Dog, Inbox, Info, Pencil, Plus, Save, Trash2 } from '@lucide/vue'
+import { Banknote, Building2, Clock3, Inbox, Info, Pencil, Plus, Save, Trash2 } from '@lucide/vue'
 import type { PensionSettingsUpdate, PetSpecies, Room } from '../domain'
 import { useSynchronizedDraft } from '../composables/useSynchronizedDraft'
 import { arePensionSettingsEqual } from '../domain/pensionSettings'
@@ -13,6 +13,7 @@ import AppEmptyState from './AppEmptyState.vue'
 import AppFormError from './AppFormError.vue'
 import AppIconButton from './AppIconButton.vue'
 import AppPageHeading from './AppPageHeading.vue'
+import AppRoomIcon from './AppRoomIcon.vue'
 import AppTab from './AppTab.vue'
 import AppTabs from './AppTabs.vue'
 import RoomFormModal from './RoomFormModal.vue'
@@ -165,7 +166,7 @@ function updateRate(species: PetSpecies, value: string) {
       <AppEmptyState v-if="!store.rooms.length">Keine Zimmer angelegt.</AppEmptyState>
       <ul v-else class="m-0 list-none p-0">
         <li v-for="room in store.rooms" :key="room.id" class="flex items-center gap-[14px] border-t border-t-[var(--border)] px-[22px] py-[14px] first:border-t-0">
-          <span class="room-icon" :class="{ cat: room.category === 'Katzenzimmer' }"><Dog v-if="room.category === 'Hundezimmer'" :size="18" /><Cat v-else :size="18" /></span>
+          <AppRoomIcon :category="room.category" :size="18" />
           <div class="min-w-0 flex-1"><strong class="block">{{ room.name }}</strong><span class="mt-[3px] block text-xs text-[var(--muted)]">{{ room.category === 'Katzenzimmer' ? 'Katzen' : 'Hunde' }} · {{ room.capacity }} {{ room.capacity === 1 ? 'Platz' : 'Plätze' }}</span></div>
           <div class="flex items-center gap-[6px] max-[680px]:flex-col">
             <AppIconButton type="button" :aria-label="`${room.name} bearbeiten`" @click="openRoomEdit(room)"><Pencil :size="15" /></AppIconButton>
