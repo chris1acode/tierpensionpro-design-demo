@@ -1,6 +1,7 @@
 import { computed, reactive, ref } from 'vue'
 import type { AccountUpdate, Booking, BookingRequest, BookingReservation, BookingUpdate, CheckInOutEvent, Customer, CustomerUpdate, NewBooking, NewBookingReservation, NewCustomer, NewPet, NewPensionClosure, OccupancyRangeDays, PensionClosureUpdate, PensionSettingsUpdate, PetUpdate, RoomInput, RoomOperationalStatus, ToastNotification } from './domain'
 import { isValidAccountUpdate } from './domain/account'
+import { isValidEmail } from './domain/email'
 import { isValidBookingNote, normalizeBookingNote } from './domain/bookingNote'
 import { addDaysToIsoDate, buildDateRange, enumerateStayDates, fromLocalIsoDate, isValidBookingPeriod, isValidIsoDate, isValidOptionalTime, toLocalIsoDate } from './domain/bookingPeriod'
 import { createCustomerProfile, updateCustomerProfile } from './domain/customerProfile'
@@ -53,6 +54,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
   const settings = reactive(initialState.settings)
   const account = reactive(initialState.account)
   const demoSession = reactive(initialState.demoSession)
+  const registrationRequest = reactive(initialState.registrationRequest)
   const demoEnvironment = reactive(initialState.demoEnvironment)
   const toastNotifications = reactive<ToastNotification[]>([])
   // Kept as a read-only compatibility projection for existing consumers; presentation uses
@@ -107,6 +109,28 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
 
   function logOut(): void {
     demoSession.isAuthenticated = false
+  }
+
+  function startRegistration(email: string): boolean {
+    const normalizedEmail = email.trim().toLocaleLowerCase('de')
+    if (!isValidEmail(normalizedEmail)) return false
+
+    registrationRequest.email = normalizedEmail
+    registrationRequest.status = 'email-sent'
+    registrationRequest.verificationCode = undefined
+    registrationRequest.requestedAt = dependencies.now().toISOString()
+    delete registrationRequest.verifiedAt
+    return true
+  }
+
+  function verifyRegistrationCode(code: string): boolean {
+    const normalizedCode = code.trim()
+    if (registrationRequest.status !== 'email-sent' || normalizedCode.length < 4) return false
+
+    registrationRequest.verificationCode = normalizedCode
+    registrationRequest.status = 'code-verified'
+    registrationRequest.verifiedAt = dependencies.now().toISOString()
+    return true
   }
 
   function recordCheckInOutEvent(bookingId: string, type: CheckInOutEvent['type']): void {
@@ -710,6 +734,10 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     Object.assign(account, initialState.account)
     delete account.cancelledAt
     Object.assign(demoSession, initialState.demoSession)
+    Object.assign(registrationRequest, initialState.registrationRequest)
+    delete registrationRequest.verificationCode
+    delete registrationRequest.requestedAt
+    delete registrationRequest.verifiedAt
     occupancyRangeDays.value = 14
     occupancyStartDate.value = businessDate.value
     demoEnvironment.resetCount += 1
@@ -749,6 +777,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     settings,
     account,
     demoSession,
+    registrationRequest,
     demoEnvironment,
     createBooking,
     createBookingReservation,
@@ -786,6 +815,8 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     dismissToast,
     logIn,
     logOut,
+    startRegistration,
+    verifyRegistrationCode,
     resetDemo
   }
 }

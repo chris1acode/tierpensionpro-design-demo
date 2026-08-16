@@ -18,6 +18,24 @@ describe('PensionStore', () => {
     expect(store.account).toMatchObject({ firstName: 'Robin', lastName: 'Muster' })
   })
 
+  it('keeps the registration invitation as independent demo data', () => {
+    const store = createPensionStore({ now: () => new Date('2026-08-09T12:00:00.000Z') })
+
+    expect(store.startRegistration('  neue-pension@example.de ')).toBe(true)
+    expect(store.registrationRequest).toMatchObject({
+      id: 'registration-1',
+      email: 'neue-pension@example.de',
+      status: 'email-sent',
+      requestedAt: '2026-08-09T12:00:00.000Z'
+    })
+    expect(store.verifyRegistrationCode(' TP-2026 ')).toBe(true)
+    expect(store.registrationRequest).toMatchObject({ status: 'code-verified', verificationCode: 'TP-2026' })
+    expect(store.startRegistration('ungueltig')).toBe(false)
+
+    store.resetDemo()
+    expect(store.registrationRequest).toEqual({ id: 'registration-1', email: '', status: 'idle' })
+  })
+
   it('resolves booking references to pet, customer and room', () => {
     const store = createPensionStore()
     const balu = store.bookingViews.value.find((booking) => booking.pet.name === 'Balu')

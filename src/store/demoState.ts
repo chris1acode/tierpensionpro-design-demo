@@ -10,6 +10,7 @@ import type {
   PensionClosure,
   PensionSettings,
   Pet,
+  RegistrationRequest,
   Room,
   RoomOperationalState
 } from '../domain'
@@ -24,6 +25,7 @@ import {
   initialDemoSession,
   initialPensionClosures,
   initialPensionSettings,
+  initialRegistrationRequest,
   initialRoomOperationalStates,
   pets as initialPets,
   rooms as initialRooms
@@ -32,6 +34,7 @@ import {
 export interface DemoState {
   account: Account
   demoSession: DemoSession
+  registrationRequest: RegistrationRequest
   bookingRequests: BookingRequest[]
   bookingReservations: BookingReservation[]
   bookings: Booking[]
@@ -55,6 +58,7 @@ export function createDemoState(): DemoState {
   return {
     account: { ...initialAccount },
     demoSession: { ...initialDemoSession },
+    registrationRequest: { ...initialRegistrationRequest },
     bookingRequests: initialBookingRequests.map((request) => ({
       ...request,
       declineNotification: request.declineNotification && { ...request.declineNotification }

@@ -290,6 +290,22 @@ export interface DemoSession {
   isAuthenticated: boolean
 }
 
+/**
+ * A local representation of the invitation flow. It deliberately remains
+ * separate from the authenticated account, because a registration has no
+ * account until all onboarding steps are complete.
+ */
+export type RegistrationStatus = 'idle' | 'email-sent' | 'code-verified'
+
+export interface RegistrationRequest {
+  id: string
+  email: string
+  status: RegistrationStatus
+  verificationCode?: string
+  requestedAt?: string
+  verifiedAt?: string
+}
+
 export interface DemoEnvironment {
   id: string
   label: string

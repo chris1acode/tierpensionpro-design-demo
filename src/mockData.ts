@@ -1,4 +1,4 @@
-import type { Account, Booking, BookingRequest, BookingReservation, CheckInOutEvent, Customer, DemoEnvironment, DemoSession, PensionClosure, PensionSettings, Pet, Room, RoomOperationalState } from './domain'
+import type { Account, Booking, BookingRequest, BookingReservation, CheckInOutEvent, Customer, DemoEnvironment, DemoSession, PensionClosure, PensionSettings, Pet, RegistrationRequest, Room, RoomOperationalState } from './domain'
 import { addDaysToIsoDate } from './domain/bookingPeriod'
 
 /** Demo bookings are "created" a plausible lead time before arrival, so the list sorts sensibly by creation time. */
@@ -19,6 +19,12 @@ export const initialAccount: Account = {
 export const initialDemoSession: DemoSession = {
   accountId: initialAccount.id,
   isAuthenticated: true
+}
+
+export const initialRegistrationRequest: RegistrationRequest = {
+  id: 'registration-1',
+  email: '',
+  status: 'idle'
 }
 
 export const initialPensionSettings: PensionSettings = {

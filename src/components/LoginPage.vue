@@ -33,7 +33,7 @@ function submitLogin() {
         <label class="grid gap-2 text-sm font-bold text-app-text">Passwort<input v-model="password" class="min-h-11 rounded-lg border border-app-border px-3 text-sm font-normal outline-none placeholder:text-[#9d9893] focus:border-primary focus:ring-2 focus:ring-[#f8d9c8]" type="password" autocomplete="current-password" placeholder="Passwort eingeben" /></label>
         <AppButton class="mt-2" variant="primary" type="submit">Anmelden <ArrowRight :size="17" /></AppButton>
       </form>
-      <p class="mb-0 mt-7 text-center text-sm text-app-muted">Noch kein Konto? <span class="font-bold text-primary">Jetzt registrieren</span></p>
+      <p class="mb-0 mt-7 text-center text-sm text-app-muted">Noch kein Konto? <RouterLink class="font-bold text-primary" to="/register">Jetzt registrieren</RouterLink></p>
     </section>
   </main>
 </template>
