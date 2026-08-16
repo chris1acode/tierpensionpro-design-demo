@@ -35,7 +35,7 @@ const selectedCustomerPets = computed(() => customerId.value && customerId.value
   : [])
 
 const roomOptions = computed(() => getRequestRoomOptions(
-  store.roomViews.value,
+  store.roomViews.value.filter((room) => !props.request.tariffId || room.tariffId === props.request.tariffId),
   store.bookingViews.value,
   props.request.animals?.length ? props.request.animals : props.request,
   props.request.arrivalDate,
@@ -43,6 +43,8 @@ const roomOptions = computed(() => getRequestRoomOptions(
   props.request.departure,
   store.pensionClosures
 ))
+
+const requestedTariffName = computed(() => store.settings.tariffs.find((tariff) => tariff.id === props.request.tariffId)?.name)
 
 const matchingCustomers = computed(() => store.customers.flatMap((customer) => {
   const match = getCustomerRequestMatch(customer, props.request)
@@ -75,7 +77,7 @@ function resetPetAssignments(): void {
   <BaseModal labelled-by="request-assign-title" modal-class="request-assign-modal max-w-[480px]" @close="emit('close')">
     <AppEyebrow>Anfrage zuordnen</AppEyebrow>
     <h2 id="request-assign-title" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">Anfrage von {{ request.customerFirstName }} {{ request.customerLastName }} annehmen</h2>
-    <p>{{ request.animals?.length ? request.animals.map((animal) => animal.name).join(', ') : request.petName }} · {{ request.arrivalDate }} bis {{ request.departure }}</p>
+    <p>{{ request.animals?.length ? request.animals.map((animal) => animal.name).join(', ') : request.petName }} · {{ request.arrivalDate }} bis {{ request.departure }}<template v-if="requestedTariffName"> · Tarif: {{ requestedTariffName }}</template></p>
     <p
       class="request-availability my-4 flex items-center gap-[5px] rounded-[7px] px-[9px] py-[7px] text-xs font-bold leading-[1.35]"
       :class="roomOptions.availability.status === 'available' ? 'bg-[#e7f2eb] text-[#315f48]' : 'bg-[#fdf2f2] text-[#9b4444]'"

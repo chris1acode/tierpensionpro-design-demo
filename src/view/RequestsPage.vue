@@ -21,10 +21,14 @@ const store = usePensionStore()
 const requestToDecline = ref<BookingRequest | null>(null)
 const requestToAssign = ref<BookingRequest | null>(null)
 
+function tariffName(tariffId: string | undefined): string | undefined {
+  return store.settings.tariffs.find((tariff) => tariff.id === tariffId)?.name
+}
+
 const pendingRequestDetails = computed(() => store.pendingRequests.value.map((request) => ({
   request,
   availability: getRequestRoomOptions(
-    store.roomViews.value,
+    store.roomViews.value.filter((room) => !request.tariffId || room.tariffId === request.tariffId),
     store.bookingViews.value,
     request.animals?.length ? request.animals : request,
     request.arrivalDate,
@@ -81,7 +85,7 @@ function exportRequests(scope: 'pending' | 'history') {
               ><Cat v-if="request.species === 'cat'" :size="19" /><Dog v-else :size="19" /></span>
               <div class="row-start-1 col-start-2 min-w-0">
                 <strong class="block text-sm">{{ request.customerFirstName }} {{ request.customerLastName }} · {{ request.phone }}</strong>
-                <span class="block text-[13px] text-app-muted mt-[3px]">{{ request.animals?.map((animal) => animal.name).join(', ') || request.petName }}</span>
+                <span class="block text-[13px] text-app-muted mt-[3px]">{{ request.animals?.map((animal) => animal.name).join(', ') || request.petName }}<template v-if="tariffName(request.tariffId)"> · {{ tariffName(request.tariffId) }}</template></span>
                 <AppNoteBadge v-if="request.note" class="mt-1.5 inline-block">{{ request.note }}</AppNoteBadge>
               </div>
               <div class="row-start-2 col-start-2 min-[900px]:row-start-1 min-[900px]:col-start-3">

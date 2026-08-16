@@ -6,8 +6,9 @@
 [x] Implementiere in den Einstellungen docs/tarif-spec.md. Ignoriere zunächst die Buchungen. Das kommt in Folgeschritt. Hinterlege in den Demodaten die Tarife Einzelzimmer und Standardzimmer
 [x] Implementiere in den Buchungen das neue Tarifmodell
 [x] Implementiere in den Unterbringungen das neue Tarifmodell. Eine Unterbringung wird 1:1 mit einem Tarif verknüpft.
-[ ] Implementiere in den Anfragen von aussen die Auwahl des Tarifes. Es soll Teil der Anfrage sein.
-[ ] Implementiere bei der Zuordnung der Anfragen zur Unterbringung die richtige Auswahl anhand des gewählten Tarifes.
+[x] Implementiere in den Anfragen von aussen die Auwahl des Tarifes. Es soll Teil der Anfrage sein.
+[x] Implementiere bei der Zuordnung der Anfragen zur Unterbringung die richtige Auswahl anhand des gewählten Tarifes.
 [ ] Entferne das pauschale preis pro tag
 [ ] Zeige auf der Anfrageseite auch eine Preisübersicht in einer extra Spalte
 [ ] Ergänze auf der Anfrageseite unten einen link, zurück zur Demo Startseite
+[ ] Entferne den hinweis "Ein ausführlichere Tarifkonfiguration ist noch in der Entwicklung..."

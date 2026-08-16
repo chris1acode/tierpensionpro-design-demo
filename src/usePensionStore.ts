@@ -414,6 +414,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     const roomIsReady = roomOperationalStates.some((state) => state.roomId === roomId && state.status === 'ready')
     const requestAnimals = request?.animals?.length ? request.animals : request ? [{ name: request.petName, species: request.species }] : []
     if (!request || request.status !== 'pending' || !room || !roomIsReady
+      || (request.tariffId && room.tariffId !== request.tariffId)
       || !requestAnimals.every((animal) => isRoomCompatibleWithSpecies(room, animal.species))
       || !isValidBookingPeriod(request.arrivalDate, request.arrival, request.departure)
       || doesStayOverlapClosure(request.arrivalDate, request.departure, pensionClosures)
@@ -459,8 +460,8 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     const createdAt = dependencies.now().toISOString()
     pets.push(...createdPets)
     const reservationId = requestAnimals.length > 1 ? nextEntityId(bookingReservations, 'res') : undefined
-    if (reservationId) bookingReservations.push({ id: reservationId, customerId: customer.id, petIds: resolvedPets.map((pet) => pet!.id), roomId: room.id, arrivalDate: request.arrivalDate, arrival: request.arrival, departure: request.departure, bookingNote: request.note, createdAt })
-    resolvedPets.forEach((pet) => bookings.push({ id: nextEntityId(bookings, 'b'), petId: pet!.id, roomId: room.id, arrivalDate: request.arrivalDate, arrival: request.arrival, departure: request.departure, createdAt, status: 'confirmed', reservationId }))
+    if (reservationId) bookingReservations.push({ id: reservationId, customerId: customer.id, petIds: resolvedPets.map((pet) => pet!.id), roomId: room.id, tariffId: room.tariffId, arrivalDate: request.arrivalDate, arrival: request.arrival, departure: request.departure, bookingNote: request.note, createdAt })
+    resolvedPets.forEach((pet) => bookings.push({ id: nextEntityId(bookings, 'b'), petId: pet!.id, roomId: room.id, tariffId: room.tariffId, arrivalDate: request.arrivalDate, arrival: request.arrival, departure: request.departure, createdAt, status: 'confirmed', reservationId }))
     request.customerId = customer.id
     request.status = 'accepted'
     showToast(`Die Anfrage von ${request.customerFirstName} ${request.customerLastName} wurde als Reservierung angelegt.`)
@@ -486,6 +487,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
 
   /** Persists a request from the public form into the same queue staff process internally. */
   function submitBookingRequest(input: NewBookingRequest): boolean {
+    const tariffIsKnown = !input.tariffId || settings.tariffs.some((item) => item.id === input.tariffId)
     const request: NewBookingRequest = {
       ...input,
       customerFirstName: input.customerFirstName.trim(), customerLastName: input.customerLastName.trim(),
@@ -493,7 +495,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       petName: input.petName.trim(), note: input.note?.trim() || undefined,
       animals: input.animals?.map((animal) => ({ name: animal.name.trim(), species: animal.species }))
     }
-    if (!settings.requestsEnabled || !isValidNewBookingRequest(request)) return false
+    if (!settings.requestsEnabled || !tariffIsKnown || !isValidNewBookingRequest(request)) return false
 
     bookingRequests.push({
       ...request, id: nextEntityId(bookingRequests, 'req'), status: 'pending',

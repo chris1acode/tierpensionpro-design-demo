@@ -371,6 +371,9 @@ export interface BookingRequest {
   /** All animals submitted together through the public request form. The
    * single-animal fields above remain the primary animal for older requests. */
   animals?: BookingRequestAnimal[]
+  /** Tariff the customer selected on the public request form. Older demo
+   * requests were submitted before tariff selection existed. */
+  tariffId?: PriceTierTariff['id']
   arrivalDate: string
   arrival: string
   departure: string
@@ -390,7 +393,7 @@ export interface BookingRequestAnimal {
 /** Fields submitted by a customer through the public, embeddable request form. */
 export type NewBookingRequest = Pick<BookingRequest,
   'customerFirstName' | 'customerLastName' | 'contactEmail' | 'phone' | 'petName'
-  | 'species' | 'animals' | 'arrivalDate' | 'arrival' | 'departure' | 'note'>
+  | 'species' | 'animals' | 'tariffId' | 'arrivalDate' | 'arrival' | 'departure' | 'note'>
 
 /** Explicit staff decision for each animal submitted with an external request. */
 export type RequestPetAssignment = Pet['id'] | 'new'
