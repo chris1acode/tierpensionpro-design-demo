@@ -29,3 +29,5 @@
 - Buchungslisten-Zeilen in `BookingsPage.vue` (inkl. Grid, mobiler Anordnung, Fokuszustand, Notiz und Aktionen) auf lokale Tailwind-Utilities umgestellt und die globalen `.booking-table`-/Aktions-/Media-Query-Regeln entfernt — Session 57bff, 2026-08-16 13:46
 - Überbuchungswarnungen als wiederverwendbare Tailwind-Komponente `AppOverbookingWarning` gebündelt, in vier Dialogen eingesetzt und die globale `!important`-Regel entfernt; Build erfolgreich — Session d87d9, 2026-08-16 14:33
 - Fallback-/404-Ansicht in `App.vue` auf lokale Tailwind-Utilities umgestellt und die globalen `.route-page`-/`.route-page-card`-/`.route-page-icon`-Regeln entfernt — Session 71e79, 2026-08-16 14:34
+
+- Wiederkehrende Eyebrow-Überschriften als Tailwind-Komponente `AppEyebrow` gebündelt, in Seiten- und Modalüberschriften verwendet und die globalen `.eyebrow`-Regeln entfernt; Build und Typprüfung erfolgreich — Session 18de5, 2026-08-16 14:36

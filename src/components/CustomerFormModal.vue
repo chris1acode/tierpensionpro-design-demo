@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import type { CustomerUpdate, CustomerView } from '../domain'
 import { usePensionStore } from '../usePensionStore'
 import AppButton from './AppButton.vue'
+import AppEyebrow from './AppEyebrow.vue'
 import AppFormField from './AppFormField.vue'
 import BaseModal from './BaseModal.vue'
 
@@ -40,7 +41,7 @@ function submit() {
 
 <template>
   <BaseModal labelled-by="customer-form-heading" modal-class="customer-form-modal max-w-[480px]" @close="$emit('close')">
-    <p class="eyebrow">{{ mode === 'edit' ? 'Kundenprofil' : 'Stammdaten' }}</p>
+    <AppEyebrow>{{ mode === 'edit' ? 'Kundenprofil' : 'Stammdaten' }}</AppEyebrow>
     <h2 id="customer-form-heading" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">{{ mode === 'edit' ? 'Kontaktdaten bearbeiten' : 'Kunden anlegen' }}</h2>
     <form class="mt-5 grid gap-[13px]" @submit.prevent="submit">
       <AppFormField label="Vorname *"><input v-model="form.firstName" class="h-10 min-w-0 rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" autocomplete="given-name" /></AppFormField>

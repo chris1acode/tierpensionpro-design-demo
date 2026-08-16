@@ -7,6 +7,7 @@ import { getRequestRoomOptions } from '../domain/roomAvailability'
 import { selectRoomOccupancyForPeriod } from '../store/pensionSelectors'
 import { usePensionStore } from '../usePensionStore'
 import AppButton from './AppButton.vue'
+import AppEyebrow from './AppEyebrow.vue'
 import BaseModal from './BaseModal.vue'
 
 const props = defineProps<{
@@ -56,7 +57,7 @@ function confirm() {
 
 <template>
   <BaseModal labelled-by="request-assign-title" modal-class="request-assign-modal max-w-[480px]" @close="emit('close')">
-    <p class="eyebrow">Anfrage zuordnen</p>
+    <AppEyebrow>Anfrage zuordnen</AppEyebrow>
     <h2 id="request-assign-title" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">Anfrage von {{ request.customerFirstName }} {{ request.customerLastName }} annehmen</h2>
     <p>{{ request.petName }} · {{ request.arrivalDate }} bis {{ request.departure }}</p>
     <p

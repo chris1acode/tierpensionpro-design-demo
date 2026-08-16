@@ -13,6 +13,7 @@ import AppButton from './AppButton.vue'
 import AppBookingStatus from './AppBookingStatus.vue'
 import AppContainer from './AppContainer.vue'
 import AppEmptyState from './AppEmptyState.vue'
+import AppEyebrow from './AppEyebrow.vue'
 import AppPageHeading from './AppPageHeading.vue'
 import AppPagination from './AppPagination.vue'
 import CustomerFormModal from './CustomerFormModal.vue'
@@ -222,7 +223,7 @@ function exportCustomers() {
         <button class="flex w-full items-center gap-[7px] border-0 border-b border-b-[#e8e4df] bg-[#faf9f7] px-4 py-[13px] text-left font-bold text-[var(--petrol)] min-[1050px]:hidden" @click="goBack"><ArrowLeft :size="17" /> Zurück zum Kundenverzeichnis</button>
         <header class="flex flex-col items-center justify-start gap-[14px] pb-[21px] sm:flex-row">
           <div class="grid min-w-0 gap-[4px]">
-            <p class="eyebrow">Kundenprofil</p>
+            <AppEyebrow>Kundenprofil</AppEyebrow>
             <h2 class="my-0 mb-[5px] mt-[2px] text-[20px]">{{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }}</h2>
             <div class="flex flex-wrap gap-x-[16px] gap-y-[8px]">
               <a class="inline-flex items-center gap-[5px] text-[12px] font-semibold text-[var(--petrol)] no-underline" :href="`mailto:${selectedCustomer.email}`"><Mail :size="14" /> {{ selectedCustomer.email }}</a>

@@ -4,6 +4,7 @@ import type { CustomerView, PetSpecies } from '../domain'
 import { usePensionStore } from '../usePensionStore'
 import { MAX_PET_NOTE_LENGTH } from '../domain/petProfile'
 import AppButton from './AppButton.vue'
+import AppEyebrow from './AppEyebrow.vue'
 import AppCheckboxField from './AppCheckboxField.vue'
 import AppFormField from './AppFormField.vue'
 import BaseModal from './BaseModal.vue'
@@ -47,7 +48,7 @@ function submit() {
 
 <template>
   <BaseModal labelled-by="pet-form-heading" modal-class="pet-form-modal max-w-[600px]" @close="$emit('close')">
-    <p class="eyebrow">{{ mode === 'edit' ? 'Tierprofil' : 'Stammdaten' }}</p>
+    <AppEyebrow>{{ mode === 'edit' ? 'Tierprofil' : 'Stammdaten' }}</AppEyebrow>
     <h2 id="pet-form-heading" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">{{ mode === 'edit' ? `${pet?.name} bearbeiten` : 'Tier anlegen' }}</h2>
     <form class="mt-5 grid grid-cols-2 gap-[13px] max-[680px]:grid-cols-1" @submit.prevent="submit">
       <AppFormField label="Name *"><input v-model="form.name" class="h-10 min-w-0 rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" autocomplete="off" /></AppFormField>

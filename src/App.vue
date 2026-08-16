@@ -9,6 +9,7 @@ import AppButton from './components/AppButton.vue'
 import AppContainer from './components/AppContainer.vue'
 import AppIconButton from './components/AppIconButton.vue'
 import AppEmptyState from './components/AppEmptyState.vue'
+import AppEyebrow from './components/AppEyebrow.vue'
 import AppMetricCard from './components/AppMetricCard.vue'
 import AppPageHeading from './components/AppPageHeading.vue'
 import AppTab from './components/AppTab.vue'
@@ -227,7 +228,7 @@ onBeforeUnmount(() => {
             <LogoIcon v-if="route.name === 'not-found'" :size="32" />
             <component :is="navigationItems.find((item) => item.name === route.name)?.icon ?? CalendarDays" v-else />
           </span>
-          <p class="eyebrow">{{ route.name === 'not-found' ? 'Fehler 404' : 'Tierpension Pro' }}</p>
+          <AppEyebrow>{{ route.name === 'not-found' ? 'Fehler 404' : 'Tierpension Pro' }}</AppEyebrow>
           <h1 class="my-[6px] text-[28px] font-bold [font-family:'Manrope',sans-serif]">{{ currentPage.title }}</h1>
           <p class="mb-[25px] mt-0 text-[var(--muted)]">{{ currentPage.description }}</p>
           <AppButton v-if="route.name === 'not-found'" variant="primary" to="/dashboard">Zurück zum Dashboard</AppButton>

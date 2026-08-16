@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import type { Room, RoomInput } from '../domain'
 import { usePensionStore } from '../usePensionStore'
 import AppButton from './AppButton.vue'
+import AppEyebrow from './AppEyebrow.vue'
 import BaseModal from './BaseModal.vue'
 
 const props = defineProps<{
@@ -33,7 +34,7 @@ function submit() {
 
 <template>
   <BaseModal labelled-by="room-form-heading" modal-class="room-form-modal max-w-[420px]" @close="$emit('close')">
-    <p class="eyebrow">Zimmerverwaltung</p>
+    <AppEyebrow>Zimmerverwaltung</AppEyebrow>
     <h2 id="room-form-heading" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">{{ mode === 'edit' ? 'Zimmer bearbeiten' : 'Zimmer anlegen' }}</h2>
     <form class="mt-5 grid gap-[13px]" @submit.prevent="submit">
       <label class="grid gap-[6px] text-[11px] font-bold text-[var(--muted)]">Zimmername<input v-model.trim="form.name" class="h-10 min-w-0 rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" aria-label="Zimmername" type="text" placeholder="z. B. Waldzimmer 3" required /></label>

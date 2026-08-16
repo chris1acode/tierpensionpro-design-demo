@@ -5,6 +5,7 @@ import type { BookingView } from '../domain'
 import { selectRoomBookingAvailability } from '../domain/roomAvailability'
 import { usePensionStore } from '../usePensionStore'
 import AppButton from './AppButton.vue'
+import AppEyebrow from './AppEyebrow.vue'
 import AppOverbookingWarning from './AppOverbookingWarning.vue'
 import BaseModal from './BaseModal.vue'
 
@@ -49,7 +50,7 @@ function confirm() {
 
 <template>
   <BaseModal labelled-by="room-change-heading" modal-class="room-change-modal max-w-[440px]" @close="emit('close')">
-    <p class="eyebrow">Zimmerwechsel</p>
+    <AppEyebrow>Zimmerwechsel</AppEyebrow>
     <h2 id="room-change-heading" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">Zimmer wechseln</h2>
     <p>{{ booking.customer.firstName }} {{ booking.customer.lastName }} · {{ booking.pet.name }} · aktuell {{ booking.room.name }}</p>
     <form class="request-assign-form" @submit.prevent="confirm">

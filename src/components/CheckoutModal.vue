@@ -3,6 +3,7 @@ import { LogOut } from '@lucide/vue'
 import type { DepartureView, StayPrice } from '../domain'
 import { formatEuroCents } from '../presentation/currencyFormat'
 import AppButton from './AppButton.vue'
+import AppEyebrow from './AppEyebrow.vue'
 import AppCustomerLink from './AppCustomerLink.vue'
 import BaseModal from './BaseModal.vue'
 
@@ -20,7 +21,7 @@ defineEmits<{
 <template>
   <BaseModal labelled-by="checkout-title" modal-class="max-w-[470px]" @close="$emit('close')">
     <span class="mb-5 inline-grid h-12 w-12 place-items-center rounded-xl bg-[#e4eff0] text-[var(--petrol)]"><LogOut /></span>
-    <p class="eyebrow">Check-out bestätigen</p>
+    <AppEyebrow>Check-out bestätigen</AppEyebrow>
     <h2 id="checkout-title" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">Check-out für <AppCustomerLink :customer-id="departure.customer.id">{{ departure.customer.firstName }} {{ departure.customer.lastName }}</AppCustomerLink></h2>
     <p class="text-[14px] leading-[1.55] text-[var(--muted)]">
       Wird {{ departure.pet.name }} von {{ departure.customer.firstName }} {{ departure.customer.lastName }} abgeholt?

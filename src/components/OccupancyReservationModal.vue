@@ -5,6 +5,7 @@ import { addDaysToIsoDate, isValidBookingPeriod } from '../domain/bookingPeriod'
 import { useReservationDraft } from '../composables/useReservationDraft'
 import { usePensionStore } from '../usePensionStore'
 import AppButton from './AppButton.vue'
+import AppEyebrow from './AppEyebrow.vue'
 import AppFormField from './AppFormField.vue'
 import AppOverbookingWarning from './AppOverbookingWarning.vue'
 import AppPetSelection from './AppPetSelection.vue'
@@ -55,7 +56,7 @@ function submit(): void {
 
 <template>
   <BaseModal labelled-by="occupancy-reservation-heading" modal-class="occupancy-reservation-modal max-w-[620px]" @close="$emit('close')">
-    <p class="eyebrow">Kapazität prüfen</p>
+    <AppEyebrow>Kapazität prüfen</AppEyebrow>
     <h2 id="occupancy-reservation-heading" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">Reservierung anlegen</h2>
     <p>Die Verfügbarkeit wird für jede Nacht des Aufenthalts geprüft.</p>
     <form class="mt-5 grid gap-[13px]" @submit.prevent="submit">

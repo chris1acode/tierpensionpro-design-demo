@@ -8,6 +8,7 @@ import { selectRoomBookingAvailability } from '../domain/roomAvailability'
 import { calculateReservationPrice, calculateStayPrice } from '../domain/stayPrice'
 import { formatEuroCents } from '../presentation/currencyFormat'
 import AppButton from './AppButton.vue'
+import AppEyebrow from './AppEyebrow.vue'
 import AppFormField from './AppFormField.vue'
 import AppOverbookingWarning from './AppOverbookingWarning.vue'
 import AppPetSelection from './AppPetSelection.vue'
@@ -125,7 +126,7 @@ function submit() {
 
 <template>
   <BaseModal labelled-by="booking-form-heading" modal-class="booking-form-modal max-w-[620px]" @close="$emit('close')">
-    <p class="eyebrow">Aufenthaltsplanung</p>
+    <AppEyebrow>Aufenthaltsplanung</AppEyebrow>
     <h2 id="booking-form-heading" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">{{ mode === 'edit' ? 'Buchung bearbeiten' : 'Neue Buchung' }}</h2>
     <p v-if="mode === 'edit' && booking">{{ booking.customer.firstName }} {{ booking.customer.lastName }} · {{ booking.pet.name }}. Kunde und Tier bleiben dieser Buchung zugeordnet.</p>
     <p v-else>Wähle zuerst die Kundin oder den Kunden und anschließend ein oder mehrere verfügbare zugehörige Tiere.</p>

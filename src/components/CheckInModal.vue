@@ -5,6 +5,7 @@ import type { BookingView } from '../domain'
 import { toTelephoneHref } from '../presentation/phoneLink'
 import { usePensionStore } from '../usePensionStore'
 import AppButton from './AppButton.vue'
+import AppEyebrow from './AppEyebrow.vue'
 import AppCustomerLink from './AppCustomerLink.vue'
 import AppOverbookingWarning from './AppOverbookingWarning.vue'
 import BaseModal from './BaseModal.vue'
@@ -35,7 +36,7 @@ const isRoomFull = computed(() => roomOccupancy.value.occupied >= roomOccupancy.
 <template>
   <BaseModal labelled-by="checkin-title" modal-class="max-w-[470px]" @close="$emit('close')">
     <span class="mb-5 inline-grid h-12 w-12 place-items-center rounded-xl bg-[#fbe8dd] text-[var(--primary-dark)]"><ClipboardCheck /></span>
-    <p class="eyebrow">Check-in bestätigen</p>
+    <AppEyebrow>Check-in bestätigen</AppEyebrow>
     <h2 id="checkin-title" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">Check-in für <AppCustomerLink :customer-id="booking.customer.id">{{ booking.customer.firstName }} {{ booking.customer.lastName }}</AppCustomerLink></h2>
     <p class="text-[14px] leading-[1.55] text-[var(--muted)]">
       Ist {{ booking.pet.name }} angekommen? Mit der Bestätigung wird {{ booking.pet.name }} dem Zimmer
