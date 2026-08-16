@@ -9,6 +9,7 @@ import AppButton from './AppButton.vue'
 import AppContainer from './AppContainer.vue'
 import AppEmptyState from './AppEmptyState.vue'
 import AppIconButton from './AppIconButton.vue'
+import AppOccupancyLegend from './AppOccupancyLegend.vue'
 import AppPageHeading from './AppPageHeading.vue'
 import AppStatusBadge from './AppStatusBadge.vue'
 import AppTab from './AppTab.vue'
@@ -124,16 +125,9 @@ function closureLabel(startDate: string, endDate: string): string {
     </div>
 
     <section class="panel occupancy-panel-wide">
-      <header>
+      <header class="max-[680px]:!flex-col max-[680px]:!items-start max-[680px]:gap-[10px]">
         <div><h2>Zimmer × Zeitraum</h2><p>{{ store.roomTimelines.value.length }} Zimmer über {{ store.occupancyDates.value.length }} Tage</p></div>
-        <div class="list-header-actions"><AppButton variant="text" type="button" aria-label="Belegung als CSV exportieren" @click="exportOccupancy"><Download :size="15" /> Exportieren</AppButton><div class="occupancy-legend">
-          <span><i class="legend-swatch free" /> Frei</span>
-          <span><i class="legend-swatch occupied" /> Teilbelegt</span>
-          <span><i class="legend-swatch full" /> Ausgebucht</span>
-          <span><i class="legend-swatch overbooked" /> Überbucht</span>
-          <span><i class="legend-swatch maintenance" /> Gesperrt</span>
-          <span><i class="legend-swatch closed" /> Geschlossen</span>
-        </div></div>
+        <div class="list-header-actions"><AppButton variant="text" type="button" aria-label="Belegung als CSV exportieren" @click="exportOccupancy"><Download :size="15" /> Exportieren</AppButton><AppOccupancyLegend /></div>
       </header>
 
       <div class="occupancy-scroll">
