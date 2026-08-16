@@ -27,8 +27,7 @@ function submitLogin() {
       <p class="mb-2 text-xs font-bold uppercase tracking-[.12em] text-primary">Willkommen zurück</p>
       <h1 id="login-title" class="m-0 font-['Manrope'] text-[28px] font-bold text-app-text">Anmelden</h1>
       <p class="mb-2 mt-2 text-sm leading-6 text-app-muted">Melde dich an, um deine Pension zu verwalten.</p>
-      <p class="mb-7 rounded-lg bg-[#fff3eb] px-3 py-2 text-xs leading-5 text-[#8e3c16]">Demo: Gib beliebige Zugangsdaten ein. Du wirst als Robin Muster angemeldet.</p>
-      <form class="grid gap-4" @submit.prevent="submitLogin">
+      <form class="mt-7 grid gap-4" @submit.prevent="submitLogin">
         <label class="grid gap-2 text-sm font-bold text-app-text">E-Mail-Adresse<input v-model="email" class="min-h-11 rounded-lg border border-app-border px-3 text-sm font-normal outline-none placeholder:text-[#9d9893] focus:border-primary focus:ring-2 focus:ring-[#f8d9c8]" type="email" autocomplete="email" placeholder="name@tierpension.de" /></label>
         <label class="grid gap-2 text-sm font-bold text-app-text">Passwort<input v-model="password" class="min-h-11 rounded-lg border border-app-border px-3 text-sm font-normal outline-none placeholder:text-[#9d9893] focus:border-primary focus:ring-2 focus:ring-[#f8d9c8]" type="password" autocomplete="current-password" placeholder="Passwort eingeben" /></label>
         <AppButton class="mt-2" variant="primary" type="submit">Anmelden <ArrowRight :size="17" /></AppButton>

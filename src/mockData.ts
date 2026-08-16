@@ -29,7 +29,7 @@ export const initialRegistrationRequest: RegistrationRequest = {
 
 export const initialPensionSettings: PensionSettings = {
   id: 'settings-1',
-  businessName: 'Tierpension Pro',
+  businessName: 'Tierpension Sonnenschein',
   contactEmail: 'hallo@tierpension-pro.de',
   contactPhone: '030 555 01 820',
   checkInFrom: '08:00',
