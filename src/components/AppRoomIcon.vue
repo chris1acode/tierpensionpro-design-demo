@@ -9,7 +9,7 @@ defineProps<{
 
 <template>
   <span
-    class="grid size-[35px] flex-none place-items-center rounded-lg bg-[#e4eff0] text-[var(--petrol)]"
+    class="grid size-[35px] flex-none place-items-center rounded-lg bg-[#e4eff0] text-petrol"
     :class="category === 'Katzenzimmer' && 'bg-[#f3e8dd] text-[#8e582b]'"
   >
     <Dog v-if="category === 'Hundezimmer'" :size="size ?? 19" />

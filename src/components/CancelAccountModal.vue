@@ -19,7 +19,7 @@ defineEmits<{
     <span class="mb-5 inline-grid h-12 w-12 place-items-center rounded-xl bg-[#fbe3e3] text-[#c23a3a]"><AlertTriangle /></span>
     <AppEyebrow>Kündigung bestätigen</AppEyebrow>
     <h2 id="cancel-account-title" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">{{ businessName }} wirklich kündigen?</h2>
-    <p class="text-[14px] leading-[1.55] text-[var(--muted)]">
+    <p class="text-[14px] leading-[1.55] text-app-muted">
       Mit der Kündigung wird dein Zugang zu Tierpension Pro zum Ende der aktuellen Vertragslaufzeit beendet.
       Du kannst die Kündigung bis dahin jederzeit zurücknehmen.
     </p>

@@ -192,18 +192,18 @@ function exportCustomers() {
           <div><h2>Kundenverzeichnis</h2><p>{{ filteredCustomers.length }} Treffer</p></div>
           <div class="flex items-center justify-end gap-[13px] max-[680px]:flex-col max-[680px]:items-stretch"><AppButton variant="text" type="button" aria-label="Kunden und Tiere als CSV exportieren" @click="exportCustomers"><Download :size="15" /> Exportieren</AppButton></div>
         </header>
-        <label class="m-[15px] flex h-10 items-center gap-2 rounded-lg border border-[var(--border)] bg-[#faf9f7] px-[11px] text-[var(--muted)]"><Search :size="17" /><input v-model="localQuery" class="w-full border-0 bg-transparent outline-none" placeholder="Kundenname oder Tiername suchen …" /></label>
+        <label class="m-[15px] flex h-10 items-center gap-2 rounded-lg border border-app-border bg-[#faf9f7] px-[11px] text-app-muted"><Search :size="17" /><input v-model="localQuery" class="w-full border-0 bg-transparent outline-none" placeholder="Kundenname oder Tiername suchen …" /></label>
         <div v-if="filteredCustomers.length" class="max-h-none overflow-auto min-[1050px]:max-h-[540px]">
           <button
             v-for="customer in pagedCustomers"
             :key="customer.id"
-            class="grid w-full grid-cols-[auto_1fr_auto] items-center gap-[11px] border-0 border-t border-t-[#eeeae6] bg-white px-4 py-[13px] text-left text-[var(--text)] hover:bg-[#fff7f1]"
-            :class="{ 'bg-[#fff7f1] shadow-[inset_3px_0_var(--primary)]': selectedCustomer?.id === customer.id }"
+            class="grid w-full grid-cols-[auto_1fr_auto] items-center gap-[11px] border-0 border-t border-t-[#eeeae6] bg-white px-4 py-[13px] text-left text-app-text hover:bg-[#fff7f1]"
+            :class="{ 'bg-[#fff7f1] shadow-[inset_3px_0_primary]': selectedCustomer?.id === customer.id }"
             @click="selectCustomer(customer.id)"
           >
-            <span class="grid h-10 w-10 place-items-center rounded-full bg-[#e4eff0] text-[13px] font-bold text-[var(--petrol)]">{{ customer.firstName[0] }}{{ customer.lastName[0] }}</span>
-            <span><strong class="block text-[15px]">{{ customer.firstName }} {{ customer.lastName }}</strong><small class="mt-[3px] block text-[13px] text-[var(--muted)]">{{ customer.pets.map((pet) => pet.name).join(', ') }}</small></span>
-            <span class="grid h-6 min-w-[24px] place-items-center rounded-full bg-[#f0ede9] px-[6px] text-[10px] font-bold text-[var(--muted)]">{{ customer.pets.length }}</span>
+            <span class="grid h-10 w-10 place-items-center rounded-full bg-[#e4eff0] text-[13px] font-bold text-petrol">{{ customer.firstName[0] }}{{ customer.lastName[0] }}</span>
+            <span><strong class="block text-[15px]">{{ customer.firstName }} {{ customer.lastName }}</strong><small class="mt-[3px] block text-[13px] text-app-muted">{{ customer.pets.map((pet) => pet.name).join(', ') }}</small></span>
+            <span class="grid h-6 min-w-[24px] place-items-center rounded-full bg-[#f0ede9] px-[6px] text-[10px] font-bold text-app-muted">{{ customer.pets.length }}</span>
           </button>
         </div>
         <AppEmptyState v-else>
@@ -221,14 +221,14 @@ function exportCustomers() {
       </AppPanel>
 
       <AppPanel v-if="selectedCustomer" class="customer-details" :class="{ 'hidden min-[1050px]:block': !detailsOpen }">
-        <button class="flex w-full items-center gap-[7px] border-0 border-b border-b-[#e8e4df] bg-[#faf9f7] px-4 py-[13px] text-left font-bold text-[var(--petrol)] min-[1050px]:hidden" @click="goBack"><ArrowLeft :size="17" /> Zurück zum Kundenverzeichnis</button>
+        <button class="flex w-full items-center gap-[7px] border-0 border-b border-b-[#e8e4df] bg-[#faf9f7] px-4 py-[13px] text-left font-bold text-petrol min-[1050px]:hidden" @click="goBack"><ArrowLeft :size="17" /> Zurück zum Kundenverzeichnis</button>
         <header class="flex flex-col items-center justify-start gap-[14px] pb-[21px] sm:flex-row">
           <div class="grid min-w-0 gap-[4px]">
             <AppEyebrow>Kundenprofil</AppEyebrow>
             <h2 class="my-0 mb-[5px] mt-[2px] text-[20px]">{{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }}</h2>
             <div class="flex flex-wrap gap-x-[16px] gap-y-[8px]">
-              <a class="inline-flex items-center gap-[5px] text-[12px] font-semibold text-[var(--petrol)] no-underline" :href="`mailto:${selectedCustomer.email}`"><Mail :size="14" /> {{ selectedCustomer.email }}</a>
-              <a class="inline-flex items-center gap-[5px] text-[12px] font-semibold text-[var(--petrol)] no-underline" :href="toTelephoneHref(selectedCustomer.phone)"><Phone :size="14" /> {{ selectedCustomer.phone }}</a>
+              <a class="inline-flex items-center gap-[5px] text-[12px] font-semibold text-petrol no-underline" :href="`mailto:${selectedCustomer.email}`"><Mail :size="14" /> {{ selectedCustomer.email }}</a>
+              <a class="inline-flex items-center gap-[5px] text-[12px] font-semibold text-petrol no-underline" :href="toTelephoneHref(selectedCustomer.phone)"><Phone :size="14" /> {{ selectedCustomer.phone }}</a>
             </div>
           </div>
           <div class="ml-0 flex flex-wrap items-center justify-start gap-[12px] sm:ml-auto sm:justify-end">
@@ -242,8 +242,8 @@ function exportCustomers() {
         </div>
         <div class="border-b border-[#e8e4df] px-[22px] py-[21px]">
           <div class="mb-[14px] flex items-center justify-between">
-            <div><h3 class="m-0 mb-[3px] font-['Manrope'] text-[15px] font-bold">Tiere</h3><p class="m-0 text-[11px] text-[var(--muted)]">{{ selectedCustomer.pets.length }} hinterlegte Tierprofile</p></div>
-            <AppButton variant="text" class="gap-[5px] text-[11px] text-[var(--primary-dark)]" type="button" @click="openPetCreate"><Plus :size="15" /> Tier anlegen</AppButton>
+            <div><h3 class="m-0 mb-[3px] font-['Manrope'] text-[15px] font-bold">Tiere</h3><p class="m-0 text-[11px] text-app-muted">{{ selectedCustomer.pets.length }} hinterlegte Tierprofile</p></div>
+            <AppButton variant="text" class="gap-[5px] text-[11px] text-primary-dark" type="button" @click="openPetCreate"><Plus :size="15" /> Tier anlegen</AppButton>
           </div>
           <div class="grid grid-cols-1 gap-[12px]">
             <article v-for="pet in selectedCustomer.pets" :key="pet.id" class="pet-profile-card flex gap-3 rounded-[10px] border border-[#e8e4df] bg-white p-[14px] shadow-[0_1px_0_rgba(36,33,31,.02)]">
@@ -258,7 +258,7 @@ function exportCustomers() {
                     <span v-if="pet.specialFood" class="mt-[7px] inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-[#faf0d9] px-[7px] py-[4px] text-[10px] font-bold leading-none text-[#84601c]"><Utensils :size="12" /> Besonderes Futter</span>
                   </div>
                   <div class="flex flex-none items-center gap-2">
-                    <button class="inline-flex items-center gap-[5px] border-0 bg-transparent text-[10px] font-bold text-[var(--primary-dark)]" type="button" :aria-label="`${pet.name} bearbeiten`" @click="openPetEdit(pet)"><Pencil :size="14" /> Bearbeiten</button>
+                    <button class="inline-flex items-center gap-[5px] border-0 bg-transparent text-[10px] font-bold text-primary-dark" type="button" :aria-label="`${pet.name} bearbeiten`" @click="openPetEdit(pet)"><Pencil :size="14" /> Bearbeiten</button>
                     <button v-if="canRemovePet(pet.id)" class="inline-flex items-center gap-[5px] border-0 bg-transparent text-[10px] font-bold text-[#a63d3d]" type="button" :aria-label="`${pet.name} entfernen`" @click="petRemovalId = pet.id"><Trash2 :size="14" /> Entfernen</button>
                   </div>
                 </div>
@@ -273,12 +273,12 @@ function exportCustomers() {
         </div>
         <div class="px-[22px] py-[21px]">
           <div class="mb-[14px] flex items-center justify-between">
-            <div><h3 class="m-0 mb-[3px] font-['Manrope'] text-[15px] font-bold">Aufenthalte</h3><p class="m-0 text-[11px] text-[var(--muted)]">Aktuelle und vergangene Buchungen</p></div>
-            <AppButton variant="text" class="whitespace-nowrap gap-[5px] text-[11px] text-[var(--primary-dark)]" :to="{ path: '/bookings', query: { customerId: selectedCustomer.id } }"><Plus :size="15" /> Jetzt Buchung anlegen</AppButton>
+            <div><h3 class="m-0 mb-[3px] font-['Manrope'] text-[15px] font-bold">Aufenthalte</h3><p class="m-0 text-[11px] text-app-muted">Aktuelle und vergangene Buchungen</p></div>
+            <AppButton variant="text" class="whitespace-nowrap gap-[5px] text-[11px] text-primary-dark" :to="{ path: '/bookings', query: { customerId: selectedCustomer.id } }"><Plus :size="15" /> Jetzt Buchung anlegen</AppButton>
           </div>
           <article v-for="booking in selectedCustomer.bookings" :key="booking.id" class="grid grid-cols-[1fr_1fr_auto] items-center gap-3 border-t border-[#eeeae6] py-3 max-[680px]:grid-cols-[1fr_auto] max-[680px]:[&>div:nth-child(2)]:col-start-1">
-            <div><strong class="block text-[12px]">{{ booking.pet.name }}</strong><span class="block text-[10px] text-[var(--muted)]">{{ booking.room.name }}</span></div>
-            <div><strong class="block text-[12px]">{{ booking.arrival }} Uhr</strong><span class="mt-[2px] block text-[10px] text-[var(--muted)]">bis {{ booking.departure }}</span></div>
+            <div><strong class="block text-[12px]">{{ booking.pet.name }}</strong><span class="block text-[10px] text-app-muted">{{ booking.room.name }}</span></div>
+            <div><strong class="block text-[12px]">{{ booking.arrival }} Uhr</strong><span class="mt-[2px] block text-[10px] text-app-muted">bis {{ booking.departure }}</span></div>
             <AppBookingStatus class="self-center justify-self-end" :status="booking.status">{{ bookingStatusLabels[booking.status] }}</AppBookingStatus>
           </article>
           <AppEmptyState v-if="!selectedCustomer.bookings.length">

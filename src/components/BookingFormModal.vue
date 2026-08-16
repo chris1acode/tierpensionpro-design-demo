@@ -132,43 +132,43 @@ function submit() {
     <p v-else>Wähle zuerst die Kundin oder den Kunden und anschließend ein oder mehrere verfügbare zugehörige Tiere.</p>
 
     <form v-if="mode === 'create'" class="mt-5 grid gap-[13px]" @submit.prevent="submit">
-      <label class="grid gap-[6px] text-[11px] font-bold text-[var(--muted)]">Kunde
+      <label class="grid gap-[6px] text-[11px] font-bold text-app-muted">Kunde
         <CustomerAutocomplete v-model="draft.customerId" input-id="booking-form-customer" label="Kunde" :customers="bookingCustomerChoices" :min-query-length="2" @selected="selectCustomer" @cleared="selectCustomer" />
       </label>
       <AppPetSelection v-model="draft.petIds" :pets="customerPets" :disabled="!draft.customerId" :description="draft.customerId ? 'Mehrere Tiere können gemeinsam reserviert werden.' : 'Zuerst Kunde wählen'" @change="selectPets" />
       <div class="grid grid-cols-1 gap-[10px] sm:grid-cols-[1.1fr_.8fr_1.1fr]">
-        <AppFormField label="Anreise"><input v-model="draft.arrivalDate" aria-label="Anreisedatum" type="date" required class="h-10 min-w-0 w-full rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" /></AppFormField>
-        <AppFormField label="Uhrzeit"><input v-model="draft.arrival" aria-label="Ankunftszeit" type="time" required class="h-10 min-w-0 w-full rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" /></AppFormField>
-        <AppFormField label="Abreise"><input v-model="draft.departure" aria-label="Abreise" type="date" :min="draft.arrivalDate" required class="h-10 min-w-0 w-full rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" /></AppFormField>
-        <AppFormField label="Abholzeit · optional"><input v-model="draft.pickupTime" aria-label="Abholzeit" type="time" class="h-10 min-w-0 w-full rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" /></AppFormField>
+        <AppFormField label="Anreise"><input v-model="draft.arrivalDate" aria-label="Anreisedatum" type="date" required class="h-10 min-w-0 w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text" /></AppFormField>
+        <AppFormField label="Uhrzeit"><input v-model="draft.arrival" aria-label="Ankunftszeit" type="time" required class="h-10 min-w-0 w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text" /></AppFormField>
+        <AppFormField label="Abreise"><input v-model="draft.departure" aria-label="Abreise" type="date" :min="draft.arrivalDate" required class="h-10 min-w-0 w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text" /></AppFormField>
+        <AppFormField label="Abholzeit · optional"><input v-model="draft.pickupTime" aria-label="Abholzeit" type="time" class="h-10 min-w-0 w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text" /></AppFormField>
       </div>
-      <label class="grid gap-[6px] text-[11px] font-bold text-[var(--muted)]">Zimmer
-        <select v-model="draft.roomId" aria-label="Zimmer" :disabled="!draft.petIds.length" required class="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)] disabled:cursor-not-allowed disabled:bg-[#f3f0ec] disabled:text-[#8b847e]">
+      <label class="grid gap-[6px] text-[11px] font-bold text-app-muted">Zimmer
+        <select v-model="draft.roomId" aria-label="Zimmer" :disabled="!draft.petIds.length" required class="h-10 w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text disabled:cursor-not-allowed disabled:bg-[#f3f0ec] disabled:text-[#8b847e]">
           <option value="" disabled>Zimmer auswählen</option>
           <option v-for="availability in roomAvailability" :key="availability.room.id" :value="availability.room.id">{{ availability.room.name }} · {{ availability.room.capacity }} {{ availability.room.capacity === 1 ? 'Platz' : 'Plätze' }}{{ availability.wouldOverbook ? ' · Überbuchung' : '' }}</option>
         </select>
       </label>
       <AppOverbookingWarning v-if="selectedRoomAvailability?.wouldOverbook" v-model="draft.allowOverbooking"><template #title>Überbuchung bewusst anlegen</template>· Im gewählten Zeitraum fehlen mindestens {{ Math.max(1, draft.petIds.length - selectedRoomAvailability.availablePlaces) }} Plätze.</AppOverbookingWarning>
-      <label class="grid gap-[6px] text-[11px] font-bold text-[var(--muted)]">Hinweis <small>optional, max. 300 Zeichen</small><textarea v-model="draft.bookingNote" maxlength="300" placeholder="z. B. Medikament mittags geben" class="min-h-16 min-w-0 w-full resize-y rounded-lg border border-[var(--border)] bg-white p-[10px] text-[var(--text)]" /></label>
+      <label class="grid gap-[6px] text-[11px] font-bold text-app-muted">Hinweis <small>optional, max. 300 Zeichen</small><textarea v-model="draft.bookingNote" maxlength="300" placeholder="z. B. Medikament mittags geben" class="min-h-16 min-w-0 w-full resize-y rounded-lg border border-app-border bg-white p-[10px] text-app-text" /></label>
       <p v-if="reservationPricePreview" class="m-0 grid min-w-[205px] grid-cols-[1fr_auto] gap-x-[10px] gap-y-[3px] rounded-lg border border-[#c9e1dc] bg-[#f2f9f7] p-[10px_12px] text-[11px] leading-[1.35] text-[#285953]"><strong class="text-xs">Preisvorschau</strong><span>{{ reservationPricePreview.stays[0]?.billableDays }} Betreuungstage · {{ draft.petIds.length }} {{ draft.petIds.length === 1 ? 'Tier' : 'Tiere' }}</span><b class="col-start-2 row-span-2 row-start-1 self-center text-[15px]">{{ formatEuroCents(reservationPricePreview.totalCents) }}</b><small class="col-span-full text-[10px] text-[#4a6865]">unverbindlich, Abrechnung beim Check-out</small></p>
       <p v-if="error" class="m-0 text-xs text-[#9b4444]" role="alert">{{ error }}</p>
       <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto"><AppButton type="button" variant="secondary" @click="$emit('close')">Abbrechen</AppButton><AppButton type="submit" variant="primary">Buchung anlegen</AppButton></div>
     </form>
 
     <form v-else class="mt-5 grid gap-[13px]" @submit.prevent="submit">
-      <label class="grid gap-[6px] text-[11px] font-bold text-[var(--muted)]">Zimmer
-        <select v-model="editDraft.roomId" aria-label="Zimmer" required class="h-10 w-full rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]">
+      <label class="grid gap-[6px] text-[11px] font-bold text-app-muted">Zimmer
+        <select v-model="editDraft.roomId" aria-label="Zimmer" required class="h-10 w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text">
           <option value="" disabled>Zimmer auswählen</option>
           <option v-for="availability in editRoomAvailability" :key="availability.room.id" :value="availability.room.id">{{ availability.room.name }} · {{ availability.room.capacity }} {{ availability.room.capacity === 1 ? 'Platz' : 'Plätze' }}{{ availability.wouldOverbook ? ' · Überbuchung' : '' }}</option>
         </select>
       </label>
       <div class="grid grid-cols-1 gap-[10px] sm:grid-cols-[1.1fr_.8fr_1.1fr]">
-        <AppFormField label="Anreise"><input v-model="editDraft.arrivalDate" aria-label="Anreisedatum" type="date" required class="h-10 min-w-0 w-full rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" /></AppFormField>
-        <AppFormField label="Uhrzeit"><input v-model="editDraft.arrival" aria-label="Ankunftszeit" type="time" required class="h-10 min-w-0 w-full rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" /></AppFormField>
-        <AppFormField label="Abreise"><input v-model="editDraft.departure" aria-label="Abreise" type="date" :min="editDraft.arrivalDate" required class="h-10 min-w-0 w-full rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" /></AppFormField>
-        <AppFormField label="Abholzeit · optional"><input v-model="editDraft.pickupTime" aria-label="Abholzeit" type="time" class="h-10 min-w-0 w-full rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" /></AppFormField>
+        <AppFormField label="Anreise"><input v-model="editDraft.arrivalDate" aria-label="Anreisedatum" type="date" required class="h-10 min-w-0 w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text" /></AppFormField>
+        <AppFormField label="Uhrzeit"><input v-model="editDraft.arrival" aria-label="Ankunftszeit" type="time" required class="h-10 min-w-0 w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text" /></AppFormField>
+        <AppFormField label="Abreise"><input v-model="editDraft.departure" aria-label="Abreise" type="date" :min="editDraft.arrivalDate" required class="h-10 min-w-0 w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text" /></AppFormField>
+        <AppFormField label="Abholzeit · optional"><input v-model="editDraft.pickupTime" aria-label="Abholzeit" type="time" class="h-10 min-w-0 w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text" /></AppFormField>
       </div>
-      <label class="grid gap-[6px] text-[11px] font-bold text-[var(--muted)]">Hinweis <small>optional, max. 300 Zeichen</small><textarea v-model="editDraft.bookingNote" maxlength="300" placeholder="z. B. Medikament mittags geben" class="min-h-16 min-w-0 w-full resize-y rounded-lg border border-[var(--border)] bg-white p-[10px] text-[var(--text)]" /></label>
+      <label class="grid gap-[6px] text-[11px] font-bold text-app-muted">Hinweis <small>optional, max. 300 Zeichen</small><textarea v-model="editDraft.bookingNote" maxlength="300" placeholder="z. B. Medikament mittags geben" class="min-h-16 min-w-0 w-full resize-y rounded-lg border border-app-border bg-white p-[10px] text-app-text" /></label>
       <p v-if="editPricePreview" class="m-0 grid min-w-[205px] grid-cols-[1fr_auto] gap-x-[10px] gap-y-[3px] rounded-lg border border-[#c9e1dc] bg-[#f2f9f7] p-[10px_12px] text-[11px] leading-[1.35] text-[#285953]"><strong class="text-xs">Preisvorschau</strong><span>{{ editPricePreview.billableDays }} Betreuungstage</span><b class="col-start-2 row-span-2 row-start-1 self-center text-[15px]">{{ formatEuroCents(editPricePreview.totalCents) }}</b><small class="col-span-full text-[10px] text-[#4a6865]">unverbindlich, Abrechnung beim Check-out</small></p>
       <AppOverbookingWarning v-if="selectedEditRoomAvailability?.wouldOverbook" v-model="editDraft.allowOverbooking"><template #title>Überbuchung bewusst übernehmen</template>· Im gewählten Zeitraum fehlen Plätze.</AppOverbookingWarning>
       <p v-if="error" class="m-0 text-xs text-[#9b4444]" role="alert">{{ error }}</p>

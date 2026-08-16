@@ -35,10 +35,10 @@ const isRoomFull = computed(() => roomOccupancy.value.occupied >= roomOccupancy.
 
 <template>
   <BaseModal labelled-by="checkin-title" modal-class="max-w-[470px]" @close="$emit('close')">
-    <span class="mb-5 inline-grid h-12 w-12 place-items-center rounded-xl bg-[#fbe8dd] text-[var(--primary-dark)]"><ClipboardCheck /></span>
+    <span class="mb-5 inline-grid h-12 w-12 place-items-center rounded-xl bg-[#fbe8dd] text-primary-dark"><ClipboardCheck /></span>
     <AppEyebrow>Check-in bestätigen</AppEyebrow>
     <h2 id="checkin-title" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">Check-in für <AppCustomerLink :customer-id="booking.customer.id">{{ booking.customer.firstName }} {{ booking.customer.lastName }}</AppCustomerLink></h2>
-    <p class="text-[14px] leading-[1.55] text-[var(--muted)]">
+    <p class="text-[14px] leading-[1.55] text-app-muted">
       Ist {{ booking.pet.name }} angekommen? Mit der Bestätigung wird {{ booking.pet.name }} dem Zimmer
       <strong>{{ booking.room.name }}</strong> zugewiesen.
     </p>
@@ -57,8 +57,8 @@ const isRoomFull = computed(() => roomOccupancy.value.occupied >= roomOccupancy.
       </div>
     </div>
     <dl class="my-[18px]">
-      <div class="flex justify-between border-b border-[#eeeae6] py-[10px] text-[13px]"><dt class="text-[var(--muted)]">Tier</dt><dd class="m-0 font-bold">{{ booking.pet.name }}</dd></div>
-      <div class="flex justify-between border-b border-[#eeeae6] py-[10px] text-[13px]"><dt class="text-[var(--muted)]">Abreise</dt><dd class="m-0 font-bold">{{ booking.departure }}</dd></div>
+      <div class="flex justify-between border-b border-[#eeeae6] py-[10px] text-[13px]"><dt class="text-app-muted">Tier</dt><dd class="m-0 font-bold">{{ booking.pet.name }}</dd></div>
+      <div class="flex justify-between border-b border-[#eeeae6] py-[10px] text-[13px]"><dt class="text-app-muted">Abreise</dt><dd class="m-0 font-bold">{{ booking.departure }}</dd></div>
     </dl>
     <AppOverbookingWarning v-if="isRoomFull" v-model="allowOverbooking"><template #title>Überbuchung bewusst durchführen</template>· Das Zimmer {{ booking.room.name }} ist bereits mit {{ roomOccupancy.occupied }} Tieren voll belegt.</AppOverbookingWarning>
     <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto">

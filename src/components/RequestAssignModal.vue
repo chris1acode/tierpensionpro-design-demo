@@ -75,8 +75,8 @@ function confirm() {
       <template v-else>Zeitraum derzeit nicht frei</template>
     </p>
     <form class="grid gap-2 mt-2" @submit.prevent="confirm">
-      <label for="request-assign-customer" class="text-[11px] font-bold text-[var(--muted)]">Kunde zuordnen</label>
-      <select id="request-assign-customer" v-model="customerId" class="h-[38px] w-full rounded-lg border border-[var(--border)] bg-white px-[10px] text-[color:var(--text)] [font:inherit]">
+      <label for="request-assign-customer" class="text-[11px] font-bold text-app-muted">Kunde zuordnen</label>
+      <select id="request-assign-customer" v-model="customerId" class="h-[38px] w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text [font:inherit]">
         <option value="" disabled>Kunde zuordnen</option>
         <option value="new">Als neuen Kunden anlegen</option>
         <optgroup v-if="matchingCustomers.length" label="Passende bestehende Kunden">
@@ -88,15 +88,15 @@ function confirm() {
         <template v-if="matchingCustomers.some(({ match }) => match === 'email')"> · gleiche E-Mail-Adresse</template><template v-else-if="matchingCustomers.some(({ match }) => match === 'phone')"> · gleiche Telefonnummer</template>.
         Mit der Auswahl wird die Anfrage diesem Kunden zugeordnet.
       </p>
-      <label for="request-assign-room" class="text-[11px] font-bold text-[var(--muted)]">Zimmer wählen</label>
-      <select id="request-assign-room" v-model="roomId" class="h-[38px] w-full rounded-lg border border-[var(--border)] bg-white px-[10px] text-[color:var(--text)] [font:inherit]">
+      <label for="request-assign-room" class="text-[11px] font-bold text-app-muted">Zimmer wählen</label>
+      <select id="request-assign-room" v-model="roomId" class="h-[38px] w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text [font:inherit]">
         <option value="" disabled>Zimmer wählen</option>
         <option v-for="room in roomOptions.rooms" :key="room.id" :value="room.id">{{ room.name }}</option>
       </select>
       <p
         v-if="selectedRoomOccupancy"
         class="m-0 rounded-[7px] px-[10px] py-[6px] text-left text-[13px]"
-        :class="selectedRoomOccupancy.availablePlaces === 0 ? 'bg-[#fdf2f2] text-[#9b4444]' : 'bg-[#f4f6f5] text-[var(--muted)]'"
+        :class="selectedRoomOccupancy.availablePlaces === 0 ? 'bg-[#fdf2f2] text-[#9b4444]' : 'bg-[#f4f6f5] text-app-muted'"
       >
         Auslastung im Zeitraum: {{ selectedRoomOccupancy.peakOccupied }}/{{ selectedRoomOccupancy.capacity }} Plätze
         <template v-if="selectedRoomOccupancy.peakDate"> · engster Tag {{ selectedRoomOccupancy.peakDate }}</template>

@@ -13,11 +13,11 @@ withDefaults(
 
 const variantClasses: Record<string, string> = {
   primary:
-    'min-h-10 px-[15px] border border-[var(--primary-button-border)] bg-[var(--primary-button)] text-[var(--primary-button-text)] hover:bg-[var(--primary-button-hover)] hover:border-[var(--primary-button-hover)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[rgba(223,100,32,.35)] focus-visible:outline-offset-2',
-  secondary: 'min-h-10 px-[15px] border border-[var(--border)] bg-white text-[#48433f] hover:bg-[#f5f2ee]',
+    'min-h-10 px-[15px] border border-primary-button-border bg-primary-button text-primary-button-text hover:bg-primary-button-hover hover:border-primary-button-hover focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[rgba(223,100,32,.35)] focus-visible:outline-offset-2',
+  secondary: 'min-h-10 px-[15px] border border-app-border bg-white text-[#48433f] hover:bg-[#f5f2ee]',
   danger: 'min-h-10 px-[15px] border border-[#c23a3a] bg-[#c23a3a] text-white hover:bg-[#a52f2f]',
-  link: 'px-2 border-0 bg-transparent text-[var(--primary)] hover:text-[var(--primary-dark)] hover:underline',
-  text: 'px-2 border-0 bg-transparent text-[var(--petrol)] hover:bg-[#f5f2ee] hover:text-[var(--text)]',
+  link: 'px-2 border-0 bg-transparent text-primary hover:text-primary-dark hover:underline',
+  text: 'px-2 border-0 bg-transparent text-petrol hover:bg-[#f5f2ee] hover:text-app-text',
 }
 </script>
 

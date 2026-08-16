@@ -113,14 +113,14 @@ onBeforeUnmount(() => {
       @input="handleInput"
       @keydown="handleKeydown"
       @blur="close"
-      class="h-10 w-full min-w-0 rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]"
+      class="h-10 w-full min-w-0 rounded-lg border border-app-border bg-white px-[10px] text-app-text"
     />
-    <ul v-if="isOpen" :id="listId" class="absolute inset-x-0 top-[calc(100%+4px)] z-10 m-0 max-h-[244px] list-none overflow-auto rounded-lg border border-[var(--border)] bg-white p-1 shadow-[0_8px_20px_rgba(50,37,28,.14)]" role="listbox" :aria-label="`${label}-Vorschläge`">
+    <ul v-if="isOpen" :id="listId" class="absolute inset-x-0 top-[calc(100%+4px)] z-10 m-0 max-h-[244px] list-none overflow-auto rounded-lg border border-app-border bg-white p-1 shadow-[0_8px_20px_rgba(50,37,28,.14)]" role="listbox" :aria-label="`${label}-Vorschläge`">
       <li v-for="(customer, index) in matches" :id="`${listId}-${index}`" :key="customer.id" role="option" :aria-selected="customer.id === model">
-        <button type="button" class="grid w-full gap-0.5 rounded-md border-0 bg-transparent px-[10px] py-[9px] text-left text-[var(--text)] hover:bg-[#fff3eb]" :class="{ 'bg-[#fff3eb]': index === activeIndex }" @mousedown.prevent @click="select(customer)"><strong class="text-xs">{{ customer.firstName }} {{ customer.lastName }}</strong><span class="text-[11px] text-[var(--muted)]">{{ customer.email }} · {{ customer.phone }}</span></button>
+        <button type="button" class="grid w-full gap-0.5 rounded-md border-0 bg-transparent px-[10px] py-[9px] text-left text-app-text hover:bg-[#fff3eb]" :class="{ 'bg-[#fff3eb]': index === activeIndex }" @mousedown.prevent @click="select(customer)"><strong class="text-xs">{{ customer.firstName }} {{ customer.lastName }}</strong><span class="text-[11px] text-app-muted">{{ customer.email }} · {{ customer.phone }}</span></button>
       </li>
-      <li v-if="!queryIsLongEnough" class="px-[10px] py-[9px] text-[11px] text-[var(--muted)]" role="status">{{ minimumQueryLength }} Zeichen eingeben, um Kunden zu suchen.</li>
-      <li v-else-if="!matches.length" class="px-[10px] py-[9px] text-[11px] text-[var(--muted)]" role="status">Keine Kunden gefunden.</li>
+      <li v-if="!queryIsLongEnough" class="px-[10px] py-[9px] text-[11px] text-app-muted" role="status">{{ minimumQueryLength }} Zeichen eingeben, um Kunden zu suchen.</li>
+      <li v-else-if="!matches.length" class="px-[10px] py-[9px] text-[11px] text-app-muted" role="status">Keine Kunden gefunden.</li>
     </ul>
   </div>
 </template>

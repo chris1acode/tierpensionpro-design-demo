@@ -44,10 +44,10 @@ function submit() {
     <AppEyebrow>{{ mode === 'edit' ? 'Kundenprofil' : 'Stammdaten' }}</AppEyebrow>
     <h2 id="customer-form-heading" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">{{ mode === 'edit' ? 'Kontaktdaten bearbeiten' : 'Kunden anlegen' }}</h2>
     <form class="mt-5 grid gap-[13px]" @submit.prevent="submit">
-      <AppFormField label="Vorname *"><input v-model="form.firstName" class="h-10 min-w-0 rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" autocomplete="given-name" /></AppFormField>
-      <AppFormField label="Nachname *"><input v-model="form.lastName" class="h-10 min-w-0 rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" autocomplete="family-name" /></AppFormField>
-      <AppFormField label="E-Mail *"><input v-model="form.email" class="h-10 min-w-0 rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" type="email" autocomplete="email" /></AppFormField>
-      <AppFormField label="Telefon *"><input v-model="form.phone" class="h-10 min-w-0 rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" autocomplete="tel" inputmode="tel" /></AppFormField>
+      <AppFormField label="Vorname *"><input v-model="form.firstName" class="h-10 min-w-0 rounded-lg border border-app-border bg-white px-[10px] text-app-text" autocomplete="given-name" /></AppFormField>
+      <AppFormField label="Nachname *"><input v-model="form.lastName" class="h-10 min-w-0 rounded-lg border border-app-border bg-white px-[10px] text-app-text" autocomplete="family-name" /></AppFormField>
+      <AppFormField label="E-Mail *"><input v-model="form.email" class="h-10 min-w-0 rounded-lg border border-app-border bg-white px-[10px] text-app-text" type="email" autocomplete="email" /></AppFormField>
+      <AppFormField label="Telefon *"><input v-model="form.phone" class="h-10 min-w-0 rounded-lg border border-app-border bg-white px-[10px] text-app-text" autocomplete="tel" inputmode="tel" /></AppFormField>
       <p v-if="error" class="m-0 text-xs text-[#9b4444]" role="alert">Bitte vollständige Namen sowie eine gültige, noch nicht verwendete E-Mail-Adresse und Telefonnummer angeben.</p>
       <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto"><AppButton type="button" variant="secondary" @click="$emit('close')">Abbrechen</AppButton><AppButton variant="primary" type="submit">{{ mode === 'edit' ? 'Kontaktdaten speichern' : 'Kundenprofil speichern' }}</AppButton></div>
     </form>

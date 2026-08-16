@@ -25,8 +25,8 @@ const sizeClasses: Record<'sm' | 'md' | 'lg', string> = {
   <RouterLink
     v-if="to"
     :to="to"
-    class="rounded-md border-0 bg-transparent font-bold text-[var(--muted)] no-underline"
-    active-class="bg-white text-[var(--text)] shadow-[0_1px_3px_rgba(36,33,31,.12)]"
+    class="rounded-md border-0 bg-transparent font-bold text-app-muted no-underline"
+    active-class="bg-white text-app-text shadow-[0_1px_3px_rgba(36,33,31,.12)]"
     :class="[sizeClasses[size], growMobile ? 'max-sm:flex-1 max-sm:text-center' : '']"
   >
     <slot />
@@ -35,8 +35,8 @@ const sizeClasses: Record<'sm' | 'md' | 'lg', string> = {
     v-else
     type="button"
     :disabled="disabled"
-    class="inline-flex items-center justify-center gap-[5px] rounded-md border-0 bg-transparent font-bold text-[var(--muted)] disabled:cursor-not-allowed disabled:opacity-45"
-    :class="[sizeClasses[size], active ? 'bg-white text-[var(--text)] shadow-[0_1px_3px_rgba(36,33,31,.12)]' : '', growMobile ? 'max-sm:flex-1' : '']"
+    class="inline-flex items-center justify-center gap-[5px] rounded-md border-0 bg-transparent font-bold text-app-muted disabled:cursor-not-allowed disabled:opacity-45"
+    :class="[sizeClasses[size], active ? 'bg-white text-app-text shadow-[0_1px_3px_rgba(36,33,31,.12)]' : '', growMobile ? 'max-sm:flex-1' : '']"
     @click="$emit('click')"
   >
     <slot />

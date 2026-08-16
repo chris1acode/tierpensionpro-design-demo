@@ -13,6 +13,6 @@ withDefaults(defineProps<{
   <RouterLink
     :to="{ name: 'customers', query: { customerId } }"
     class="block font-bold leading-[inherit] no-underline hover:underline"
-    :class="compact ? 'mt-[3px] text-[11px] text-[var(--petrol)]' : 'text-[var(--petrol)]'"
+    :class="compact ? 'mt-[3px] text-[11px] text-petrol' : 'text-petrol'"
   ><slot /></RouterLink>
 </template>

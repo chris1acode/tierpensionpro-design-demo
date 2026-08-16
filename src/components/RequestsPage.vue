@@ -57,7 +57,7 @@ function exportRequests(scope: 'pending' | 'history') {
 <template>
   <AppContainer class="requests-page">
     <AppPageHeading eyebrow="Externe Anfragen" title="Anfragen" description="Buchungsanfragen prüfen, Kunde zuordnen und anschließend als Reservierung übernehmen.">
-      <span class="inline-flex items-center gap-[7px] rounded-lg border border-[var(--border)] bg-white px-3 py-[9px] text-xs font-bold text-[var(--muted)]"><Inbox :size="17" /> {{ store.pendingRequests.value.length }} offen</span>
+      <span class="inline-flex items-center gap-[7px] rounded-lg border border-app-border bg-white px-3 py-[9px] text-xs font-bold text-app-muted"><Inbox :size="17" /> {{ store.pendingRequests.value.length }} offen</span>
     </AppPageHeading>
 
     <AppPanel as="div" v-if="!store.settings.requestsEnabled" >
@@ -77,15 +77,15 @@ function exportRequests(scope: 'pending' | 'history') {
             <div class="request-summary grid min-w-0 items-center gap-x-4 gap-y-3 grid-cols-[auto_1fr] grid-rows-[auto_auto_auto] min-[900px]:grid-cols-[auto_minmax(190px,1fr)_minmax(175px,.9fr)] min-[900px]:grid-rows-[auto_auto]">
               <span
                 class="row-start-1 row-span-2 col-start-1 grid h-[42px] w-[42px] place-items-center self-center rounded-full"
-                :class="request.species === 'cat' ? 'bg-[#f3e8dd] text-[#8e582b]' : 'bg-[#e4eff0] text-[var(--petrol)]'"
+                :class="request.species === 'cat' ? 'bg-[#f3e8dd] text-[#8e582b]' : 'bg-[#e4eff0] text-petrol'"
               ><Cat v-if="request.species === 'cat'" :size="19" /><Dog v-else :size="19" /></span>
               <div class="row-start-1 col-start-2 min-w-0">
                 <strong class="block text-sm">{{ request.customerFirstName }} {{ request.customerLastName }} · {{ request.phone }}</strong>
-                <span class="block text-[13px] text-[var(--muted)] mt-[3px]">{{ request.petName }}</span>
+                <span class="block text-[13px] text-app-muted mt-[3px]">{{ request.petName }}</span>
                 <AppNoteBadge v-if="request.note" class="mt-1.5 inline-block">{{ request.note }}</AppNoteBadge>
               </div>
               <div class="row-start-2 col-start-2 min-[900px]:row-start-1 min-[900px]:col-start-3">
-                <small class="block text-xs text-[var(--muted)] mb-1">Aufenthalt</small>
+                <small class="block text-xs text-app-muted mb-1">Aufenthalt</small>
                 <strong class="block text-[13px]">{{ request.arrivalDate }} · {{ request.arrival }} Uhr – {{ request.departure }}</strong>
               </div>
               <p
@@ -129,11 +129,11 @@ function exportRequests(scope: 'pending' | 'history') {
             <div>
               <AppCustomerLink v-if="request.customerId" :customer-id="request.customerId">{{ request.customerFirstName }} {{ request.customerLastName }}</AppCustomerLink>
               <strong v-else class="block text-[15px]">{{ request.customerFirstName }} {{ request.customerLastName }}</strong>
-              <span class="block text-[13px] text-[var(--muted)] mt-0.5">{{ request.petName }}</span>
+              <span class="block text-[13px] text-app-muted mt-0.5">{{ request.petName }}</span>
             </div>
             <div class="col-start-1 row-start-2 min-[900px]:col-start-2 min-[900px]:row-start-1">
-              <small class="block text-[10px] text-[var(--muted)] mb-[3px]">Aufenthalt</small>
-              <span class="block text-[13px] text-[var(--muted)] mt-0.5">{{ request.arrivalDate }} – {{ request.departure }}</span>
+              <small class="block text-[10px] text-app-muted mb-[3px]">Aufenthalt</small>
+              <span class="block text-[13px] text-app-muted mt-0.5">{{ request.arrivalDate }} – {{ request.departure }}</span>
             </div>
             <AppBookingStatus
               class="col-start-2 row-start-1 row-span-2 min-[900px]:col-start-3 min-[900px]:row-span-1 self-center justify-self-end"

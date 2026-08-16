@@ -8,7 +8,7 @@ withDefaults(defineProps<{ variant?: 'default' | 'inline' }>(), { variant: 'defa
       <slot name="icon" />
     </span>
     <strong v-if="$slots.title" class="block"><slot name="title" /></strong>
-    <p v-if="$slots.description" class="m-0 text-[13px] text-[var(--muted)]"><slot name="description" /></p>
+    <p v-if="$slots.description" class="m-0 text-[13px] text-app-muted"><slot name="description" /></p>
     <slot />
   </div>
 </template>
