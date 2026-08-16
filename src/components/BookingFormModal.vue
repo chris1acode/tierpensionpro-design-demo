@@ -7,6 +7,7 @@ import { usePensionStore } from '../usePensionStore'
 import { selectRoomBookingAvailability } from '../domain/roomAvailability'
 import { calculateReservationPrice, calculateStayPrice } from '../domain/stayPrice'
 import { formatEuroCents } from '../presentation/currencyFormat'
+import AppButton from './AppButton.vue'
 import BaseModal from './BaseModal.vue'
 import CustomerAutocomplete from './CustomerAutocomplete.vue'
 
@@ -120,9 +121,9 @@ function submit() {
 </script>
 
 <template>
-  <BaseModal labelled-by="booking-form-heading" modal-class="booking-form-modal" @close="$emit('close')">
+  <BaseModal labelled-by="booking-form-heading" modal-class="booking-form-modal max-w-[620px]" @close="$emit('close')">
     <p class="eyebrow">Aufenthaltsplanung</p>
-    <h2 id="booking-form-heading">{{ mode === 'edit' ? 'Buchung bearbeiten' : 'Neue Buchung' }}</h2>
+    <h2 id="booking-form-heading" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">{{ mode === 'edit' ? 'Buchung bearbeiten' : 'Neue Buchung' }}</h2>
     <p v-if="mode === 'edit' && booking">{{ booking.customer.firstName }} {{ booking.customer.lastName }} · {{ booking.pet.name }}. Kunde und Tier bleiben dieser Buchung zugeordnet.</p>
     <p v-else>Wähle zuerst die Kundin oder den Kunden und anschließend ein oder mehrere verfügbare zugehörige Tiere.</p>
 
@@ -147,7 +148,7 @@ function submit() {
       <label>Hinweis <small>optional, max. 300 Zeichen</small><textarea v-model="draft.bookingNote" maxlength="300" placeholder="z. B. Medikament mittags geben" /></label>
       <p v-if="reservationPricePreview" class="booking-price-preview"><strong>Preisvorschau</strong><span>{{ reservationPricePreview.stays[0]?.billableDays }} Betreuungstage · {{ draft.petIds.length }} {{ draft.petIds.length === 1 ? 'Tier' : 'Tiere' }}</span><b>{{ formatEuroCents(reservationPricePreview.totalCents) }}</b><small>unverbindlich, Abrechnung beim Check-out</small></p>
       <p v-if="error" class="form-error" role="alert">{{ error }}</p>
-      <div class="modal-actions"><button type="button" class="secondary-button" @click="$emit('close')">Abbrechen</button><button type="submit" class="primary-button">Buchung anlegen</button></div>
+      <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto"><AppButton type="button" variant="secondary" @click="$emit('close')">Abbrechen</AppButton><AppButton type="submit" variant="primary">Buchung anlegen</AppButton></div>
     </form>
 
     <form v-else class="occupancy-reservation-form" @submit.prevent="submit">
@@ -167,7 +168,7 @@ function submit() {
       <p v-if="editPricePreview" class="booking-price-preview"><strong>Preisvorschau</strong><span>{{ editPricePreview.billableDays }} Betreuungstage</span><b>{{ formatEuroCents(editPricePreview.totalCents) }}</b><small>unverbindlich, Abrechnung beim Check-out</small></p>
       <label v-if="selectedEditRoomAvailability?.wouldOverbook" class="overbooking-warning"><input v-model="editDraft.allowOverbooking" type="checkbox" /> <span><strong>Überbuchung bewusst übernehmen</strong> · Im gewählten Zeitraum fehlen Plätze.</span></label>
       <p v-if="error" class="form-error" role="alert">{{ error }}</p>
-      <div class="modal-actions"><button type="button" class="secondary-button" @click="$emit('close')">Abbrechen</button><button type="submit" class="primary-button"><Pencil :size="16" /> Änderungen speichern</button></div>
+      <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto"><AppButton type="button" variant="secondary" @click="$emit('close')">Abbrechen</AppButton><AppButton type="submit" variant="primary"><Pencil :size="16" /> Änderungen speichern</AppButton></div>
     </form>
   </BaseModal>
 </template>

@@ -5,6 +5,14 @@ import {
   ArrowRight, CalendarDays, Check, ChevronLeft, ChevronRight, Dog, Inbox, LogOut, Menu, X
 } from '@lucide/vue'
 import AccountSettingsPage from './components/AccountSettingsPage.vue'
+import AppButton from './components/AppButton.vue'
+import AppContainer from './components/AppContainer.vue'
+import AppIconButton from './components/AppIconButton.vue'
+import AppEmptyState from './components/AppEmptyState.vue'
+import AppMetricCard from './components/AppMetricCard.vue'
+import AppPageHeading from './components/AppPageHeading.vue'
+import AppTab from './components/AppTab.vue'
+import AppTabs from './components/AppTabs.vue'
 import CheckInModal from './components/CheckInModal.vue'
 import CheckInOutPage from './components/CheckInOutPage.vue'
 import BookingsPage from './components/BookingsPage.vue'
@@ -31,8 +39,8 @@ const sidebarCollapsed = ref(localStorage.getItem('sidebarCollapsed') === 'true'
 const selectedBooking = ref<BookingView | null>(null)
 const selectedDeparture = ref<DepartureView | null>(null)
 const scheduleView = ref<'arrivals' | 'departures'>('arrivals')
-const mobileNavTrigger = ref<HTMLButtonElement | null>(null)
-const mobileNavClose = ref<HTMLButtonElement | null>(null)
+const mobileNavTrigger = ref<InstanceType<typeof AppIconButton> | null>(null)
+const mobileNavClose = ref<InstanceType<typeof AppIconButton> | null>(null)
 const mobileNavigation = ref<HTMLElement | null>(null)
 
 const currentPage = computed(() => ({
@@ -124,7 +132,7 @@ onBeforeUnmount(() => {
         </span>
         <span>Tierpension <span>Pro</span></span>
       </RouterLink>
-      <button ref="mobileNavClose" class="close-nav icon-button" aria-label="Navigation schließen" @click="closeMobileNavigation(true)"><X /></button>
+      <AppIconButton ref="mobileNavClose" class="hidden absolute right-[10px] top-[21px] max-[920px]:grid" aria-label="Navigation schließen" @click="closeMobileNavigation(true)"><X /></AppIconButton>
       <nav aria-label="Hauptnavigation">
         <RouterLink v-for="item in visibleNavigationItems" :key="item.name" :to="item.path" :class="{ 'router-link-exact-active': item.name === 'settings' && isSettingsRoute }" :title="sidebarCollapsed ? item.title : undefined" @click="closeMobileNavigation()">
           <component :is="item.icon" :size="19" /><span>{{ item.title }}</span><span v-if="item.name === 'requests' && store.pendingRequests.value.length" class="nav-badge" aria-hidden="true">{{ store.pendingRequests.value.length }}</span>
@@ -144,31 +152,29 @@ onBeforeUnmount(() => {
     <div v-if="mobileNavOpen" class="scrim" @click="closeMobileNavigation(true)" />
     <section class="main-area">
       <header class="topbar">
-        <button ref="mobileNavTrigger" class="menu-button icon-button" aria-label="Navigation öffnen" @click="openMobileNavigation"><Menu /></button>
+        <AppIconButton ref="mobileNavTrigger" class="hidden max-[920px]:grid" aria-label="Navigation öffnen" @click="openMobileNavigation"><Menu /></AppIconButton>
         <DemoDataControl />
         <RouterLink class="top-avatar" to="/account" aria-label="Zu den Kontoeinstellungen">{{ accountInitials(store.account) }}</RouterLink>
       </header>
 
-      <main v-if="route.name === 'dashboard'">
-        <div class="page-heading">
-          <div><p class="eyebrow">{{ formatLongWeekdayDate(store.businessDate.value) }}</p><h1>Tagesübersicht</h1><p>Hier ist der Überblick für den heutigen Pensionstag.</p></div>
-        </div>
+      <AppContainer v-if="route.name === 'dashboard'">
+        <AppPageHeading :eyebrow="formatLongWeekdayDate(store.businessDate.value)" title="Tagesübersicht" description="Hier ist der Überblick für den heutigen Pensionstag." />
 
-        <section v-if="visibleNavigationItems.some(item => item.name === 'requests')" class="metrics" aria-label="Tageskennzahlen">
-          <RouterLink class="metric-card" :to="{ path: '/check-in-out', query: { view: 'arrivals' } }" aria-label="Anreisen heute in Check-in und Check-out öffnen"><span class="metric-icon orange"><CalendarDays /></span><div><small>Anreisen heute</small><strong>{{ store.arrivals.value.length }}</strong><p>Nächste um {{ store.arrivals.value[0]?.arrival ?? '–' }} Uhr</p></div><ArrowRight class="metric-arrow" :size="18" /></RouterLink>
-          <RouterLink class="metric-card" :to="{ path: '/check-in-out', query: { view: 'departures' } }" aria-label="Abreisen heute in Check-in und Check-out öffnen"><span class="metric-icon teal"><LogOut /></span><div><small>Abreisen heute</small><strong>{{ store.departures.value.length }}</strong><p>{{ store.departures.value.length ? 'Heute abholbereit' : 'Keine Abreise geplant' }}</p></div><ArrowRight class="metric-arrow" :size="18" /></RouterLink>
-          <RouterLink class="metric-card" :to="{ path: '/check-in-out', query: { view: 'checked-in' } }" aria-label="Tiere im Haus in Check-in und Check-out öffnen"><span class="metric-icon teal"><Dog /></span><div><small>Tiere im Haus</small><strong>{{ store.checkedIn.value.length }}<em> / {{ store.totalCapacity.value }}</em></strong><p>{{ store.occupancyRate.value }} % der Plätze belegt</p></div><ArrowRight class="metric-arrow" :size="18" /></RouterLink>
-          <RouterLink class="metric-card" to="/requests" aria-label="Offene Anfragen öffnen"><span class="metric-icon orange"><Inbox /></span><div><small>Offene Anfragen</small><strong>{{ store.pendingRequests.value.length }}</strong><p>{{ store.pendingRequests.value.length ? 'Bearbeitung ausstehend' : 'Alles erledigt' }}</p></div><ArrowRight class="metric-arrow" :size="18" /></RouterLink>
+        <section v-if="visibleNavigationItems.some(item => item.name === 'requests')" class="grid grid-cols-1 gap-4 mb-[22px] sm:grid-cols-4" aria-label="Tageskennzahlen">
+          <AppMetricCard :to="{ path: '/check-in-out', query: { view: 'arrivals' } }" ariaLabel="Anreisen heute in Check-in und Check-out öffnen" :icon="CalendarDays" color="orange" label="Anreisen heute" :hint="`Nächste um ${store.arrivals.value[0]?.arrival ?? '–'} Uhr`">{{ store.arrivals.value.length }}</AppMetricCard>
+          <AppMetricCard :to="{ path: '/check-in-out', query: { view: 'departures' } }" ariaLabel="Abreisen heute in Check-in und Check-out öffnen" :icon="LogOut" color="teal" label="Abreisen heute" :hint="store.departures.value.length ? 'Heute abholbereit' : 'Keine Abreise geplant'">{{ store.departures.value.length }}</AppMetricCard>
+          <AppMetricCard :to="{ path: '/check-in-out', query: { view: 'checked-in' } }" ariaLabel="Tiere im Haus in Check-in und Check-out öffnen" :icon="Dog" color="teal" label="Tiere im Haus" :hint="`${store.occupancyRate.value} % der Plätze belegt`">{{ store.checkedIn.value.length }}<em class="not-italic"> / {{ store.totalCapacity.value }}</em></AppMetricCard>
+          <AppMetricCard to="/requests" ariaLabel="Offene Anfragen öffnen" :icon="Inbox" color="orange" label="Offene Anfragen" :hint="store.pendingRequests.value.length ? 'Bearbeitung ausstehend' : 'Alles erledigt'">{{ store.pendingRequests.value.length }}</AppMetricCard>
         </section>
-        <section v-else class="metrics three-cols" aria-label="Tageskennzahlen">
-          <RouterLink class="metric-card" :to="{ path: '/check-in-out', query: { view: 'arrivals' } }" aria-label="Anreisen heute in Check-in und Check-out öffnen"><span class="metric-icon orange"><CalendarDays /></span><div><small>Anreisen heute</small><strong>{{ store.arrivals.value.length }}</strong><p>Nächste um {{ store.arrivals.value[0]?.arrival ?? '–' }} Uhr</p></div><ArrowRight class="metric-arrow" :size="18" /></RouterLink>
-          <RouterLink class="metric-card" :to="{ path: '/check-in-out', query: { view: 'departures' } }" aria-label="Abreisen heute in Check-in und Check-out öffnen"><span class="metric-icon teal"><LogOut /></span><div><small>Abreisen heute</small><strong>{{ store.departures.value.length }}</strong><p>{{ store.departures.value.length ? 'Heute abholbereit' : 'Keine Abreise geplant' }}</p></div><ArrowRight class="metric-arrow" :size="18" /></RouterLink>
-          <RouterLink class="metric-card" :to="{ path: '/check-in-out', query: { view: 'checked-in' } }" aria-label="Tiere im Haus in Check-in und Check-out öffnen"><span class="metric-icon teal"><Dog /></span><div><small>Tiere im Haus</small><strong>{{ store.checkedIn.value.length }}<em> / {{ store.totalCapacity.value }}</em></strong><p>{{ store.occupancyRate.value }} % der Plätze belegt</p></div><ArrowRight class="metric-arrow" :size="18" /></RouterLink>
+        <section v-else class="grid grid-cols-1 gap-4 mb-[22px] sm:grid-cols-3" aria-label="Tageskennzahlen">
+          <AppMetricCard :to="{ path: '/check-in-out', query: { view: 'arrivals' } }" ariaLabel="Anreisen heute in Check-in und Check-out öffnen" :icon="CalendarDays" color="orange" label="Anreisen heute" :hint="`Nächste um ${store.arrivals.value[0]?.arrival ?? '–'} Uhr`">{{ store.arrivals.value.length }}</AppMetricCard>
+          <AppMetricCard :to="{ path: '/check-in-out', query: { view: 'departures' } }" ariaLabel="Abreisen heute in Check-in und Check-out öffnen" :icon="LogOut" color="teal" label="Abreisen heute" :hint="store.departures.value.length ? 'Heute abholbereit' : 'Keine Abreise geplant'">{{ store.departures.value.length }}</AppMetricCard>
+          <AppMetricCard :to="{ path: '/check-in-out', query: { view: 'checked-in' } }" ariaLabel="Tiere im Haus in Check-in und Check-out öffnen" :icon="Dog" color="teal" label="Tiere im Haus" :hint="`${store.occupancyRate.value} % der Plätze belegt`">{{ store.checkedIn.value.length }}<em class="not-italic"> / {{ store.totalCapacity.value }}</em></AppMetricCard>
         </section>
 
         <div class="dashboard-grid">
           <section class="panel arrivals-panel">
-            <header><div><h2>{{ scheduleView === 'arrivals' ? 'Heutige Anreisen' : 'Heutige Abreisen' }}</h2><p>{{ scheduleView === 'arrivals' ? `${filteredArrivals.length} Tiere warten auf ihren Check-in` : `${filteredDepartures.length} Tiere sind abholbereit` }}</p></div><div class="schedule-tabs"><button :class="{ active: scheduleView === 'arrivals' }" @click="scheduleView = 'arrivals'">Anreisen</button><button :class="{ active: scheduleView === 'departures' }" @click="scheduleView = 'departures'">Abreisen</button></div></header>
+            <header><div><h2>{{ scheduleView === 'arrivals' ? 'Heutige Anreisen' : 'Heutige Abreisen' }}</h2><p>{{ scheduleView === 'arrivals' ? `${filteredArrivals.length} Tiere warten auf ihren Check-in` : `${filteredDepartures.length} Tiere sind abholbereit` }}</p></div><AppTabs><AppTab :active="scheduleView === 'arrivals'" @click="scheduleView = 'arrivals'">Anreisen</AppTab><AppTab :active="scheduleView === 'departures'" @click="scheduleView = 'departures'">Abreisen</AppTab></AppTabs></header>
             <div v-if="scheduleView === 'arrivals' && filteredArrivals.length" class="arrival-list">
               <article v-for="booking in filteredArrivals" :key="booking.id" class="arrival-row">
                 <div class="pet-avatar" :style="{ background: booking.pet.color }">{{ booking.pet.initials }}</div>
@@ -177,7 +183,7 @@ onBeforeUnmount(() => {
                 <span class="arrival-note-slot">
                   <span v-if="booking.pet.note" class="note-badge">Hinweis</span>
                 </span>
-                <button class="link-button" @click="selectedBooking = booking">Einchecken</button>
+                <AppButton variant="link" @click="selectedBooking = booking">Einchecken</AppButton>
               </article>
             </div>
             <div v-else-if="scheduleView === 'departures' && filteredDepartures.length" class="arrival-list">
@@ -185,14 +191,14 @@ onBeforeUnmount(() => {
                 <div class="pet-avatar" :style="{ background: departure.pet.color }">{{ departure.pet.initials }}</div>
                 <div class="pet-info"><strong>{{ departure.customer.firstName }} {{ departure.customer.lastName }}</strong><span>{{ departure.pet.name }}</span></div>
                 <div class="arrival-meta"><strong>Abreise heute</strong><span>{{ departure.room.name }}</span></div>
-                <button class="link-button" @click="selectedDeparture = departure"><LogOut :size="16" /> Auschecken</button>
+                <AppButton variant="link" @click="selectedDeparture = departure"><LogOut :size="16" /> Auschecken</AppButton>
               </article>
             </div>
-            <div v-else class="empty-state">
-              <span><Check /></span>
-              <strong>{{ scheduleView === 'arrivals' ? 'Alle erwarteten Tiere sind angekommen.' : 'Alle Abreisen sind abgeschlossen.' }}</strong>
-              <p>{{ scheduleView === 'arrivals' ? 'Für heute steht kein weiterer Check-in an.' : 'Für heute steht kein weiterer Check-out an.' }}</p>
-            </div>
+            <AppEmptyState v-else>
+              <template #icon><Check /></template>
+              <template #title>{{ scheduleView === 'arrivals' ? 'Alle erwarteten Tiere sind angekommen.' : 'Alle Abreisen sind abgeschlossen.' }}</template>
+              <template #description>{{ scheduleView === 'arrivals' ? 'Für heute steht kein weiterer Check-in an.' : 'Für heute steht kein weiterer Check-out an.' }}</template>
+            </AppEmptyState>
             <RouterLink class="panel-navigation" to="/check-in-out">Alle Check-ins und Check-outs <ArrowRight :size="16" /></RouterLink>
           </section>
 
@@ -207,7 +213,7 @@ onBeforeUnmount(() => {
             </div>
           </aside>
         </div>
-      </main>
+      </AppContainer>
       <CustomersPage v-else-if="route.name === 'customers'" />
       <CheckInOutPage v-else-if="route.name === 'check-in-out'" @check-in="selectedBooking = $event" @check-out="selectedDeparture = $event" />
       <BookingsPage v-else-if="route.name === 'bookings'" @check-out="selectedDeparture = $event" />
@@ -215,7 +221,7 @@ onBeforeUnmount(() => {
       <RequestsPage v-else-if="route.name === 'requests'" />
       <SettingsPage v-else-if="isSettingsRoute" />
       <AccountSettingsPage v-else-if="route.name === 'account'" />
-      <main v-else-if="route.name !== 'intro'" class="route-page">
+      <AppContainer v-else-if="route.name !== 'intro'" class="route-page">
         <div class="route-page-card">
           <span class="route-page-icon">
             <LogoIcon v-if="route.name === 'not-found'" :size="32" />
@@ -224,10 +230,10 @@ onBeforeUnmount(() => {
           <p class="eyebrow">{{ route.name === 'not-found' ? 'Fehler 404' : 'Tierpension Pro' }}</p>
           <h1>{{ currentPage.title }}</h1>
           <p>{{ currentPage.description }}</p>
-          <RouterLink v-if="route.name === 'not-found'" class="primary-button" to="/dashboard">Zurück zum Dashboard</RouterLink>
-          <RouterLink v-else class="secondary-button" to="/dashboard">Zum Tagesdashboard</RouterLink>
+          <AppButton v-if="route.name === 'not-found'" variant="primary" to="/dashboard">Zurück zum Dashboard</AppButton>
+          <AppButton v-else variant="secondary" to="/dashboard">Zum Tagesdashboard</AppButton>
         </div>
-      </main>
+      </AppContainer>
     </section>
 
     <ToastRegion :notifications="store.toastNotifications" @dismiss="store.dismissToast" />

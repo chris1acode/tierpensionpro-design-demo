@@ -1,122 +1,34 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
+import AppButton from './AppButton.vue'
 import LogoIcon from './LogoIcon.vue'
 </script>
 
 <template>
-  <div class="intro-page">
-    <div class="intro-card">
-      <div class="intro-logo">
+  <div class="grid min-h-screen place-items-center bg-[var(--bg)] p-5">
+    <div class="w-full max-w-[540px] rounded-[20px] border border-[var(--border)] bg-[var(--surface)] px-5 py-8 text-center shadow-[0_20px_50px_rgba(36,33,31,0.08)] min-[480px]:p-10">
+      <div class="mb-6 flex flex-col items-center gap-4 text-[var(--primary)]">
         <LogoIcon :size="64" />
-        <h1>Tierpension <span>Pro</span></h1>
+        <h1 class="m-0 text-[28px] font-bold text-[var(--text)] [font-family:'Manrope',sans-serif]">Tierpension <span class="text-[var(--primary)]">Pro</span></h1>
       </div>
 
-      <div class="intro-content">
-        <p class="eyebrow">Design Demo</p>
-        <h2>Ein erster Blick auf Tierpension Pro</h2>
-        <p>
-          Wir entwickeln eine digitale Lösung, um den Alltag in Tierpensionen einfacher zu gestalten. 
+      <div class="mb-6 text-left">
+        <p class="mb-1 text-center text-[13px] font-bold uppercase tracking-[0.1em] text-[#a34b1b]">Design Demo</p>
+        <h2 class="mb-4 mt-2 text-center text-[22px] font-bold [font-family:'Manrope',sans-serif]">Ein erster Blick auf Tierpension Pro</h2>
+        <p class="mb-3 leading-[1.5] text-[var(--muted)]">
+          Wir entwickeln eine digitale Lösung, um den Alltag in Tierpensionen einfacher zu gestalten.
           Ihr Feedback aus der Praxis wäre sehr wertvoll. Schauen Sie sich die Demo an! Was wirkt sinnvoll? Was würden Sie anders machen?
         </p>
-        <p class="hint">
+        <p class="mb-3 mt-4 rounded-lg border-l-4 border-[var(--primary)] bg-[var(--bg)] p-3 text-[0.9em] leading-[1.5] text-[var(--muted)]">
           <strong>Hinweis:</strong> Für das beste Erlebnis testen Sie die Demo bitte im <strong>Desktop-Browser</strong>. Für mobile Nutzung ist später eine App geplant.
         </p>
       </div>
 
-      <div class="intro-actions">
-        <RouterLink to="/dashboard" class="primary-button large-button">
+      <div class="flex justify-center">
+        <AppButton to="/dashboard" variant="primary" class="min-h-12 px-8 text-base">
           Demo ansehen
-        </RouterLink>
+        </AppButton>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.intro-page {
-  display: grid;
-  place-items: center;
-  min-height: 100vh;
-  padding: 20px;
-  background: var(--bg);
-}
-
-.intro-card {
-  width: min(540px, 100%);
-  padding: 40px;
-  text-align: center;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  box-shadow: 0 20px 50px rgba(36, 33, 31, 0.08);
-}
-
-.intro-logo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 24px;
-  color: var(--primary);
-}
-
-
-.intro-logo h1 {
-  font: 700 28px Manrope, sans-serif;
-  margin: 0;
-  color: var(--text);
-}
-
-.intro-logo h1 span {
-  color: var(--primary);
-}
-
-.intro-content {
-  margin-bottom: 24px;
-  text-align: left;
-}
-
-.intro-content h2 {
-  font: 700 22px Manrope, sans-serif;
-  margin: 8px 0 16px;
-  text-align: center;
-}
-
-.intro-content p {
-  margin: 0 0 12px;
-  color: var(--muted);
-  line-height: 1.5;
-}
-
-.intro-content .hint {
-  font-size: 0.9em;
-  padding: 12px;
-  background: var(--bg);
-  border-radius: 8px;
-  border-left: 4px solid var(--primary);
-  margin-top: 16px;
-}
-
-.intro-content .eyebrow {
-  text-align: center;
-  margin-bottom: 4px;
-}
-
-.intro-actions {
-  display: flex;
-  justify-content: center;
-}
-
-.large-button {
-  min-height: 48px;
-  padding: 0 32px;
-  font-size: 16px;
-  text-decoration: none;
-}
-
-@media (max-width: 480px) {
-  .intro-card {
-    padding: 32px 20px;
-  }
-}
-</style>

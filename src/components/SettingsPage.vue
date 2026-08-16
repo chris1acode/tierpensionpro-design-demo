@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { Banknote, Building2, Cat, Clock3, Dog, Inbox, Info, Pencil, Plus, Save, Trash2 } from '@lucide/vue'
 import type { PensionSettingsUpdate, PetSpecies, Room } from '../domain'
 import { useSynchronizedDraft } from '../composables/useSynchronizedDraft'
 import { arePensionSettingsEqual } from '../domain/pensionSettings'
 import { usePensionStore } from '../usePensionStore'
+import AppButton from './AppButton.vue'
+import AppContainer from './AppContainer.vue'
+import AppEmptyState from './AppEmptyState.vue'
+import AppIconButton from './AppIconButton.vue'
+import AppPageHeading from './AppPageHeading.vue'
+import AppTab from './AppTab.vue'
+import AppTabs from './AppTabs.vue'
 import RoomFormModal from './RoomFormModal.vue'
 
 const store = usePensionStore()
@@ -91,16 +98,14 @@ function updateRate(species: PetSpecies, value: string) {
 </script>
 
 <template>
-  <main class="settings-page">
-    <div class="page-heading">
-      <div><p class="eyebrow">Betrieb konfigurieren</p><h1>Einstellungen</h1><p>Kontaktdaten, Tarife und Zimmer zentral verwalten.</p></div>
-    </div>
+  <AppContainer class="settings-page">
+    <AppPageHeading eyebrow="Betrieb konfigurieren" title="Einstellungen" description="Kontaktdaten, Tarife und Zimmer zentral verwalten." />
 
-    <nav class="settings-tabs" aria-label="Einstellungsbereiche">
-      <RouterLink to="/settings/general">Allgemein</RouterLink>
-      <RouterLink to="/settings/rates">Tarife</RouterLink>
-      <RouterLink to="/settings/rooms">Unterbringung</RouterLink>
-    </nav>
+    <AppTabs class="mb-[22px] max-sm:w-full" grow-mobile aria-label="Einstellungsbereiche">
+      <AppTab to="/settings/general" size="lg" grow-mobile>Allgemein</AppTab>
+      <AppTab to="/settings/rates" size="lg" grow-mobile>Tarife</AppTab>
+      <AppTab to="/settings/rooms" size="lg" grow-mobile>Unterbringung</AppTab>
+    </AppTabs>
 
     <form v-if="activeTab !== 'rooms'" class="settings-layout" @submit.prevent="save">
       <template v-if="activeTab === 'general'">
@@ -131,8 +136,8 @@ function updateRate(species: PetSpecies, value: string) {
       </template>
 
       <section v-else class="panel settings-panel">
-        <div class="info-banner">
-          <Info :size="20" />
+        <div class="mb-6 flex items-start gap-3 rounded-[10px] border border-[#c9e1dc] bg-[#eef5f3] p-4 text-sm leading-relaxed text-[var(--petrol)]">
+          <Info :size="20" class="mt-0.5 shrink-0" />
           <p>Ein ausführlichere Tarifkonfiguration ist noch in der Entwicklung (Bsp. Rabatt für mehrere Tiere, Einzelzimmer etc)</p>
         </div>
         <header><span class="settings-icon amber"><Banknote :size="20" /></span><div><h2>Preisliste</h2><p>Grundpreis je Tier und angefangenen Betreuungstag. Alle Beträge inklusive Mehrwertsteuer.</p></div></header>
@@ -147,22 +152,22 @@ function updateRate(species: PetSpecies, value: string) {
       </section>
 
       <p v-if="error" class="form-error" role="alert">{{ error }}</p>
-      <div class="settings-actions"><button class="secondary-button" :disabled="!hasUnsavedSettings" type="button" @click="discard">Änderungen verwerfen</button><button class="primary-button" :disabled="!hasUnsavedSettings" type="submit"><Save :size="16" /> Einstellungen speichern</button></div>
+      <div class="settings-actions"><AppButton variant="secondary" :disabled="!hasUnsavedSettings" type="button" @click="discard">Änderungen verwerfen</AppButton><AppButton variant="primary" :disabled="!hasUnsavedSettings" type="submit"><Save :size="16" /> Einstellungen speichern</AppButton></div>
     </form>
 
     <section v-else class="panel settings-panel room-settings-panel">
       <header>
         <div><h2>Zimmer</h2><p>Zimmernamen, Tierart und Platzanzahl für Belegung und Buchungen verwalten.</p></div>
-        <button class="primary-button" type="button" @click="openRoomCreate"><Plus :size="15" /> Zimmer anlegen</button>
+        <AppButton variant="primary" type="button" @click="openRoomCreate"><Plus :size="15" /> Zimmer anlegen</AppButton>
       </header>
-      <p v-if="!store.rooms.length" class="empty-state">Keine Zimmer angelegt.</p>
+      <AppEmptyState v-if="!store.rooms.length">Keine Zimmer angelegt.</AppEmptyState>
       <ul v-else class="room-list">
         <li v-for="room in store.rooms" :key="room.id">
           <span class="room-icon" :class="{ cat: room.category === 'Katzenzimmer' }"><Dog v-if="room.category === 'Hundezimmer'" :size="18" /><Cat v-else :size="18" /></span>
           <div><strong>{{ room.name }}</strong><span>{{ room.category === 'Katzenzimmer' ? 'Katzen' : 'Hunde' }} · {{ room.capacity }} {{ room.capacity === 1 ? 'Platz' : 'Plätze' }}</span></div>
           <div class="room-list-actions">
-            <button class="icon-button" type="button" :aria-label="`${room.name} bearbeiten`" @click="openRoomEdit(room)"><Pencil :size="15" /></button>
-            <button class="icon-button danger-icon-button" type="button" :aria-label="`${room.name} entfernen`" :disabled="roomHasBookings(room.id)" @click="removeRoom(room)"><Trash2 :size="15" /></button>
+            <AppIconButton type="button" :aria-label="`${room.name} bearbeiten`" @click="openRoomEdit(room)"><Pencil :size="15" /></AppIconButton>
+            <AppIconButton variant="danger" type="button" :aria-label="`${room.name} entfernen`" :disabled="roomHasBookings(room.id)" @click="removeRoom(room)"><Trash2 :size="15" /></AppIconButton>
           </div>
         </li>
       </ul>
@@ -177,5 +182,5 @@ function updateRate(species: PetSpecies, value: string) {
       @close="closeRoomModal"
       @saved="closeRoomModal"
     />
-  </main>
+  </AppContainer>
 </template>

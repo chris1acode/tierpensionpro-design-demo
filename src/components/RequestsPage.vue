@@ -3,6 +3,10 @@ import { computed, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { Cat, Check, CircleAlert, CircleCheck, Dog, Download, Inbox, ThumbsDown, ThumbsUp } from '@lucide/vue'
 import type { BookingRequest } from '../domain'
+import AppButton from './AppButton.vue'
+import AppContainer from './AppContainer.vue'
+import AppEmptyState from './AppEmptyState.vue'
+import AppPageHeading from './AppPageHeading.vue'
 import DeclineRequestModal from './DeclineRequestModal.vue'
 import RequestAssignModal from './RequestAssignModal.vue'
 import { getRequestRoomOptions } from '../domain/roomAvailability'
@@ -48,23 +52,22 @@ function exportRequests(scope: 'pending' | 'history') {
 </script>
 
 <template>
-  <main class="requests-page">
-    <div class="page-heading">
-      <div><p class="eyebrow">Externe Anfragen</p><h1>Anfragen</h1><p>Buchungsanfragen prüfen, Kunde zuordnen und anschließend als Reservierung übernehmen.</p></div>
+  <AppContainer class="requests-page">
+    <AppPageHeading eyebrow="Externe Anfragen" title="Anfragen" description="Buchungsanfragen prüfen, Kunde zuordnen und anschließend als Reservierung übernehmen.">
       <span class="page-count"><Inbox :size="17" /> {{ store.pendingRequests.value.length }} offen</span>
-    </div>
+    </AppPageHeading>
 
     <div v-if="!store.settings.requestsEnabled" class="panel">
-      <div class="empty-state">
-        <span><Inbox /></span>
-        <strong>Anfragen ist derzeit deaktiviert.</strong>
-        <p>Aktiviere das Feature unter Einstellungen, um externe Buchungsanfragen zu empfangen.</p>
-      </div>
+      <AppEmptyState>
+        <template #icon><Inbox /></template>
+        <template #title>Anfragen ist derzeit deaktiviert.</template>
+        <template #description>Aktiviere das Feature unter Einstellungen, um externe Buchungsanfragen zu empfangen.</template>
+      </AppEmptyState>
     </div>
 
     <template v-else>
       <section class="panel requests-list">
-        <header><div><h2>Offene Anfragen</h2><p>{{ store.pendingRequests.value.length }} Anfragen warten auf eine Entscheidung</p></div><button class="text-button" type="button" aria-label="Offene Anfragen als CSV exportieren" @click="exportRequests('pending')"><Download :size="15" /> Exportieren</button></header>
+        <header><div><h2>Offene Anfragen</h2><p>{{ store.pendingRequests.value.length }} Anfragen warten auf eine Entscheidung</p></div><AppButton variant="text" type="button" aria-label="Offene Anfragen als CSV exportieren" @click="exportRequests('pending')"><Download :size="15" /> Exportieren</AppButton></header>
         <div v-if="store.pendingRequests.value.length" class="request-cards">
           <article v-for="requestDetail in pendingRequestDetails" :key="requestDetail.request.id" class="request-card">
             <template v-for="request in [requestDetail.request]" :key="request.id">
@@ -92,18 +95,22 @@ function exportRequests(scope: 'pending' | 'history') {
             </div>
             <div class="request-actions">
               <div class="request-buttons">
-                <button class="primary-button" @click="requestToAssign = request"><ThumbsUp :size="15" /> Annehmen</button>
-                <button class="secondary-button" @click="requestToDecline = request"><ThumbsDown :size="15" /> Ablehnen</button>
+                <AppButton variant="primary" @click="requestToAssign = request"><ThumbsUp :size="15" /> Annehmen</AppButton>
+                <AppButton variant="secondary" @click="requestToDecline = request"><ThumbsDown :size="15" /> Ablehnen</AppButton>
               </div>
             </div>
             </template>
           </article>
         </div>
-        <div v-else class="empty-state"><span><Check /></span><strong>Keine offenen Anfragen.</strong><p>Neue externe Anfragen erscheinen automatisch hier.</p></div>
+        <AppEmptyState v-else>
+          <template #icon><Check /></template>
+          <template #title>Keine offenen Anfragen.</template>
+          <template #description>Neue externe Anfragen erscheinen automatisch hier.</template>
+        </AppEmptyState>
       </section>
 
       <section class="panel requests-list">
-        <header><div><h2>Verlauf</h2><p>Bereits entschiedene Anfragen</p></div><button class="text-button" type="button" aria-label="Anfragenverlauf als CSV exportieren" @click="exportRequests('history')"><Download :size="15" /> Exportieren</button></header>
+        <header><div><h2>Verlauf</h2><p>Bereits entschiedene Anfragen</p></div><AppButton variant="text" type="button" aria-label="Anfragenverlauf als CSV exportieren" @click="exportRequests('history')"><Download :size="15" /> Exportieren</AppButton></header>
         <div v-if="store.requestHistory.value.length" class="request-history">
           <article v-for="request in store.requestHistory.value" :key="request.id">
             <div class="request-history-customer">
@@ -119,10 +126,14 @@ function exportRequests(scope: 'pending' | 'history') {
             </div>
           </article>
         </div>
-        <div v-else class="empty-state"><span><Inbox /></span><strong>Noch keine entschiedenen Anfragen.</strong><p>Angenommene und abgelehnte Anfragen erscheinen hier.</p></div>
+        <AppEmptyState v-else>
+          <template #icon><Inbox /></template>
+          <template #title>Noch keine entschiedenen Anfragen.</template>
+          <template #description>Angenommene und abgelehnte Anfragen erscheinen hier.</template>
+        </AppEmptyState>
       </section>
     </template>
     <DeclineRequestModal v-if="requestToDecline" :request="requestToDecline" @close="requestToDecline = null" @confirm="decline" />
     <RequestAssignModal v-if="requestToAssign" :request="requestToAssign" @close="requestToAssign = null" @accepted="requestToAssign = null" />
-  </main>
+  </AppContainer>
 </template>

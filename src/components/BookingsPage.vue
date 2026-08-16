@@ -3,6 +3,14 @@ import { computed, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { CalendarDays, Check, ChevronLeft, ChevronRight, Download, List, LogOut, Pencil, Plus, Search, Trash2 } from '@lucide/vue'
 import type { BookingStatus, BookingView, DepartureView } from '../domain'
+import AppButton from './AppButton.vue'
+import AppContainer from './AppContainer.vue'
+import AppEmptyState from './AppEmptyState.vue'
+import AppIconButton from './AppIconButton.vue'
+import AppPageHeading from './AppPageHeading.vue'
+import AppPagination from './AppPagination.vue'
+import AppTab from './AppTab.vue'
+import AppTabs from './AppTabs.vue'
 import DeleteBookingModal from './DeleteBookingModal.vue'
 import BookingFormModal from './BookingFormModal.vue'
 import { bookingStatusFilters, bookingStatusLabels } from '../presentation/bookingStatus'
@@ -135,14 +143,13 @@ function openBookingFromTimeline(bookingId: string) {
 </script>
 
 <template>
-  <main class="bookings-page">
-    <div class="page-heading">
-      <div><p class="eyebrow">Aufenthaltsplanung</p><h1>Buchungen</h1><p>Aufenthalte durchsuchen und neue Reservierungen verbindlich anlegen.</p></div>
-      <button class="primary-button" @click="openCreateBooking"><Plus :size="17" />Neue Buchung</button>
-    </div>
+  <AppContainer class="bookings-page">
+    <AppPageHeading eyebrow="Aufenthaltsplanung" title="Buchungen" description="Aufenthalte durchsuchen und neue Reservierungen verbindlich anlegen.">
+      <AppButton variant="primary" class="w-full sm:w-auto" @click="openCreateBooking"><Plus :size="17" />Neue Buchung</AppButton>
+    </AppPageHeading>
 
     <section class="panel bookings-list">
-      <header><div><h2>{{ focusedBooking ? 'Ausgewählter Aufenthalt' : (view === 'list' ? 'Alle Aufenthalte' : 'Buchungszeitachse') }}</h2><p>{{ focusedBooking ? 'Details und Aktionen für die gewählte Buchung' : (view === 'list' ? `${visibleBookings.length} passende Buchungen` : 'Zimmer und zusammenhängende Aufenthalte im Wochenüberblick') }}</p></div><div class="list-header-actions"><div class="booking-view-switch" aria-label="Buchungsansicht"><button :class="{ active: view === 'list' }" aria-label="Listenansicht" @click="view = 'list'"><List :size="15" /> Liste</button><button :class="{ active: view === 'calendar' }" aria-label="Zeitachsenansicht" :disabled="!!focusedBooking" @click="view = 'calendar'"><CalendarDays :size="15" /> Zeitachse</button></div><button class="text-button" type="button" aria-label="Buchungen als CSV exportieren" :disabled="!!focusedBooking" @click="exportBookings"><Download :size="15" /> Exportieren</button><label class="directory-search" :class="{ disabled: !!focusedBooking }"><Search :size="17" /><input v-model="localQuery" :disabled="!!focusedBooking" placeholder="Tier, Kunde oder Zimmer suchen …" /></label></div></header>
+      <header><div><h2>{{ focusedBooking ? 'Ausgewählter Aufenthalt' : (view === 'list' ? 'Alle Aufenthalte' : 'Buchungszeitachse') }}</h2><p>{{ focusedBooking ? 'Details und Aktionen für die gewählte Buchung' : (view === 'list' ? `${visibleBookings.length} passende Buchungen` : 'Zimmer und zusammenhängende Aufenthalte im Wochenüberblick') }}</p></div><div class="list-header-actions"><AppTabs class="max-sm:w-full max-sm:justify-center"><AppTab :active="view === 'list'" aria-label="Listenansicht" @click="view = 'list'"><List :size="15" /> Liste</AppTab><AppTab :active="view === 'calendar'" aria-label="Zeitachsenansicht" :disabled="!!focusedBooking" @click="view = 'calendar'"><CalendarDays :size="15" /> Zeitachse</AppTab></AppTabs><AppButton variant="text" type="button" aria-label="Buchungen als CSV exportieren" :disabled="!!focusedBooking" @click="exportBookings"><Download :size="15" /> Exportieren</AppButton><label class="directory-search" :class="{ disabled: !!focusedBooking }"><Search :size="17" /><input v-model="localQuery" :disabled="!!focusedBooking" placeholder="Tier, Kunde oder Zimmer suchen …" /></label></div></header>
       <div class="booking-filters" :class="{ disabled: !!focusedBooking }" aria-label="Buchungsstatus">
         <button v-for="option in bookingStatusFilters" :key="option.value" :class="{ active: status === option.value }" :disabled="!!focusedBooking" @click="status = option.value">{{ option.label }}</button>
         <label class="booking-date-filter">Am Datum <input type="date" aria-label="Buchungen am Datum filtern" :value="selectedDate" :disabled="!!focusedBooking" @change="setSelectedDate" /></label>
@@ -153,7 +160,7 @@ function openBookingFromTimeline(bookingId: string) {
         <button type="button" @click="clearFocusedBooking">Zurück zur Übersicht</button>
       </div>
       <div v-if="view === 'calendar'" class="booking-calendar">
-        <div class="booking-calendar-navigation"><button class="icon-button" aria-label="Vorherige Woche" @click="changeCalendarWeek(-1)"><ChevronLeft :size="18" /></button><strong>{{ calendarLabel }}</strong><button class="icon-button" aria-label="Nächste Woche" @click="changeCalendarWeek(1)"><ChevronRight :size="18" /></button><button class="secondary-button booking-calendar-today" type="button" :disabled="calendarStart === store.businessDate.value" @click="jumpTimelineToToday">Heute</button></div>
+        <div class="booking-calendar-navigation"><AppIconButton aria-label="Vorherige Woche" @click="changeCalendarWeek(-1)"><ChevronLeft :size="18" /></AppIconButton><strong>{{ calendarLabel }}</strong><AppIconButton aria-label="Nächste Woche" @click="changeCalendarWeek(1)"><ChevronRight :size="18" /></AppIconButton><AppButton variant="secondary" class="booking-calendar-today" type="button" :disabled="calendarStart === store.businessDate.value" @click="jumpTimelineToToday">Heute</AppButton></div>
         <div class="booking-timeline" aria-label="Buchungszeitachse">
           <div class="booking-timeline-header"><span>Zimmer</span><div><span v-for="date in calendarDates" :key="date"><b>{{ formatShortWeekday(date) }}</b>{{ formatDayAndMonth(date) }}</span></div></div>
           <section v-for="row in bookingTimeline" :key="row.id" class="booking-timeline-row" :aria-label="row.label">
@@ -186,12 +193,18 @@ function openBookingFromTimeline(bookingId: string) {
           </div>
         </article>
       </div>
-      <nav v-if="view === 'list' && pageCount > 1" class="pagination" aria-label="Seiten in der Buchungsliste">
-        <button :disabled="currentPage === 1" aria-label="Vorherige Seite" @click="selectPage(currentPage - 1)">‹</button>
-        <span>Seite {{ currentPage }} von {{ pageCount }}</span>
-        <button :disabled="currentPage === pageCount" aria-label="Nächste Seite" @click="selectPage(currentPage + 1)">›</button>
-      </nav>
-      <div v-if="view === 'list' && !visibleBookings.length" class="empty-state"><span><Search v-if="searchTerm" /><Check v-else /></span><strong>Keine Buchungen gefunden.</strong><p>Ändere Suche oder Statusfilter.</p></div>
+      <AppPagination
+        v-if="view === 'list'"
+        :current-page="currentPage"
+        :page-count="pageCount"
+        ariaLabel="Seiten in der Buchungsliste"
+        @select="selectPage"
+      />
+      <AppEmptyState v-if="view === 'list' && !visibleBookings.length">
+        <template #icon><Search v-if="searchTerm" /><Check v-else /></template>
+        <template #title>Keine Buchungen gefunden.</template>
+        <template #description>Ändere Suche oder Statusfilter.</template>
+      </AppEmptyState>
     </section>
     <DeleteBookingModal v-if="bookingPendingDeletion" :booking="bookingPendingDeletion" @close="bookingPendingDeletion = null" @confirm="confirmDeletion" />
     <BookingFormModal
@@ -201,5 +214,5 @@ function openBookingFromTimeline(bookingId: string) {
       :preset-customer-id="bookingModalPresetCustomerId"
       @close="closeBookingModal"
     />
-  </main>
+  </AppContainer>
 </template>

@@ -5,6 +5,13 @@ import { CalendarOff, CalendarPlus, ChevronLeft, ChevronRight, Download, Lock, L
 import type { DailyOccupancy, OccupancyLevel, OccupancyRangeDays, PensionClosure } from '../domain'
 import { formatDayAndMonth, formatShortWeekday } from '../presentation/dateFormat'
 import { usePensionStore } from '../usePensionStore'
+import AppButton from './AppButton.vue'
+import AppContainer from './AppContainer.vue'
+import AppEmptyState from './AppEmptyState.vue'
+import AppIconButton from './AppIconButton.vue'
+import AppPageHeading from './AppPageHeading.vue'
+import AppTab from './AppTab.vue'
+import AppTabs from './AppTabs.vue'
 import OccupancyReservationModal from './OccupancyReservationModal.vue'
 import ClosureFormModal from './ClosureFormModal.vue'
 import { downloadCsv } from '../shared/csvExport'
@@ -83,10 +90,8 @@ function closureLabel(startDate: string, endDate: string): string {
 </script>
 
 <template>
-  <main class="occupancy-page">
-    <div class="page-heading">
-      <div><p class="eyebrow">Kapazitätsplanung</p><h1>Belegung</h1><p>Zimmerbelegung als kompakte Tages-Spaltenansicht.</p></div>
-    </div>
+  <AppContainer class="occupancy-page">
+    <AppPageHeading eyebrow="Kapazitätsplanung" title="Belegung" description="Zimmerbelegung als kompakte Tages-Spaltenansicht." />
 
     <div class="occupancy-controls">
       <div class="occupancy-date-nav" role="group" aria-label="Startdatum">
@@ -103,22 +108,24 @@ function closureLabel(startDate: string, endDate: string): string {
         <button type="button" class="occupancy-today" :disabled="store.occupancyStartDate.value === todayIso" @click="store.jumpOccupancyToToday()">Heute</button>
       </div>
 
-      <div class="range-filters" aria-label="Zeitraum">
-        <button
+      <AppTabs class="max-sm:mt-4 max-sm:w-full" grow-mobile aria-label="Zeitraum">
+        <AppTab
           v-for="option in rangeOptions"
           :key="option.value"
-          :class="{ active: store.occupancyRangeDays.value === option.value }"
+          size="md"
+          grow-mobile
+          :active="store.occupancyRangeDays.value === option.value"
           @click="store.setOccupancyRangeDays(option.value)"
-        >{{ option.label }}</button>
-      </div>
+        >{{ option.label }}</AppTab>
+      </AppTabs>
 
-      <button class="primary-button occupancy-reservation-button" @click="reservationOpen = true"><CalendarPlus :size="17" /> Reservierung anlegen</button>
+      <AppButton variant="primary" class="occupancy-reservation-button" @click="reservationOpen = true"><CalendarPlus :size="17" /> Reservierung anlegen</AppButton>
     </div>
 
     <section class="panel occupancy-panel-wide">
       <header>
         <div><h2>Zimmer × Zeitraum</h2><p>{{ store.roomTimelines.value.length }} Zimmer über {{ store.occupancyDates.value.length }} Tage</p></div>
-        <div class="list-header-actions"><button class="text-button" type="button" aria-label="Belegung als CSV exportieren" @click="exportOccupancy"><Download :size="15" /> Exportieren</button><div class="occupancy-legend">
+        <div class="list-header-actions"><AppButton variant="text" type="button" aria-label="Belegung als CSV exportieren" @click="exportOccupancy"><Download :size="15" /> Exportieren</AppButton><div class="occupancy-legend">
           <span><i class="legend-swatch free" /> Frei</span>
           <span><i class="legend-swatch occupied" /> Teilbelegt</span>
           <span><i class="legend-swatch full" /> Ausgebucht</span>
@@ -188,7 +195,7 @@ function closureLabel(startDate: string, endDate: string): string {
           <h2 id="mobile-occupancy-heading">Zimmer pro Tag</h2>
           <p>Für kleine Bildschirme als gut lesbare Tagesliste.</p>
         </div>
-        <button class="text-button" type="button" aria-label="Belegung als CSV exportieren" @click="exportOccupancy"><Download :size="15" /> Exportieren</button>
+        <AppButton variant="text" type="button" aria-label="Belegung als CSV exportieren" @click="exportOccupancy"><Download :size="15" /> Exportieren</AppButton>
       </header>
       <article
         v-for="day in store.dailyOccupancy.value"
@@ -235,15 +242,15 @@ function closureLabel(startDate: string, endDate: string): string {
     <section class="panel occupancy-closures" aria-labelledby="closures-heading">
       <header>
         <div><h2 id="closures-heading">Schließzeiten</h2><p>Während einer Schließzeit stehen keine Plätze für Reservierungen zur Verfügung.</p></div>
-        <button class="secondary-button" type="button" @click="openClosureCreate"><LockKeyhole :size="15" /> Schließzeit anlegen</button>
+        <AppButton variant="secondary" type="button" @click="openClosureCreate"><LockKeyhole :size="15" /> Schließzeit anlegen</AppButton>
       </header>
-      <p v-if="!store.pensionClosures.length" class="empty-state">Keine Schließzeiten hinterlegt.</p>
+      <AppEmptyState v-if="!store.pensionClosures.length" variant="inline">Keine Schließzeiten hinterlegt.</AppEmptyState>
       <ul v-else class="closure-list">
         <li v-for="closure in store.pensionClosures" :key="closure.id">
           <div><strong>{{ closureLabel(closure.startDate, closure.endDate) }}</strong><span>{{ closure.reason || 'Ohne Hinweis' }}</span></div>
           <div class="closure-actions">
-            <button class="icon-button" type="button" :aria-label="`Schließzeit ${closureLabel(closure.startDate, closure.endDate)} bearbeiten`" @click="openClosureEdit(closure)"><Pencil :size="15" /></button>
-            <button class="icon-button" type="button" :aria-label="`Schließzeit ${closureLabel(closure.startDate, closure.endDate)} entfernen`" @click="store.deletePensionClosure(closure.id)"><Trash2 :size="15" /></button>
+            <AppIconButton type="button" :aria-label="`Schließzeit ${closureLabel(closure.startDate, closure.endDate)} bearbeiten`" @click="openClosureEdit(closure)"><Pencil :size="15" /></AppIconButton>
+            <AppIconButton type="button" :aria-label="`Schließzeit ${closureLabel(closure.startDate, closure.endDate)} entfernen`" @click="store.deletePensionClosure(closure.id)"><Trash2 :size="15" /></AppIconButton>
           </div>
         </li>
       </ul>
@@ -256,5 +263,5 @@ function closureLabel(startDate: string, endDate: string): string {
       @close="closeClosureModal"
       @saved="closeClosureModal"
     />
-  </main>
+  </AppContainer>
 </template>

@@ -6,6 +6,7 @@ import { getCustomerRequestMatch } from '../domain/customerProfile'
 import { getRequestRoomOptions } from '../domain/roomAvailability'
 import { selectRoomOccupancyForPeriod } from '../store/pensionSelectors'
 import { usePensionStore } from '../usePensionStore'
+import AppButton from './AppButton.vue'
 import BaseModal from './BaseModal.vue'
 
 const props = defineProps<{
@@ -54,9 +55,9 @@ function confirm() {
 </script>
 
 <template>
-  <BaseModal labelled-by="request-assign-title" modal-class="request-assign-modal" @close="emit('close')">
+  <BaseModal labelled-by="request-assign-title" modal-class="request-assign-modal max-w-[480px]" @close="emit('close')">
     <p class="eyebrow">Anfrage zuordnen</p>
-    <h2 id="request-assign-title">Anfrage von {{ request.customerFirstName }} {{ request.customerLastName }} annehmen</h2>
+    <h2 id="request-assign-title" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">Anfrage von {{ request.customerFirstName }} {{ request.customerLastName }} annehmen</h2>
     <p>{{ request.petName }} · {{ request.arrivalDate }} bis {{ request.departure }}</p>
     <p
       class="request-availability"
@@ -100,9 +101,9 @@ function confirm() {
         <template v-if="selectedRoomOccupancy.availablePlaces === 0"> · bereits ausgebucht</template>
       </p>
       <p v-if="error" class="form-error" role="alert">Bitte ordne einen Kunden zu und wähle ein verfügbares Zimmer.</p>
-      <div class="modal-actions">
-        <button class="secondary-button" type="button" @click="emit('close')">Abbrechen</button>
-        <button class="primary-button" type="submit" :disabled="!roomId || !customerId"><ThumbsUp :size="16" /> Anfrage annehmen</button>
+      <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto">
+        <AppButton variant="secondary" type="button" @click="emit('close')">Abbrechen</AppButton>
+        <AppButton variant="primary" type="submit" :disabled="!roomId || !customerId"><ThumbsUp :size="16" /> Anfrage annehmen</AppButton>
       </div>
     </form>
   </BaseModal>

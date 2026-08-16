@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import type { CustomerView, PetSpecies } from '../domain'
 import { usePensionStore } from '../usePensionStore'
 import { MAX_PET_NOTE_LENGTH } from '../domain/petProfile'
+import AppButton from './AppButton.vue'
 import BaseModal from './BaseModal.vue'
 
 const props = defineProps<{
@@ -43,16 +44,16 @@ function submit() {
 </script>
 
 <template>
-  <BaseModal labelled-by="pet-form-heading" modal-class="pet-form-modal" @close="$emit('close')">
+  <BaseModal labelled-by="pet-form-heading" modal-class="pet-form-modal max-w-[600px]" @close="$emit('close')">
     <p class="eyebrow">{{ mode === 'edit' ? 'Tierprofil' : 'Stammdaten' }}</p>
-    <h2 id="pet-form-heading">{{ mode === 'edit' ? `${pet?.name} bearbeiten` : 'Tier anlegen' }}</h2>
+    <h2 id="pet-form-heading" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">{{ mode === 'edit' ? `${pet?.name} bearbeiten` : 'Tier anlegen' }}</h2>
     <form class="pet-form" @submit.prevent="submit">
       <label>Name *<input v-model="form.name" autocomplete="off" /></label>
       <label v-if="mode === 'create'">Tierart *<select v-model="form.species"><option value="dog">Hund</option><option value="cat">Katze</option></select></label>
       <label class="wide checkbox-field"><input v-model="form.specialFood" type="checkbox" /> Besonderes Futter <small>Tier benötigt von zu Hause mitgebrachtes Futter statt Standardfutter</small></label>
       <label class="wide">Notizen & Hinweise <small>max. {{ MAX_PET_NOTE_LENGTH }} Zeichen</small><textarea v-model="form.note" :maxlength="MAX_PET_NOTE_LENGTH" rows="6" placeholder="" /></label>
       <p v-if="error" class="form-error">Bitte gib einen Namen an.</p>
-      <div class="modal-actions"><button type="button" class="secondary-button" @click="$emit('close')">Abbrechen</button><button class="primary-button" type="submit">{{ mode === 'edit' ? 'Änderungen speichern' : 'Tierprofil speichern' }}</button></div>
+      <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto"><AppButton type="button" variant="secondary" @click="$emit('close')">Abbrechen</AppButton><AppButton variant="primary" type="submit">{{ mode === 'edit' ? 'Änderungen speichern' : 'Tierprofil speichern' }}</AppButton></div>
     </form>
   </BaseModal>
 </template>

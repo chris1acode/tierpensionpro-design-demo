@@ -7,6 +7,11 @@ import { addDaysToIsoDate, isValidIsoDate } from '../domain/bookingPeriod'
 import { usePagination } from '../composables/usePagination'
 import { formatDayAndMonth, formatEventTimestamp, formatShortWeekday } from '../presentation/dateFormat'
 import { checkInOutEventLabels } from '../presentation/checkInOutEvent'
+import AppButton from './AppButton.vue'
+import AppContainer from './AppContainer.vue'
+import AppEmptyState from './AppEmptyState.vue'
+import AppPageHeading from './AppPageHeading.vue'
+import AppPagination from './AppPagination.vue'
 import { matchesSearchTerm, resolveSearchTerm } from '../shared/search'
 import { downloadCsv } from '../shared/csvExport'
 import { selectArrivals, selectCheckedIn, selectDepartures } from '../store/pensionSelectors'
@@ -88,10 +93,8 @@ function exportHistory() {
 </script>
 
 <template>
-  <main class="operations-page">
-    <div class="page-heading">
-      <div><p class="eyebrow">Tagesgeschäft</p><h1>Check-in/out</h1><p>Eingecheckte Tiere sowie anstehende Anreisen und Abreisen zentral bearbeiten.</p></div>
-    </div>
+  <AppContainer class="operations-page">
+    <AppPageHeading eyebrow="Tagesgeschäft" title="Check-in/out" description="Eingecheckte Tiere sowie anstehende Anreisen und Abreisen zentral bearbeiten." />
     <div class="operations-date-nav" :class="{ disabled: activeView === 'checked-in' }" role="group" aria-label="Vorgangsdatum">
       <button type="button" aria-label="Einen Tag zurück" :disabled="activeView === 'checked-in'" @click="shiftSelectedDate(-1)"><ChevronLeft :size="16" /></button>
       <label class="operations-date-input"><span>Datum</span><input type="date" aria-label="Datum für Check-in und Check-out" :value="selectedDate" :disabled="activeView === 'checked-in'" @change="setSelectedDate" /></label>
@@ -105,7 +108,7 @@ function exportHistory() {
       <button :class="{ active: activeView === 'departures' }" :aria-pressed="activeView === 'departures'" @click="activeView = 'departures'"><span class="metric-icon teal"><ArrowUpFromLine /></span><span><small>Geplante Abreisen</small><strong>{{ departures.length }}</strong><em>heute auszuchecken</em></span></button>
     </section>
     <section class="panel operations-list">
-      <header class="operations-list-header"><div><h2>{{ activeViewTitle }}</h2><p>{{ activeViewDescription }}</p></div><label class="directory-search operations-search"><Search :size="19" /><input v-model="localQuery" aria-label="Aktuelle Vorgänge durchsuchen" placeholder="Tier, Kunde oder Zimmer suchen …" /></label><div class="list-header-actions"><button class="text-button" type="button" aria-label="Aktuelle Vorgänge als CSV exportieren" @click="exportOperations"><Download :size="15" /> Exportieren</button></div></header>
+      <header class="operations-list-header"><div><h2>{{ activeViewTitle }}</h2><p>{{ activeViewDescription }}</p></div><label class="directory-search operations-search"><Search :size="19" /><input v-model="localQuery" aria-label="Aktuelle Vorgänge durchsuchen" placeholder="Tier, Kunde oder Zimmer suchen …" /></label><div class="list-header-actions"><AppButton variant="text" type="button" aria-label="Aktuelle Vorgänge als CSV exportieren" @click="exportOperations"><Download :size="15" /> Exportieren</AppButton></div></header>
       <div v-if="visibleBookings.length" class="operation-rows">
         <article v-for="booking in visibleBookings" :key="booking.id" class="operation-row">
           <div class="pet-avatar" :style="{ background: booking.pet.color }">{{ booking.pet.initials }}</div>
@@ -113,34 +116,42 @@ function exportHistory() {
           <div class="operation-room"><small>Zimmer</small><strong>{{ booking.room.name }}</strong></div>
           <div class="operation-time"><small>{{ activeView === 'arrivals' ? 'Ankunft' : activeView === 'departures' ? 'Abholung' : 'Geplante Abreise' }}</small><strong>{{ activeView === 'arrivals' ? `${booking.arrival} Uhr` : activeView === 'departures' ? (booking.pickupTime ? `${booking.pickupTime} Uhr` : 'Nicht vereinbart') : formatDayAndMonth(booking.departure) }}</strong></div>
           <div v-if="activeView === 'arrivals'" class="operation-actions">
-            <RouterLink class="text-button" :to="{ name: 'bookings', query: { bookingId: booking.id, edit: 'true' } }">Buchung bearbeiten <ExternalLink :size="14" /></RouterLink>
-            <button class="link-button" @click="emit('checkIn', booking)"><ArrowDownToLine :size="16" /> Einchecken</button>
+            <AppButton variant="text" :to="{ name: 'bookings', query: { bookingId: booking.id, edit: 'true' } }">Buchung bearbeiten <ExternalLink :size="14" /></AppButton>
+            <AppButton variant="link" @click="emit('checkIn', booking)"><ArrowDownToLine :size="16" /> Einchecken</AppButton>
           </div>
           <div v-else class="operation-actions">
-            <button class="text-button" type="button" @click="bookingToMove = booking"><DoorOpen :size="14" /> Zimmer wechseln</button>
-            <button class="link-button" @click="emit('checkOut', booking as DepartureView)"><ArrowUpFromLine :size="16" /> Auschecken</button>
+            <AppButton variant="text" type="button" @click="bookingToMove = booking"><DoorOpen :size="14" /> Zimmer wechseln</AppButton>
+            <AppButton variant="link" @click="emit('checkOut', booking as DepartureView)"><ArrowUpFromLine :size="16" /> Auschecken</AppButton>
           </div>
         </article>
       </div>
-      <div v-else class="empty-state"><span><Search v-if="searchTerm" /><Check v-else /></span><strong>{{ searchTerm ? 'Keine passenden Vorgänge.' : activeView === 'checked-in' ? 'Keine Tiere eingecheckt.' : 'Alles erledigt.' }}</strong><p>{{ searchTerm ? 'Versuche einen anderen Suchbegriff.' : activeView === 'checked-in' ? 'Aktuell befindet sich kein Tier in der Pension.' : 'In diesem Bereich sind keine Vorgänge mehr offen.' }}</p></div>
+      <AppEmptyState v-else>
+        <template #icon><Search v-if="searchTerm" /><Check v-else /></template>
+        <template #title>{{ searchTerm ? 'Keine passenden Vorgänge.' : activeView === 'checked-in' ? 'Keine Tiere eingecheckt.' : 'Alles erledigt.' }}</template>
+        <template #description>{{ searchTerm ? 'Versuche einen anderen Suchbegriff.' : activeView === 'checked-in' ? 'Aktuell befindet sich kein Tier in der Pension.' : 'In diesem Bereich sind keine Vorgänge mehr offen.' }}</template>
+      </AppEmptyState>
     </section>
     <RoomChangeModal v-if="bookingToMove" :booking="bookingToMove" @close="bookingToMove = null" />
     <section class="panel operations-history">
-      <header><div><h2>Letzte Vorgänge</h2><p>Zuletzt ein- und ausgecheckte Tiere · {{ store.checkInOutHistory.value.length }} insgesamt</p></div><div class="list-header-actions"><button class="text-button" type="button" aria-label="Check-in-out-Verlauf als CSV exportieren" @click="exportHistory"><Download :size="15" /> Exportieren</button><History :size="20" /></div></header>
+      <header><div><h2>Letzte Vorgänge</h2><p>Zuletzt ein- und ausgecheckte Tiere · {{ store.checkInOutHistory.value.length }} insgesamt</p></div><div class="list-header-actions"><AppButton variant="text" type="button" aria-label="Check-in-out-Verlauf als CSV exportieren" @click="exportHistory"><Download :size="15" /> Exportieren</AppButton><History :size="20" /></div></header>
       <div class="history-rows">
         <article v-for="event in pagedHistory" :key="event.id">
           <span class="history-event-icon" :class="event.type"><ArrowDownToLine v-if="event.type === 'check-in'" :size="17" /><RotateCcw v-else-if="event.type === 'check-in-reverted'" :size="17" /><ArrowUpFromLine v-else :size="17" /></span>
           <div class="pet-info"><RouterLink class="customer-profile-link" :to="{ name: 'customers', query: { customerId: event.booking.customer.id } }">{{ event.booking.customer.firstName }} {{ event.booking.customer.lastName }}</RouterLink><span>{{ event.booking.pet.name }} · {{ event.booking.room.name }}</span></div>
           <div class="history-event-time"><strong>{{ checkInOutEventLabels[event.type] }}</strong><span>{{ formatEventTime(event.occurredAt) }} Uhr</span></div>
-          <button v-if="event.type === 'check-in' && store.canUndoCheckIn(event.bookingId)" class="text-button history-undo" type="button" @click="store.undoCheckIn(event.bookingId)"><RotateCcw :size="14" /> Rückgängig</button>
-          <RouterLink class="text-button" :to="{ name: 'bookings', query: { bookingId: event.bookingId } }">Zur Buchung <ExternalLink :size="14" /></RouterLink>
+          <AppButton v-if="event.type === 'check-in' && store.canUndoCheckIn(event.bookingId)" variant="text" class="text-[11px] text-[var(--primary-dark)] max-sm:col-start-2 max-sm:justify-self-start" type="button" @click="store.undoCheckIn(event.bookingId)"><RotateCcw :size="14" /> Rückgängig</AppButton>
+          <AppButton variant="text" class="max-sm:col-start-2 max-sm:justify-self-start" :to="{ name: 'bookings', query: { bookingId: event.bookingId } }">Zur Buchung <ExternalLink :size="14" /></AppButton>
         </article>
       </div>
-      <nav v-if="historyPageCount > 1" class="pagination history-pagination" aria-label="Seiten im Check-in-out-Verlauf">
-        <button :disabled="historyPage === 1" aria-label="Vorherige Seite" @click="selectHistoryPage(historyPage - 1)"><ArrowLeft :size="15" /></button>
-        <span>Seite {{ historyPage }} von {{ historyPageCount }}</span>
-        <button :disabled="historyPage === historyPageCount" aria-label="Nächste Seite" @click="selectHistoryPage(historyPage + 1)"><ArrowRight :size="15" /></button>
-      </nav>
+      <AppPagination
+        :current-page="historyPage"
+        :page-count="historyPageCount"
+        ariaLabel="Seiten im Check-in-out-Verlauf"
+        @select="selectHistoryPage"
+      >
+        <template #prev><ArrowLeft :size="15" /></template>
+        <template #next><ArrowRight :size="15" /></template>
+      </AppPagination>
     </section>
-  </main>
+  </AppContainer>
 </template>

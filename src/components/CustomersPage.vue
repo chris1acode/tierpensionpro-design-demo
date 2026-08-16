@@ -9,6 +9,11 @@ import { usePagination } from '../composables/usePagination'
 import { matchesSearchTerm, resolveSearchTerm } from '../shared/search'
 import { downloadCsv } from '../shared/csvExport'
 import { usePensionStore } from '../usePensionStore'
+import AppButton from './AppButton.vue'
+import AppContainer from './AppContainer.vue'
+import AppEmptyState from './AppEmptyState.vue'
+import AppPageHeading from './AppPageHeading.vue'
+import AppPagination from './AppPagination.vue'
 import CustomerFormModal from './CustomerFormModal.vue'
 import PetFormModal from './PetFormModal.vue'
 
@@ -173,63 +178,61 @@ function exportCustomers() {
 </script>
 
 <template>
-  <main class="customers-page">
-    <div class="page-heading">
-      <div><p class="eyebrow">Stammdaten</p><h1>Kunden & Tiere</h1><p>Kontaktdaten, Tierprofile und Aufenthalte an einem Ort.</p></div>
-      <div class="page-heading-actions">
-        <button class="primary-button" type="button" @click="customerModalMode = 'create'"><Plus :size="18" /> Kunden anlegen</button>
-      </div>
-    </div>
+  <AppContainer class="customers-page">
+    <AppPageHeading eyebrow="Stammdaten" title="Kunden & Tiere" description="Kontaktdaten, Tierprofile und Aufenthalte an einem Ort.">
+      <AppButton variant="primary" type="button" @click="customerModalMode = 'create'"><Plus :size="18" /> Kunden anlegen</AppButton>
+    </AppPageHeading>
 
-    <div class="customer-layout" :class="{ 'details-open': detailsOpen }">
-      <section class="panel customer-directory">
+    <div class="grid grid-cols-1 items-start gap-[22px] min-[1050px]:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
+      <section class="panel customer-directory max-h-none min-[1050px]:max-h-[680px]" :class="{ 'hidden min-[1050px]:block': detailsOpen }">
         <header>
           <div><h2>Kundenverzeichnis</h2><p>{{ filteredCustomers.length }} Treffer</p></div>
-          <div class="list-header-actions"><button class="text-button" type="button" aria-label="Kunden und Tiere als CSV exportieren" @click="exportCustomers"><Download :size="15" /> Exportieren</button></div>
+          <div class="list-header-actions"><AppButton variant="text" type="button" aria-label="Kunden und Tiere als CSV exportieren" @click="exportCustomers"><Download :size="15" /> Exportieren</AppButton></div>
         </header>
         <label class="directory-search"><Search :size="17" /><input v-model="localQuery" placeholder="Kundenname oder Tiername suchen …" /></label>
-        <div v-if="filteredCustomers.length" class="customer-list">
+        <div v-if="filteredCustomers.length" class="customer-list max-h-none min-[1050px]:max-h-[540px]">
           <button v-for="customer in pagedCustomers" :key="customer.id" :class="{ active: selectedCustomer?.id === customer.id }" @click="selectCustomer(customer.id)">
             <span class="customer-avatar">{{ customer.firstName[0] }}{{ customer.lastName[0] }}</span>
             <span><strong>{{ customer.firstName }} {{ customer.lastName }}</strong><small>{{ customer.pets.map((pet) => pet.name).join(', ') }}</small></span>
             <span class="pet-count">{{ customer.pets.length }}</span>
           </button>
         </div>
-        <div v-else class="empty-state compact"><span><Search /></span><strong>Keine passenden Stammdaten.</strong><p>Versuche einen anderen Suchbegriff.</p></div>
-        <nav v-if="pageCount > 1" class="pagination" aria-label="Seiten im Kundenverzeichnis">
-          <button :disabled="currentPage === 1" aria-label="Erste Seite" @click="selectPage(1)">«</button>
-          <button :disabled="currentPage === 1" aria-label="Vorherige Seite" @click="selectPage(currentPage - 1)">‹</button>
-          <template v-for="item in visiblePageItems" :key="item">
-            <span v-if="typeof item === 'string'" class="pagination-ellipsis" aria-hidden="true">…</span>
-            <button v-else :class="{ active: item === currentPage }" :aria-current="item === currentPage ? 'page' : undefined" @click="selectPage(item)">{{ item }}</button>
-          </template>
-          <button :disabled="currentPage === pageCount" aria-label="Nächste Seite" @click="selectPage(currentPage + 1)">›</button>
-          <button :disabled="currentPage === pageCount" aria-label="Letzte Seite" @click="selectPage(pageCount)">»</button>
-        </nav>
+        <AppEmptyState v-else>
+          <template #icon><Search /></template>
+          <template #title>Keine passenden Stammdaten.</template>
+          <template #description>Versuche einen anderen Suchbegriff.</template>
+        </AppEmptyState>
+        <AppPagination
+          :current-page="currentPage"
+          :page-count="pageCount"
+          :page-items="visiblePageItems"
+          ariaLabel="Seiten im Kundenverzeichnis"
+          @select="selectPage"
+        />
       </section>
 
-      <section v-if="selectedCustomer" class="panel customer-details">
-        <button class="customer-details-back" @click="goBack"><ArrowLeft :size="17" /> Zurück zum Kundenverzeichnis</button>
-        <header class="customer-profile-header">
-          <div class="customer-profile-intro">
+      <section v-if="selectedCustomer" class="panel customer-details" :class="{ 'hidden min-[1050px]:block': !detailsOpen }">
+        <button class="customer-details-back flex items-center gap-[7px] min-[1050px]:hidden" @click="goBack"><ArrowLeft :size="17" /> Zurück zum Kundenverzeichnis</button>
+        <header class="flex flex-col items-center justify-start gap-[14px] pb-[21px] sm:flex-row">
+          <div class="grid min-w-0 gap-[4px]">
             <p class="eyebrow">Kundenprofil</p>
-            <h2>{{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }}</h2>
-            <div class="customer-contact-links">
-              <a :href="`mailto:${selectedCustomer.email}`"><Mail :size="14" /> {{ selectedCustomer.email }}</a>
-              <a :href="toTelephoneHref(selectedCustomer.phone)"><Phone :size="14" /> {{ selectedCustomer.phone }}</a>
+            <h2 class="my-0 mb-[5px] mt-[2px] text-[20px]">{{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }}</h2>
+            <div class="flex flex-wrap gap-x-[16px] gap-y-[8px]">
+              <a class="inline-flex items-center gap-[5px] text-[12px] font-semibold text-[var(--petrol)] no-underline" :href="`mailto:${selectedCustomer.email}`"><Mail :size="14" /> {{ selectedCustomer.email }}</a>
+              <a class="inline-flex items-center gap-[5px] text-[12px] font-semibold text-[var(--petrol)] no-underline" :href="toTelephoneHref(selectedCustomer.phone)"><Phone :size="14" /> {{ selectedCustomer.phone }}</a>
             </div>
           </div>
-          <div class="customer-profile-actions">
-            <button class="link-button" type="button" @click="customerModalMode = 'edit'"><Pencil :size="15" /> Kontaktdaten bearbeiten</button>
-            <button v-if="!selectedCustomer.pets.length && !selectedCustomer.bookings.length" class="text-button danger-text-button" type="button" @click="customerRemovalOpen = true"><Trash2 :size="15" /> Entfernen</button>
+          <div class="ml-0 flex flex-wrap items-center justify-start gap-[12px] sm:ml-auto sm:justify-end">
+            <AppButton variant="link" type="button" @click="customerModalMode = 'edit'"><Pencil :size="15" /> Kontaktdaten bearbeiten</AppButton>
+            <AppButton v-if="!selectedCustomer.pets.length && !selectedCustomer.bookings.length" variant="text" class="text-[#a63d3d]" type="button" @click="customerRemovalOpen = true"><Trash2 :size="15" /> Entfernen</AppButton>
           </div>
         </header>
         <div v-if="customerRemovalOpen" class="emergency-contact-removal" role="alert">
           <p><strong>{{ selectedCustomer.firstName }} {{ selectedCustomer.lastName }} entfernen?</strong> Das Profil enthält keine Tiere und keine Aufenthalte.</p>
-          <div><button class="secondary-button" type="button" @click="customerRemovalOpen = false">Behalten</button><button class="danger-button" type="button" @click="removeCustomer">Jetzt entfernen</button></div>
+          <div><AppButton variant="secondary" type="button" @click="customerRemovalOpen = false">Behalten</AppButton><AppButton variant="danger" type="button" @click="removeCustomer">Jetzt entfernen</AppButton></div>
         </div>
         <div class="detail-section">
-          <div class="section-title"><div><h3>Tiere</h3><p>{{ selectedCustomer.pets.length }} hinterlegte Tierprofile</p></div><button class="text-button" type="button" @click="openPetCreate"><Plus :size="15" /> Tier anlegen</button></div>
+          <div class="section-title"><div><h3>Tiere</h3><p>{{ selectedCustomer.pets.length }} hinterlegte Tierprofile</p></div><AppButton variant="text" class="gap-[5px] text-[11px] text-[var(--primary-dark)]" type="button" @click="openPetCreate"><Plus :size="15" /> Tier anlegen</AppButton></div>
           <div class="grid grid-cols-1 gap-[12px]">
             <article v-for="pet in selectedCustomer.pets" :key="pet.id" class="pet-profile-card" :class="pet.species">
               <span class="pet-profile-avatar" :style="{ background: pet.color }" aria-hidden="true">
@@ -246,20 +249,22 @@ function exportCustomers() {
               </div>
               <div v-if="petRemovalId === pet.id" class="pet-removal-confirmation" role="alert">
                 <p><strong>{{ pet.name }} entfernen?</strong> Für dieses Tier gibt es noch keine Aufenthalte.</p>
-                <div><button class="secondary-button" type="button" @click="petRemovalId = null">Behalten</button><button class="danger-button" type="button" @click="removePet(pet.id)">Jetzt entfernen</button></div>
+                <div><AppButton variant="secondary" type="button" @click="petRemovalId = null">Behalten</AppButton><AppButton variant="danger" class="min-h-[34px] px-[10px] text-[11px]" type="button" @click="removePet(pet.id)">Jetzt entfernen</AppButton></div>
               </div>
               <p v-if="pet.note" class="pet-note-display">{{ pet.note }}</p>
             </article>
           </div>
         </div>
         <div class="detail-section booking-history">
-          <div class="section-title"><div><h3>Aufenthalte</h3><p>Aktuelle und vergangene Buchungen</p></div><RouterLink class="text-button customer-booking-link" :to="{ path: '/bookings', query: { customerId: selectedCustomer.id } }"><Plus :size="15" /> Jetzt Buchung anlegen</RouterLink></div>
+          <div class="section-title"><div><h3>Aufenthalte</h3><p>Aktuelle und vergangene Buchungen</p></div><AppButton variant="text" class="whitespace-nowrap gap-[5px] text-[11px] text-[var(--primary-dark)]" :to="{ path: '/bookings', query: { customerId: selectedCustomer.id } }"><Plus :size="15" /> Jetzt Buchung anlegen</AppButton></div>
           <article v-for="booking in selectedCustomer.bookings" :key="booking.id">
             <div><strong>{{ booking.pet.name }}</strong><span>{{ booking.room.name }}</span></div>
             <div><strong>{{ booking.arrival }} Uhr</strong><span>bis {{ booking.departure }}</span></div>
             <span class="booking-status" :class="booking.status">{{ bookingStatusLabels[booking.status] }}</span>
           </article>
-          <div v-if="!selectedCustomer.bookings.length" class="empty-state compact"><strong>Noch keine Aufenthalte.</strong></div>
+          <AppEmptyState v-if="!selectedCustomer.bookings.length">
+            <template #title>Noch keine Aufenthalte.</template>
+          </AppEmptyState>
         </div>
       </section>
     </div>
@@ -280,5 +285,5 @@ function exportCustomers() {
       @close="closePetModal"
       @saved="closePetModal"
     />
-  </main>
+  </AppContainer>
 </template>

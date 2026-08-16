@@ -6,6 +6,9 @@ import { useSynchronizedDraft } from '../composables/useSynchronizedDraft'
 import { areAccountUpdatesEqual } from '../domain/account'
 import { formatCancellationDate } from '../presentation/dateFormat'
 import { usePensionStore } from '../usePensionStore'
+import AppButton from './AppButton.vue'
+import AppContainer from './AppContainer.vue'
+import AppPageHeading from './AppPageHeading.vue'
 import CancelAccountModal from './CancelAccountModal.vue'
 
 const store = usePensionStore()
@@ -49,14 +52,12 @@ function confirmCancellation() {
 </script>
 
 <template>
-  <main class="settings-page account-page">
-    <div class="page-heading">
-      <div><p class="eyebrow">Persönlicher Bereich</p><h1>Konto</h1><p>Verwalte deine persönlichen Zugangsdaten.</p></div>
-    </div>
+  <AppContainer class="settings-page account-page">
+    <AppPageHeading eyebrow="Persönlicher Bereich" title="Konto" description="Verwalte deine persönlichen Zugangsdaten." />
 
     <div v-if="store.account.cancelledAt" class="cancellation-notice">
       <div><strong>Diese Pension ist gekündigt.</strong><small>Der Zugang bleibt bis zum Ende der Vertragslaufzeit bestehen. Kündigung eingereicht am {{ formatCancellationDate(store.account.cancelledAt) }}.</small></div>
-      <button class="secondary-button" @click="store.reactivateAccount()"><Undo2 :size="16" /> Kündigung zurücknehmen</button>
+      <AppButton variant="secondary" @click="store.reactivateAccount()"><Undo2 :size="16" /> Kündigung zurücknehmen</AppButton>
     </div>
 
     <form class="settings-layout" @submit.prevent="save">
@@ -71,14 +72,14 @@ function confirmCancellation() {
       </section>
 
       <p v-if="error" class="form-error" role="alert">{{ error }}</p>
-      <div class="settings-actions"><button class="secondary-button" :disabled="!hasUnsavedChanges" type="button" @click="discard">Änderungen verwerfen</button><button class="primary-button" :disabled="!hasUnsavedChanges" type="submit"><Save :size="16" /> Konto speichern</button></div>
+      <div class="settings-actions"><AppButton variant="secondary" :disabled="!hasUnsavedChanges" type="button" @click="discard">Änderungen verwerfen</AppButton><AppButton variant="primary" :disabled="!hasUnsavedChanges" type="submit"><Save :size="16" /> Konto speichern</AppButton></div>
     </form>
 
     <section v-if="store.account.role === 'root' && !store.account.cancelledAt" class="panel settings-panel danger-zone">
       <header><span class="settings-icon danger-icon"><AlertTriangle :size="20" /></span><div><h2>Vertrag kündigen</h2><p>Nur als Inhaber-Account sichtbar.</p></div></header>
       <div class="danger-zone-body">
         <div><strong>Pension kündigen</strong><p>Der Zugang für dein gesamtes Team wird zum Ende der Vertragslaufzeit deaktiviert. Diese Aktion kann bis dahin zurückgenommen werden.</p></div>
-        <button class="danger-button" @click="cancelDialogOpen = true"><AlertTriangle :size="16" /> Pension kündigen</button>
+        <AppButton variant="danger" @click="cancelDialogOpen = true"><AlertTriangle :size="16" /> Pension kündigen</AppButton>
       </div>
     </section>
 
@@ -88,5 +89,5 @@ function confirmCancellation() {
       @close="cancelDialogOpen = false"
       @confirm="confirmCancellation"
     />
-  </main>
+  </AppContainer>
 </template>

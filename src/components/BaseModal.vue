@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { X } from '@lucide/vue'
+import AppIconButton from './AppIconButton.vue'
 
 defineProps<{
   labelledBy: string
@@ -11,7 +12,7 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const closeButton = ref<HTMLButtonElement | null>(null)
+const closeButton = ref<InstanceType<typeof AppIconButton> | null>(null)
 const dialog = ref<HTMLElement | null>(null)
 let previouslyFocusedElement: HTMLElement | null = null
 
@@ -55,18 +56,18 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="modal-backdrop" @click.self="$emit('close')">
+  <div class="fixed inset-0 z-50 grid items-start justify-items-center overflow-y-auto bg-[rgba(36,33,31,.48)] p-5" @click.self="$emit('close')">
     <section
       ref="dialog"
-      class="modal"
+      class="relative w-full rounded-[14px] bg-white p-[24px] shadow-[0_20px_60px_rgba(36,33,31,.18)] sm:p-[29px]"
       :class="modalClass"
       role="dialog"
       aria-modal="true"
       :aria-labelledby="labelledBy"
     >
-      <button ref="closeButton" class="modal-close icon-button" aria-label="Dialog schließen" @click="$emit('close')">
+      <AppIconButton ref="closeButton" class="absolute right-[15px] top-[15px]" aria-label="Dialog schließen" @click="$emit('close')">
         <X />
-      </button>
+      </AppIconButton>
       <slot />
     </section>
   </div>

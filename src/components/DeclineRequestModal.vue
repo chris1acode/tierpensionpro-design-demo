@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { ThumbsDown } from '@lucide/vue'
 import type { BookingRequest } from '../domain'
+import AppButton from './AppButton.vue'
 import BaseModal from './BaseModal.vue'
 
 defineProps<{
@@ -23,18 +24,18 @@ function confirm() {
 </script>
 
 <template>
-  <BaseModal labelled-by="decline-request-title" modal-class="decline-request-modal" @close="emit('close')">
-    <span class="modal-icon cancel-icon"><ThumbsDown /></span>
+  <BaseModal labelled-by="decline-request-title" modal-class="decline-request-modal max-w-[470px]" @close="emit('close')">
+    <span class="mb-5 inline-grid h-12 w-12 place-items-center rounded-xl bg-[#fbe3e3] text-[#c23a3a]"><ThumbsDown /></span>
     <p class="eyebrow">Anfrage ablehnen</p>
-    <h2 id="decline-request-title">Anfrage von {{ request.customerFirstName }} {{ request.customerLastName }} ablehnen?</h2>
-    <p>{{ request.petName }} bleibt ohne Reservierung. Der Grund wird im Anfrageverlauf dokumentiert.</p>
-    <p class="modal-notification-hint" role="status">Nach der Ablehnung wird {{ request.customerFirstName }} {{ request.customerLastName }} per E-Mail an {{ request.contactEmail }} über die Stornierung benachrichtigt.</p>
+    <h2 id="decline-request-title" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">Anfrage von {{ request.customerFirstName }} {{ request.customerLastName }} ablehnen?</h2>
+    <p class="text-[14px] leading-[1.55] text-[var(--muted)]">{{ request.petName }} bleibt ohne Reservierung. Der Grund wird im Anfrageverlauf dokumentiert.</p>
+    <p class="modal-notification-hint text-[14px] leading-[1.55]" role="status">Nach der Ablehnung wird {{ request.customerFirstName }} {{ request.customerLastName }} per E-Mail an {{ request.contactEmail }} über die Stornierung benachrichtigt.</p>
     <form class="decline-request-form" @submit.prevent="confirm">
       <label for="decline-request-reason">Ablehnungsgrund</label>
       <textarea id="decline-request-reason" v-model="reason" rows="3" required placeholder="z. B. Zeitraum bereits ausgebucht"></textarea>
-      <div class="modal-actions">
-        <button class="secondary-button" type="button" @click="emit('close')">Abbrechen</button>
-        <button class="danger-button" type="submit" :disabled="!reason.trim()"><ThumbsDown :size="16" /> Anfrage ablehnen</button>
+      <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto">
+        <AppButton variant="secondary" type="button" @click="emit('close')">Abbrechen</AppButton>
+        <AppButton variant="danger" type="submit" :disabled="!reason.trim()"><ThumbsDown :size="16" /> Anfrage ablehnen</AppButton>
       </div>
     </form>
   </BaseModal>

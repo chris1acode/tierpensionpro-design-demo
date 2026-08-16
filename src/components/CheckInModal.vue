@@ -5,6 +5,7 @@ import { Check, ClipboardCheck } from '@lucide/vue'
 import type { BookingView } from '../domain'
 import { toTelephoneHref } from '../presentation/phoneLink'
 import { usePensionStore } from '../usePensionStore'
+import AppButton from './AppButton.vue'
 import BaseModal from './BaseModal.vue'
 
 const props = defineProps<{
@@ -31,15 +32,15 @@ const isRoomFull = computed(() => roomOccupancy.value.occupied >= roomOccupancy.
 </script>
 
 <template>
-  <BaseModal labelled-by="checkin-title" @close="$emit('close')">
-    <span class="modal-icon"><ClipboardCheck /></span>
+  <BaseModal labelled-by="checkin-title" modal-class="max-w-[470px]" @close="$emit('close')">
+    <span class="mb-5 inline-grid h-12 w-12 place-items-center rounded-xl bg-[#fbe8dd] text-[var(--primary-dark)]"><ClipboardCheck /></span>
     <p class="eyebrow">Check-in bestätigen</p>
-    <h2 id="checkin-title">Check-in für <RouterLink class="customer-profile-link" :to="{ name: 'customers', query: { customerId: booking.customer.id } }">{{ booking.customer.firstName }} {{ booking.customer.lastName }}</RouterLink></h2>
-    <p>
+    <h2 id="checkin-title" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">Check-in für <RouterLink class="customer-profile-link" :to="{ name: 'customers', query: { customerId: booking.customer.id } }">{{ booking.customer.firstName }} {{ booking.customer.lastName }}</RouterLink></h2>
+    <p class="text-[14px] leading-[1.55] text-[var(--muted)]">
       Ist {{ booking.pet.name }} angekommen? Mit der Bestätigung wird {{ booking.pet.name }} dem Zimmer
       <strong>{{ booking.room.name }}</strong> zugewiesen.
     </p>
-    <div v-if="booking.pet.note || booking.pet.specialFood || booking.bookingNote" class="pet-note" aria-label="Operative Hinweise">
+    <div v-if="booking.pet.note || booking.pet.specialFood || booking.bookingNote" class="my-[18px] grid gap-[4px] rounded-lg bg-[#faf0d9] p-3 text-xs text-[#6f5018]" aria-label="Operative Hinweise">
       <div v-if="booking.pet.note">
         <strong>Hinweis zum Tier</strong>
         <span>{{ booking.pet.note }}</span>
@@ -53,17 +54,17 @@ const isRoomFull = computed(() => roomOccupancy.value.occupied >= roomOccupancy.
         <span>Tier benötigt von zu Hause mitgebrachtes Futter statt Standardfutter.</span>
       </div>
     </div>
-    <dl>
-      <div><dt>Tier</dt><dd>{{ booking.pet.name }}</dd></div>
-      <div><dt>Abreise</dt><dd>{{ booking.departure }}</dd></div>
+    <dl class="my-[18px]">
+      <div class="flex justify-between border-b border-[#eeeae6] py-[10px] text-[13px]"><dt class="text-[var(--muted)]">Tier</dt><dd class="m-0 font-bold">{{ booking.pet.name }}</dd></div>
+      <div class="flex justify-between border-b border-[#eeeae6] py-[10px] text-[13px]"><dt class="text-[var(--muted)]">Abreise</dt><dd class="m-0 font-bold">{{ booking.departure }}</dd></div>
     </dl>
     <label v-if="isRoomFull" class="overbooking-warning">
       <input v-model="allowOverbooking" type="checkbox" />
       <span><strong>Überbuchung bewusst durchführen</strong> · Das Zimmer {{ booking.room.name }} ist bereits mit {{ roomOccupancy.occupied }} Tieren voll belegt.</span>
     </label>
-    <div class="modal-actions">
-      <button class="secondary-button" @click="$emit('close')">Abbrechen</button>
-      <button class="primary-button" :disabled="isRoomFull && !allowOverbooking" @click="$emit('confirm', allowOverbooking)"><Check :size="17" /> Jetzt einchecken</button>
+    <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto">
+      <AppButton variant="secondary" @click="$emit('close')">Abbrechen</AppButton>
+      <AppButton variant="primary" :disabled="isRoomFull && !allowOverbooking" @click="$emit('confirm', allowOverbooking)"><Check :size="17" /> Jetzt einchecken</AppButton>
     </div>
   </BaseModal>
 </template>

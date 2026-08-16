@@ -4,6 +4,7 @@ import { DoorOpen } from '@lucide/vue'
 import type { BookingView } from '../domain'
 import { selectRoomBookingAvailability } from '../domain/roomAvailability'
 import { usePensionStore } from '../usePensionStore'
+import AppButton from './AppButton.vue'
 import BaseModal from './BaseModal.vue'
 
 const props = defineProps<{
@@ -46,9 +47,9 @@ function confirm() {
 </script>
 
 <template>
-  <BaseModal labelled-by="room-change-heading" modal-class="room-change-modal" @close="emit('close')">
+  <BaseModal labelled-by="room-change-heading" modal-class="room-change-modal max-w-[440px]" @close="emit('close')">
     <p class="eyebrow">Zimmerwechsel</p>
-    <h2 id="room-change-heading">Zimmer wechseln</h2>
+    <h2 id="room-change-heading" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">Zimmer wechseln</h2>
     <p>{{ booking.customer.firstName }} {{ booking.customer.lastName }} · {{ booking.pet.name }} · aktuell {{ booking.room.name }}</p>
     <form class="request-assign-form" @submit.prevent="confirm">
       <label for="room-change-room">Neues Zimmer</label>
@@ -59,9 +60,9 @@ function confirm() {
       <label v-if="selectedRoomAvailability?.wouldOverbook" class="overbooking-warning"><input v-model="allowOverbooking" type="checkbox" /> <span><strong>Überbuchung bewusst durchführen</strong> · Im gewählten Zimmer fehlen mindestens {{ Math.max(1, 1 - selectedRoomAvailability.availablePlaces) }} Plätze.</span></label>
       <p v-if="!roomOptions.length" class="form-error" role="alert">Aktuell ist kein anderes passendes Zimmer verfügbar.</p>
       <p v-else-if="error" class="form-error" role="alert">Bitte wähle ein Zimmer und bestätige eine notwendige Überbuchung.</p>
-      <div class="modal-actions">
-        <button class="secondary-button" type="button" @click="emit('close')">Abbrechen</button>
-        <button class="primary-button" type="submit" :disabled="!roomOptions.length"><DoorOpen :size="16" /> Zimmer wechseln</button>
+      <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto">
+        <AppButton variant="secondary" type="button" @click="emit('close')">Abbrechen</AppButton>
+        <AppButton variant="primary" type="submit" :disabled="!roomOptions.length"><DoorOpen :size="16" /> Zimmer wechseln</AppButton>
       </div>
     </form>
   </BaseModal>

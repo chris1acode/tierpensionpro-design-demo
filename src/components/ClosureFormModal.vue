@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import type { PensionClosure, PensionClosureUpdate } from '../domain'
 import { usePensionStore } from '../usePensionStore'
+import AppButton from './AppButton.vue'
 import BaseModal from './BaseModal.vue'
 
 const props = defineProps<{
@@ -30,15 +31,15 @@ function submit() {
 </script>
 
 <template>
-  <BaseModal labelled-by="closure-form-heading" modal-class="closure-form-modal" @close="$emit('close')">
+  <BaseModal labelled-by="closure-form-heading" modal-class="closure-form-modal max-w-[420px]" @close="$emit('close')">
     <p class="eyebrow">Kapazitätsplanung</p>
-    <h2 id="closure-form-heading">{{ mode === 'edit' ? 'Schließzeit bearbeiten' : 'Schließzeit hinterlegen' }}</h2>
+    <h2 id="closure-form-heading" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">{{ mode === 'edit' ? 'Schließzeit bearbeiten' : 'Schließzeit hinterlegen' }}</h2>
     <form class="closure-form-modal-form" @submit.prevent="submit">
       <label>Von<input v-model="form.startDate" aria-label="Schließzeit von" type="date" required /></label>
       <label>Bis<input v-model="form.endDate" aria-label="Schließzeit bis" type="date" :min="form.startDate" required /></label>
       <label>Hinweis <small>optional</small><input v-model="form.reason" aria-label="Hinweis zur Schließzeit" type="text" placeholder="z. B. Betriebsferien" /></label>
       <p v-if="error" class="form-error" role="alert">Bitte einen gültigen Zeitraum für die Schließzeit angeben.</p>
-      <div class="modal-actions"><button type="button" class="secondary-button" @click="$emit('close')">Abbrechen</button><button class="primary-button" type="submit">{{ mode === 'edit' ? 'Änderungen speichern' : 'Schließzeit hinterlegen' }}</button></div>
+      <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto"><AppButton type="button" variant="secondary" @click="$emit('close')">Abbrechen</AppButton><AppButton variant="primary" type="submit">{{ mode === 'edit' ? 'Änderungen speichern' : 'Schließzeit hinterlegen' }}</AppButton></div>
     </form>
   </BaseModal>
 </template>

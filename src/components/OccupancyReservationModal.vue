@@ -4,6 +4,7 @@ import type { NewBookingReservation } from '../domain'
 import { addDaysToIsoDate, isValidBookingPeriod } from '../domain/bookingPeriod'
 import { useReservationDraft } from '../composables/useReservationDraft'
 import { usePensionStore } from '../usePensionStore'
+import AppButton from './AppButton.vue'
 import BaseModal from './BaseModal.vue'
 import CustomerAutocomplete from './CustomerAutocomplete.vue'
 
@@ -50,9 +51,9 @@ function submit(): void {
 </script>
 
 <template>
-  <BaseModal labelled-by="occupancy-reservation-heading" modal-class="occupancy-reservation-modal" @close="$emit('close')">
+  <BaseModal labelled-by="occupancy-reservation-heading" modal-class="occupancy-reservation-modal max-w-[620px]" @close="$emit('close')">
     <p class="eyebrow">Kapazität prüfen</p>
-    <h2 id="occupancy-reservation-heading">Reservierung anlegen</h2>
+    <h2 id="occupancy-reservation-heading" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">Reservierung anlegen</h2>
     <p>Die Verfügbarkeit wird für jede Nacht des Aufenthalts geprüft.</p>
     <form class="occupancy-reservation-form" @submit.prevent="submit">
       <label>Kunde
@@ -74,7 +75,7 @@ function submit(): void {
       </label>
       <label v-if="selectedRoomAvailability?.wouldOverbook" class="overbooking-warning"><input v-model="draft.allowOverbooking" type="checkbox" /> <span><strong>Überbuchung bewusst anlegen</strong> · Im gewählten Zeitraum fehlen mindestens {{ Math.max(1, draft.petIds.length - selectedRoomAvailability.availablePlaces) }} Plätze.</span></label>
       <p v-if="error" class="form-error" role="alert">{{ error }}</p>
-      <div class="modal-actions"><button type="button" class="secondary-button" @click="$emit('close')">Abbrechen</button><button type="submit" class="primary-button" :disabled="!draft.roomId || Boolean(selectedRoomAvailability?.wouldOverbook && !draft.allowOverbooking)">Reservieren</button></div>
+      <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto"><AppButton type="button" variant="secondary" @click="$emit('close')">Abbrechen</AppButton><AppButton type="submit" variant="primary" :disabled="!draft.roomId || Boolean(selectedRoomAvailability?.wouldOverbook && !draft.allowOverbooking)">Reservieren</AppButton></div>
     </form>
   </BaseModal>
 </template>
