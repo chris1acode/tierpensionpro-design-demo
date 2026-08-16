@@ -7,6 +7,7 @@ import { useSynchronizedDraft } from '../composables/useSynchronizedDraft'
 import { arePensionSettingsEqual } from '../domain/pensionSettings'
 import { usePensionStore } from '../usePensionStore'
 import AppButton from './AppButton.vue'
+import AppCheckboxField from './AppCheckboxField.vue'
 import AppContainer from './AppContainer.vue'
 import AppEmptyState from './AppEmptyState.vue'
 import AppIconButton from './AppIconButton.vue'
@@ -130,7 +131,7 @@ function updateRate(species: PetSpecies, value: string) {
         <section class="panel">
           <header class="!justify-start gap-3"><span class="grid size-[42px] flex-none place-items-center rounded-[10px] bg-[#e4eff0] text-[var(--petrol)]"><Inbox :size="20" /></span><div><h2>Anfragen</h2><p>Externe Buchungsanfragen empfangen und im Menü anzeigen.</p></div></header>
           <div class="grid grid-cols-2 gap-[17px] p-[22px] max-[680px]:grid-cols-1 max-[680px]:p-4">
-            <label class="col-span-full checkbox-field"><input v-model="draft.requestsEnabled" type="checkbox" /> Anfragen aktivieren</label>
+            <AppCheckboxField v-model="draft.requestsEnabled" class="col-span-full">Anfragen aktivieren</AppCheckboxField>
           </div>
         </section>
       </template>
