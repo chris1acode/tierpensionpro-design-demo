@@ -144,6 +144,8 @@ export interface Booking {
   reservationId?: string
   petId: Pet['id']
   roomId: Room['id']
+  /** Chosen accommodation tariff. Older demo records may omit it and use the default tariff. */
+  tariffId?: PriceTierTariff['id']
   arrivalDate: string
   arrival: string
   departure: string
@@ -159,13 +161,13 @@ export interface Booking {
   checkoutPrice?: StayPrice
 }
 
-export type NewBooking = Pick<Booking, 'petId' | 'roomId' | 'arrivalDate' | 'arrival' | 'departure' | 'pickupTime' | 'bookingNote'> & {
+export type NewBooking = Pick<Booking, 'petId' | 'roomId' | 'tariffId' | 'arrivalDate' | 'arrival' | 'departure' | 'pickupTime' | 'bookingNote'> & {
   customerId: Customer['id']
   allowOverbooking?: boolean
 }
 
 /** Editable planning fields of an arrival that has not been checked in yet. */
-export type BookingUpdate = Pick<Booking, 'roomId' | 'arrivalDate' | 'arrival' | 'departure' | 'pickupTime' | 'bookingNote'> & {
+export type BookingUpdate = Pick<Booking, 'roomId' | 'tariffId' | 'arrivalDate' | 'arrival' | 'departure' | 'pickupTime' | 'bookingNote'> & {
   /** Requires an explicit acknowledgement when the changed stay exceeds capacity. */
   allowOverbooking?: boolean
 }
@@ -176,6 +178,7 @@ export interface BookingReservation {
   customerId: Customer['id']
   petIds: Pet['id'][]
   roomId: Room['id']
+  tariffId?: PriceTierTariff['id']
   arrivalDate: string
   arrival: string
   departure: string

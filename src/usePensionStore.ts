@@ -1,5 +1,5 @@
 import { computed, reactive, ref } from 'vue'
-import type { AccountUpdate, Booking, BookingRequest, BookingReservation, BookingUpdate, CheckInOutEvent, Customer, CustomerUpdate, NewBooking, NewBookingRequest, NewBookingReservation, NewCustomer, NewPet, NewPensionClosure, OccupancyRangeDays, PensionClosureUpdate, PensionSettingsUpdate, PetUpdate, RegistrationProfile, RequestPetAssignment, RoomInput, RoomOperationalStatus, ToastNotification } from './domain'
+import type { AccountUpdate, Booking, BookingRequest, BookingReservation, BookingUpdate, CheckInOutEvent, Customer, CustomerUpdate, NewBooking, NewBookingRequest, NewBookingReservation, NewCustomer, NewPet, NewPensionClosure, OccupancyRangeDays, PensionClosureUpdate, PensionSettingsUpdate, Pet, PetUpdate, RegistrationProfile, RequestPetAssignment, RoomInput, RoomOperationalStatus, ToastNotification } from './domain'
 import { isValidAccountUpdate } from './domain/account'
 import { isValidEmail } from './domain/email'
 import { isValidBookingNote, normalizeBookingNote } from './domain/bookingNote'
@@ -12,7 +12,7 @@ import { isValidRoomInput } from './domain/roomConfiguration'
 import { doesStayOverlapClosure, isValidPensionClosure } from './domain/pensionClosure'
 import { hasRoomCapacityForStay } from './domain/roomAvailability'
 import { isRoomCompatibleWithSpecies } from './domain/roomCompatibility'
-import { calculateStayPrice } from './domain/stayPrice'
+import { calculateStayPrice, calculateTariffReservationPrice } from './domain/stayPrice'
 import {
   selectBookingViews,
   selectArrivals,
@@ -207,12 +207,14 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     const customer = customers.find((item) => item.id === input.customerId)
     const pet = pets.find((item) => item.id === input.petId)
     const room = rooms.find((item) => item.id === input.roomId)
+    const tariffId = input.tariffId || settings.tariffs[0]?.id
+    const tariff = settings.tariffs.find((item) => item.id === tariffId)
     const speciesMatchesRoom = pet && room && isRoomCompatibleWithSpecies(room, pet.species)
     const roomIsReady = roomOperationalStates.some((state) => state.roomId === room?.id && state.status === 'ready')
     const petBelongsToCustomer = customer && pet && pet.customerId === customer.id
     const hasActiveBooking = bookings.some((item) => item.petId === input.petId && item.status !== 'checked-out')
     const exceedsCapacity = room && !hasRoomCapacityForStay(bookings, room.id, room.capacity, input.arrivalDate, input.departure)
-    if (!petBelongsToCustomer || !room || !speciesMatchesRoom || !roomIsReady || hasActiveBooking
+    if (!petBelongsToCustomer || !room || !tariff || !speciesMatchesRoom || !roomIsReady || hasActiveBooking
       || !isValidBookingPeriod(input.arrivalDate, input.arrival, input.departure)
       || !isValidOptionalTime(input.pickupTime)
       || !isValidBookingNote(input.bookingNote)
@@ -223,6 +225,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       id: nextEntityId(bookings, 'b'),
       petId: input.petId,
       roomId: input.roomId,
+      tariffId,
       arrivalDate: input.arrivalDate,
       arrival: input.arrival,
       departure: input.departure,
@@ -244,6 +247,8 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     const petIds = [...new Set(input.petIds)]
     const customer = customers.find((item) => item.id === input.customerId)
     const room = rooms.find((item) => item.id === input.roomId)
+    const tariffId = input.tariffId || settings.tariffs[0]?.id
+    const tariff = settings.tariffs.find((item) => item.id === tariffId)
     const selectedPets = petIds.map((id) => pets.find((item) => item.id === id))
     const roomIsReady = roomOperationalStates.some((state) => state.roomId === room?.id && state.status === 'ready')
     const petsBelongToCustomer = selectedPets.length === petIds.length
@@ -251,7 +256,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     const allPetsAreCompatible = room && selectedPets.every((pet) => pet && isRoomCompatibleWithSpecies(room, pet.species))
     const hasActiveBooking = petIds.some((petId) => bookings.some((booking) => booking.petId === petId && booking.status !== 'checked-out'))
     const exceedsCapacity = room && !hasRoomCapacityForStay(bookings, room.id, room.capacity, input.arrivalDate, input.departure, petIds.length)
-    if (!customer || !room || !petIds.length || !petsBelongToCustomer || !allPetsAreCompatible || !roomIsReady || hasActiveBooking
+    if (!customer || !room || !tariff || !petIds.length || !petsBelongToCustomer || !allPetsAreCompatible || !roomIsReady || hasActiveBooking
       || !isValidBookingPeriod(input.arrivalDate, input.arrival, input.departure)
       || !isValidOptionalTime(input.pickupTime)
       || !isValidBookingNote(input.bookingNote)
@@ -261,12 +266,12 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     const reservationId = nextEntityId(bookingReservations, 'reservation')
     const createdAt = dependencies.now().toISOString()
     bookingReservations.push({
-      ...reservationInput, id: reservationId, petIds, createdAt,
+      ...reservationInput, tariffId, id: reservationId, petIds, createdAt,
       ...(normalizeBookingNote(bookingNote) ? { bookingNote: normalizeBookingNote(bookingNote) } : {})
     })
     for (const petId of petIds) {
       bookings.push({
-        id: nextEntityId(bookings, 'b'), reservationId, petId, roomId: room.id,
+        id: nextEntityId(bookings, 'b'), reservationId, petId, roomId: room.id, tariffId,
         arrivalDate: input.arrivalDate, arrival: input.arrival, departure: input.departure, createdAt,
         ...(input.pickupTime ? { pickupTime: input.pickupTime } : {}),
         ...(normalizeBookingNote(bookingNote) ? { bookingNote: normalizeBookingNote(bookingNote) } : {}),
@@ -287,13 +292,15 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     const booking = bookings.find((item) => item.id === bookingId)
     const pet = booking && pets.find((item) => item.id === booking.petId)
     const room = rooms.find((item) => item.id === input.roomId)
+    const tariffId = input.tariffId || booking?.tariffId || settings.tariffs[0]?.id
+    const tariff = settings.tariffs.find((item) => item.id === tariffId)
     const roomIsReady = roomOperationalStates.some((state) => state.roomId === room?.id && state.status === 'ready')
     const speciesMatchesRoom = pet && room && isRoomCompatibleWithSpecies(room, pet.species)
     const otherBookings = bookings.filter((item) => item.id !== bookingId)
     const exceedsCapacity = room && !hasRoomCapacityForStay(
       otherBookings, room.id, room.capacity, input.arrivalDate, input.departure
     )
-    if (!booking || !pet || booking.status !== 'confirmed' || !room || !roomIsReady || !speciesMatchesRoom
+    if (!booking || !pet || !tariff || booking.status !== 'confirmed' || !room || !roomIsReady || !speciesMatchesRoom
       || !isValidBookingPeriod(input.arrivalDate, input.arrival, input.departure)
       || !isValidOptionalTime(input.pickupTime)
       || !isValidBookingNote(input.bookingNote)
@@ -311,9 +318,11 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
       || reservation.departure !== input.departure
       || reservation.pickupTime !== (input.pickupTime || undefined)
       || reservation.bookingNote !== bookingNote
+      || reservation.tariffId !== tariffId
     )
 
     booking.roomId = room.id
+    booking.tariffId = tariffId
     booking.arrivalDate = input.arrivalDate
     booking.arrival = input.arrival
     booking.departure = input.departure
@@ -577,7 +586,18 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     const pet = booking && pets.find((item) => item.id === booking.petId)
     if (!booking || !pet || booking.status !== 'checked-in') return false
 
-    const price = calculateStayPrice({ ...booking, pet }, settings.dailyPetRates)
+    const reservation = booking.reservationId ? bookingReservations.find((item) => item.id === booking.reservationId) : undefined
+    const tariff = booking.tariffId || reservation?.tariffId
+      ? settings.tariffs.find((item) => item.id === (booking.tariffId ?? reservation?.tariffId))
+      : undefined
+    const reservationPets = reservation
+      ? reservation.petIds.map((id) => pets.find((candidate) => candidate.id === id)).filter((candidate): candidate is Pet => Boolean(candidate))
+      : [pet]
+    const tariffPrice = calculateTariffReservationPrice(booking, reservationPets, tariff)
+    const reservationPrice = tariffPrice?.stays[reservationPets.findIndex((candidate) => candidate.id === pet.id)]
+    const price = reservationPrice
+      ? { ...reservationPrice, bookingId: booking.id }
+      : calculateStayPrice({ ...booking, pet }, settings.dailyPetRates)
     booking.status = 'checked-out'
     // Keep the completed invoice independent from future rate changes.
     booking.checkoutPrice = price ? { ...price } : undefined

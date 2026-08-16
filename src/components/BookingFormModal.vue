@@ -5,7 +5,7 @@ import type { BookingUpdate, BookingView, NewBookingReservation } from '../domai
 import { useReservationDraft } from '../composables/useReservationDraft'
 import { usePensionStore } from '../usePensionStore'
 import { selectRoomBookingAvailability } from '../domain/roomAvailability'
-import { calculateReservationPrice, calculateStayPrice } from '../domain/stayPrice'
+import { calculateTariffReservationPrice } from '../domain/stayPrice'
 import { formatEuroCents } from '../presentation/currencyFormat'
 import AppButton from './AppButton.vue'
 import AppEyebrow from './AppEyebrow.vue'
@@ -33,6 +33,7 @@ function createDraft(): NewBookingReservation {
     customerId: props.presetCustomerId ?? '',
     petIds: [],
     roomId: '',
+    tariffId: store.settings.tariffs[0]?.id ?? '',
     arrivalDate: store.businessDate.value,
     arrival: '09:00',
     departure: store.businessDate.value,
@@ -61,11 +62,11 @@ const bookingCustomerChoices = computed(() => {
     : availableCustomers.value
 })
 
-const reservationPricePreview = computed(() => calculateReservationPrice({
+const reservationPricePreview = computed(() => calculateTariffReservationPrice({
   arrivalDate: draft.value.arrivalDate,
   arrival: draft.value.arrival,
   departure: draft.value.departure
-}, store.pets.filter((pet) => draft.value.petIds.includes(pet.id)), store.settings.dailyPetRates))
+}, store.pets.filter((pet) => draft.value.petIds.includes(pet.id)), store.settings.tariffs.find((tariff) => tariff.id === draft.value.tariffId)))
 
 function selectPets() {
   draft.value.roomId = roomAvailability.value.find((item) => !item.wouldOverbook)?.room.id ?? roomAvailability.value[0]?.room.id ?? ''
@@ -74,6 +75,7 @@ function selectPets() {
 const editDraft = ref<BookingUpdate>(props.booking
   ? {
       roomId: props.booking.roomId,
+      tariffId: props.booking.tariffId ?? store.settings.tariffs[0]?.id ?? '',
       arrivalDate: props.booking.arrivalDate,
       arrival: props.booking.arrival,
       departure: props.booking.departure,
@@ -97,7 +99,7 @@ const editRoomAvailability = computed(() => {
 })
 const selectedEditRoomAvailability = computed(() => editRoomAvailability.value.find((item) => item.room.id === editDraft.value.roomId))
 const editPricePreview = computed(() => props.booking
-  ? calculateStayPrice({ ...editDraft.value, id: props.booking.id, pet: props.booking.pet }, store.settings.dailyPetRates)
+  ? calculateTariffReservationPrice(editDraft.value, [props.booking.pet], store.settings.tariffs.find((tariff) => tariff.id === editDraft.value.tariffId))
   : null)
 
 watch([() => editDraft.value.arrivalDate, () => editDraft.value.arrival, () => editDraft.value.departure, editRoomAvailability], () => {
@@ -136,6 +138,9 @@ function submit() {
         <CustomerAutocomplete v-model="draft.customerId" input-id="booking-form-customer" label="Kunde" :customers="bookingCustomerChoices" :min-query-length="2" @selected="selectCustomer" @cleared="selectCustomer" />
       </label>
       <AppPetSelection v-model="draft.petIds" :pets="customerPets" :disabled="!draft.customerId" :description="draft.customerId ? 'Mehrere Tiere können gemeinsam reserviert werden.' : 'Zuerst Kunde wählen'" @change="selectPets" />
+      <label class="grid gap-[6px] text-[11px] font-bold text-app-muted">Tarif
+        <select v-model="draft.tariffId" aria-label="Tarif" required class="h-10 w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text"><option value="" disabled>Tarif auswählen</option><option v-for="tariff in store.settings.tariffs" :key="tariff.id" :value="tariff.id">{{ tariff.name }}</option></select>
+      </label>
       <div class="grid grid-cols-1 gap-[10px] sm:grid-cols-[1.1fr_.8fr_1.1fr]">
         <AppFormField label="Anreise"><input v-model="draft.arrivalDate" aria-label="Anreisedatum" type="date" required class="h-10 min-w-0 w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text" /></AppFormField>
         <AppFormField label="Uhrzeit"><input v-model="draft.arrival" aria-label="Ankunftszeit" type="time" required class="h-10 min-w-0 w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text" /></AppFormField>
@@ -169,7 +174,10 @@ function submit() {
         <AppFormField label="Abholzeit · optional"><input v-model="editDraft.pickupTime" aria-label="Abholzeit" type="time" class="h-10 min-w-0 w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text" /></AppFormField>
       </div>
       <label class="grid gap-[6px] text-[11px] font-bold text-app-muted">Hinweis <small>optional, max. 300 Zeichen</small><textarea v-model="editDraft.bookingNote" maxlength="300" placeholder="z. B. Medikament mittags geben" class="min-h-16 min-w-0 w-full resize-y rounded-lg border border-app-border bg-white p-[10px] text-app-text" /></label>
-      <p v-if="editPricePreview" class="m-0 grid min-w-[205px] grid-cols-[1fr_auto] gap-x-[10px] gap-y-[3px] rounded-lg border border-[#c9e1dc] bg-[#f2f9f7] p-[10px_12px] text-[11px] leading-[1.35] text-[#285953]"><strong class="text-xs">Preisvorschau</strong><span>{{ editPricePreview.billableDays }} Betreuungstage</span><b class="col-start-2 row-span-2 row-start-1 self-center text-[15px]">{{ formatEuroCents(editPricePreview.totalCents) }}</b><small class="col-span-full text-[10px] text-[#4a6865]">unverbindlich, Abrechnung beim Check-out</small></p>
+      <label class="grid gap-[6px] text-[11px] font-bold text-app-muted">Tarif
+        <select v-model="editDraft.tariffId" aria-label="Tarif" required class="h-10 w-full rounded-lg border border-app-border bg-white px-[10px] text-app-text"><option value="" disabled>Tarif auswählen</option><option v-for="tariff in store.settings.tariffs" :key="tariff.id" :value="tariff.id">{{ tariff.name }}</option></select>
+      </label>
+      <p v-if="editPricePreview" class="m-0 grid min-w-[205px] grid-cols-[1fr_auto] gap-x-[10px] gap-y-[3px] rounded-lg border border-[#c9e1dc] bg-[#f2f9f7] p-[10px_12px] text-[11px] leading-[1.35] text-[#285953]"><strong class="text-xs">Preisvorschau</strong><span>{{ editPricePreview.stays[0]?.billableDays }} Betreuungstage</span><b class="col-start-2 row-span-2 row-start-1 self-center text-[15px]">{{ formatEuroCents(editPricePreview.totalCents) }}</b><small class="col-span-full text-[10px] text-[#4a6865]">unverbindlich, Abrechnung beim Check-out</small></p>
       <AppOverbookingWarning v-if="selectedEditRoomAvailability?.wouldOverbook" v-model="editDraft.allowOverbooking"><template #title>Überbuchung bewusst übernehmen</template>· Im gewählten Zeitraum fehlen Plätze.</AppOverbookingWarning>
       <p v-if="error" class="m-0 text-xs text-[#9b4444]" role="alert">{{ error }}</p>
       <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto"><AppButton type="button" variant="secondary" @click="$emit('close')">Abbrechen</AppButton><AppButton type="submit" variant="primary"><Pencil :size="16" /> Änderungen speichern</AppButton></div>
