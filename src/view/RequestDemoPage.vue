@@ -81,6 +81,9 @@ function submit(): void {
           <p v-else class="m-0 text-xs leading-relaxed text-app-muted">Wähle Tarif, Anreise- und Abreisedatum, um die voraussichtlichen Kosten zu sehen.</p>
         </aside>
       </div>
+      <footer class="mt-6 text-center">
+        <router-link to="/" class="text-sm font-bold text-primary hover:underline">← Zurück zur Demo Startseite</router-link>
+      </footer>
     </div>
   </main>
 </template>

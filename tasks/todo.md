@@ -10,6 +10,6 @@
 [x] Implementiere bei der Zuordnung der Anfragen zur Unterbringung die richtige Auswahl anhand des gewählten Tarifes.
 [x] Entferne das pauschale preis pro tag
 [x] Zeige auf der Anfrageseite auch eine Preisübersicht in einer extra Spalte
-[ ] Ergänze auf der Anfrageseite unten einen link, zurück zur Demo Startseite
+[x] Ergänze auf der Anfrageseite unten einen link, zurück zur Demo Startseite
 [ ] Entferne den hinweis "Ein ausführlichere Tarifkonfiguration ist noch in der Entwicklung..."
 [ ] Baue Tierfotos in die Detailansicht ein (nicht in die Liste)
