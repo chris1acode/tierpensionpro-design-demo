@@ -31,3 +31,4 @@
 - Fallback-/404-Ansicht in `App.vue` auf lokale Tailwind-Utilities umgestellt und die globalen `.route-page`-/`.route-page-card`-/`.route-page-icon`-Regeln entfernt — Session 71e79, 2026-08-16 14:34
 
 - Wiederkehrende Eyebrow-Überschriften als Tailwind-Komponente `AppEyebrow` gebündelt, in Seiten- und Modalüberschriften verwendet und die globalen `.eyebrow`-Regeln entfernt; Build und Typprüfung erfolgreich — Session 18de5, 2026-08-16 14:36
+- Occupancy date controls migrated to Tailwind layout utilities and reusable AppButton/AppIconButton components; removed the remaining global controls, date-navigation, and mobile media-query CSS rules; build successful — Session c7484, 2026-08-16 14:37

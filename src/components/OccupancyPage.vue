@@ -93,22 +93,22 @@ function closureLabel(startDate: string, endDate: string): string {
   <AppContainer class="occupancy-page">
     <AppPageHeading eyebrow="Kapazitätsplanung" title="Belegung" description="Zimmerbelegung als kompakte Tages-Spaltenansicht." />
 
-    <div class="occupancy-controls">
-      <div class="occupancy-date-nav" role="group" aria-label="Startdatum">
-        <button type="button" aria-label="Eine Woche zurück" @click="store.shiftOccupancyStartDate(-7)">
+    <div class="mb-4 flex items-center justify-between gap-4 max-[680px]:flex-wrap">
+      <div class="flex items-center gap-[10px] max-[680px]:flex-wrap" role="group" aria-label="Startdatum">
+        <AppIconButton class="h-10 w-10 border border-[var(--border)] bg-white text-[var(--text)]" type="button" aria-label="Eine Woche zurück" @click="store.shiftOccupancyStartDate(-7)">
           <ChevronLeft :size="16" />
-        </button>
-        <label class="occupancy-start-date">
+        </AppIconButton>
+        <label class="flex items-center gap-2 text-[11px] font-bold text-[var(--muted)] max-[680px]:flex-1">
           <span>Start</span>
-          <input type="date" :value="store.occupancyStartDate.value" @change="onStartDateChange" />
+          <input class="h-10 rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)] max-[680px]:flex-1" type="date" :value="store.occupancyStartDate.value" @change="onStartDateChange" />
         </label>
-        <button type="button" aria-label="Eine Woche vor" @click="store.shiftOccupancyStartDate(7)">
+        <AppIconButton class="h-10 w-10 border border-[var(--border)] bg-white text-[var(--text)]" type="button" aria-label="Eine Woche vor" @click="store.shiftOccupancyStartDate(7)">
           <ChevronRight :size="16" />
-        </button>
-        <button type="button" class="occupancy-today" :disabled="store.occupancyStartDate.value === todayIso" @click="store.jumpOccupancyToToday()">Heute</button>
+        </AppIconButton>
+        <AppButton variant="secondary" class="min-w-[92px] px-[18px]" :disabled="store.occupancyStartDate.value === todayIso" @click="store.jumpOccupancyToToday()">Heute</AppButton>
       </div>
 
-      <AppTabs class="max-sm:mt-4 max-sm:w-full" grow-mobile aria-label="Zeitraum">
+      <AppTabs class="max-[680px]:mt-4 max-[680px]:w-full" grow-mobile aria-label="Zeitraum">
         <AppTab
           v-for="option in rangeOptions"
           :key="option.value"
@@ -119,7 +119,7 @@ function closureLabel(startDate: string, endDate: string): string {
         >{{ option.label }}</AppTab>
       </AppTabs>
 
-      <AppButton variant="primary" class="max-sm:w-full" @click="reservationOpen = true"><CalendarPlus :size="17" /> Reservierung anlegen</AppButton>
+      <AppButton variant="primary" class="ml-auto max-[680px]:w-full" @click="reservationOpen = true"><CalendarPlus :size="17" /> Reservierung anlegen</AppButton>
     </div>
 
     <section class="panel occupancy-panel-wide">
