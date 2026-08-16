@@ -66,7 +66,6 @@ nav a.router-link-exact-active .nav-badge { background:#fbe8dd; color:#a74613; }
 .occupancy-cell.closed{background:#f7ece8;color:#9a4a35}
 
 .booking-timeline-lane article button{display:block;max-width:100%;padding:0;border:0;background:transparent;color:inherit;font:inherit;font-weight:600;opacity:.82;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;text-align:left}.booking-timeline-lane article button:hover{text-decoration:underline}
-.mobile-occupancy-date{display:block;padding:0;border:0;background:transparent;color:var(--muted);font:700 10px inherit;text-align:left;text-transform:uppercase;cursor:pointer}.mobile-occupancy-date:hover{text-decoration:underline}
 
 /* Keep desktop timeline panels steady while their period or lane count changes. */
 :root {

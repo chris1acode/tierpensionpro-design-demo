@@ -202,7 +202,7 @@ function closureLabel(startDate: string, endDate: string): string {
       >
         <header>
           <div>
-            <button type="button" class="mobile-occupancy-date" :aria-label="`Buchungen am ${day.date} anzeigen`" @click="openBookingsForDate(day.date)">{{ formatShortWeekday(day.date) }} · {{ formatDayAndMonth(day.date) }}</button>
+            <button type="button" class="block cursor-pointer border-0 bg-transparent p-0 text-left text-[10px] font-bold uppercase text-[var(--muted)] hover:underline" :aria-label="`Buchungen am ${day.date} anzeigen`" @click="openBookingsForDate(day.date)">{{ formatShortWeekday(day.date) }} · {{ formatDayAndMonth(day.date) }}</button>
             <strong>{{ occupancyLabel(day) }}</strong>
           </div>
           <b>{{ day.rate }} %</b>
