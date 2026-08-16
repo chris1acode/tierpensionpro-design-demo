@@ -25,9 +25,22 @@ const error = ref(false)
 const form = ref(props.mode === 'edit' && props.pet
   ? {
     name: props.pet.name, species: props.pet.species, note: props.pet.note ?? '',
-    specialFood: props.pet.specialFood ?? false
+    specialFood: props.pet.specialFood ?? false, photoUrl: props.pet.photoUrl ?? ''
   }
-  : { name: '', species: 'dog' as PetSpecies, note: '', specialFood: false })
+  : { name: '', species: 'dog' as PetSpecies, note: '', specialFood: false, photoUrl: '' })
+
+function selectPhoto(event: Event) {
+  const file = (event.target as HTMLInputElement).files?.[0]
+  if (!file) return
+
+  const reader = new FileReader()
+  reader.onload = () => { form.value.photoUrl = String(reader.result) }
+  reader.readAsDataURL(file)
+}
+
+function removePhoto() {
+  form.value.photoUrl = ''
+}
 
 function submit() {
   const { species, ...input } = form.value
@@ -53,6 +66,21 @@ function submit() {
     <form class="mt-5 grid grid-cols-2 gap-[13px] max-[680px]:grid-cols-1" @submit.prevent="submit">
       <AppFormField label="Name *"><input v-model="form.name" class="h-10 min-w-0 rounded-lg border border-app-border bg-white px-[10px] text-app-text" autocomplete="off" /></AppFormField>
       <AppFormField v-if="mode === 'create'" label="Tierart *"><select v-model="form.species" class="h-10 min-w-0 rounded-lg border border-app-border bg-white px-[10px] text-app-text [font:inherit]"><option value="dog">Hund</option><option value="cat">Katze</option></select></AppFormField>
+      <AppFormField label="Foto" class="col-span-full">
+        <div class="flex items-center gap-3">
+          <span class="grid h-16 w-16 flex-none place-items-center overflow-hidden rounded-full bg-[#f0ede9] text-[11px] text-app-muted">
+            <img v-if="form.photoUrl" :src="form.photoUrl" alt="" class="h-full w-full object-cover" />
+            <span v-else>Kein Foto</span>
+          </span>
+          <div class="flex flex-col items-start gap-[7px]">
+            <label class="inline-flex cursor-pointer items-center gap-[5px] rounded-lg border border-app-border bg-white px-[10px] py-[7px] text-[12px] font-bold text-app-text">
+              Foto auswählen
+              <input type="file" accept="image/*" class="hidden" @change="selectPhoto" />
+            </label>
+            <button v-if="form.photoUrl" class="border-0 bg-transparent p-0 text-[11px] font-bold text-[#a63d3d]" type="button" @click="removePhoto">Foto entfernen</button>
+          </div>
+        </div>
+      </AppFormField>
       <AppCheckboxField v-model="form.specialFood" class="col-span-full">
         Besonderes Futter
         <template #description>Tier benötigt von zu Hause mitgebrachtes Futter statt Standardfutter</template>

@@ -22,7 +22,8 @@ export function createPetProfile(id: Pet['id'], input: NewPet): Pet | undefined 
     initials: name.slice(0, 2).toLocaleUpperCase('de-DE'),
     color: PET_AVATAR_COLORS[colorIndex],
     ...(note ? { note } : {}),
-    ...(input.specialFood ? { specialFood: true } : {})
+    ...(input.specialFood ? { specialFood: true } : {}),
+    ...(input.photoUrl ? { photoUrl: input.photoUrl } : {})
   }
 }
 

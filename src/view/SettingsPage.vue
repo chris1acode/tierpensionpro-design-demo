@@ -2,7 +2,7 @@
 import AppPanel from '../components/AppPanel.vue'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { Banknote, Building2, Clock3, Inbox, Info, Pencil, Plus, Save, Trash2 } from '@lucide/vue'
+import { Banknote, Building2, Clock3, Inbox, Pencil, Plus, Save, Trash2 } from '@lucide/vue'
 import type { PensionSettingsUpdate, PriceTierTariff, Room } from '../domain'
 import { useSynchronizedDraft } from '../composables/useSynchronizedDraft'
 import { arePensionSettingsEqual } from '../domain/pensionSettings'
@@ -149,10 +149,6 @@ function removeTariff(index: number): void { if (draft.value.tariffs.length > 1)
       </template>
 
       <AppPanel v-else >
-        <div class="mb-6 flex items-start gap-3 rounded-[10px] border border-[#c9e1dc] bg-[#eef5f3] p-4 text-sm leading-relaxed text-petrol">
-          <Info :size="20" class="mt-0.5 shrink-0" />
-          <p>Ein ausführlichere Tarifkonfiguration ist noch in der Entwicklung (Bsp. Rabatt für mehrere Tiere, Einzelzimmer etc)</p>
-        </div>
         <header class="!justify-start gap-3"><span class="grid size-[42px] flex-none place-items-center rounded-[10px] bg-[#faf0d9] text-[#84601c]"><Banknote :size="20" /></span><div><h2>Preisliste</h2><p>Preisstaffeltarife je Zimmer. Alle Beträge inklusive Mehrwertsteuer.</p></div></header>
         <div class="p-[22px] max-[680px]:p-4">
           <div class="mb-4 flex items-center justify-between gap-3"><div><h3 class="m-0 text-base">Preisstaffeltarife</h3><p class="mb-0 mt-1 text-xs text-app-muted">Jede Preisstufe gilt ab der angegebenen Tierposition.</p></div><AppButton type="button" variant="secondary" @click="addTariff"><Plus :size="15" /> Tarif anlegen</AppButton></div>

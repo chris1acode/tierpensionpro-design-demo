@@ -11,5 +11,5 @@
 [x] Entferne das pauschale preis pro tag
 [x] Zeige auf der Anfrageseite auch eine Preisübersicht in einer extra Spalte
 [x] Ergänze auf der Anfrageseite unten einen link, zurück zur Demo Startseite
-[ ] Entferne den hinweis "Ein ausführlichere Tarifkonfiguration ist noch in der Entwicklung..."
-[ ] Baue Tierfotos in die Detailansicht ein (nicht in die Liste)
+[x] Entferne den hinweis "Ein ausführlichere Tarifkonfiguration ist noch in der Entwicklung..."
+[x] Baue Tierfotos in die Detailansicht ein (nicht in die Liste)

@@ -28,13 +28,15 @@ export interface Pet {
   note?: string
   /** Flags that the animal requires food brought by its owner rather than house food. */
   specialFood?: boolean
+  /** Portrait photo shown in the animal's detail view; absent shows a placeholder. */
+  photoUrl?: string
 }
 
-export type NewPet = Pick<Pet, 'customerId' | 'name' | 'species' | 'note' | 'specialFood'>
+export type NewPet = Pick<Pet, 'customerId' | 'name' | 'species' | 'note' | 'specialFood' | 'photoUrl'>
 
 /** Editable master data of an existing animal. Owner and species stay stable so
  * historical bookings keep their valid customer and room references. */
-export type PetUpdate = Pick<Pet, 'name' | 'note' | 'specialFood'>
+export type PetUpdate = Pick<Pet, 'name' | 'note' | 'specialFood' | 'photoUrl'>
 
 export interface VeterinaryContact {
   practiceName: string

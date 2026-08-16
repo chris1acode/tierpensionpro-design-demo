@@ -57,17 +57,26 @@ const coreCustomers: Customer[] = [
   { id: 'c-12', firstName: 'Clara', lastName: 'Vogel', email: 'clara.vogel@example.de', phone: '0152 396 18 57' }
 ]
 
+/** Builds a lightweight illustrated placeholder photo (no external image hosting) for demo animal profiles. */
+function petPhoto(species: Pet['species'], color: string): string {
+  const face = species === 'dog'
+    ? '<ellipse cx="60" cy="70" rx="22" ry="34" fill="#c98a52" transform="rotate(-20 60 70)"/><ellipse cx="140" cy="70" rx="22" ry="34" fill="#c98a52" transform="rotate(20 140 70)"/><ellipse cx="100" cy="122" rx="48" ry="40" fill="#dba569"/><circle cx="82" cy="114" r="6" fill="#2b2b2b"/><circle cx="118" cy="114" r="6" fill="#2b2b2b"/><ellipse cx="100" cy="134" rx="10" ry="7" fill="#2b2b2b"/>'
+    : '<path d="M58 58 L74 96 L42 96 Z" fill="#8a8a8a"/><path d="M142 58 L158 96 L126 96 Z" fill="#8a8a8a"/><ellipse cx="100" cy="122" rx="50" ry="42" fill="#9a9a9a"/><circle cx="82" cy="116" r="6" fill="#2b2b2b"/><circle cx="118" cy="116" r="6" fill="#2b2b2b"/><path d="M92 133 L100 139 L108 133" stroke="#2b2b2b" stroke-width="3" fill="none" stroke-linecap="round"/>'
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="${color}"/>${face}</svg>`
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`
+}
+
 const corePets: Pet[] = [
-  { id: 'p-1', customerId: 'c-1', name: 'Balu', species: 'dog', initials: 'BA', color: '#DCE9E5', note: 'Bitte mit dem gewohnten Futter füttern. Morgens und abends je 180 g des mitgebrachten Trockenfutters; kein Rind. Schilddrüsenmedikament: 1 Tablette täglich um 18 Uhr mit dem Abendfutter. Unverträglichkeit gegen Rind; keine Rinderleckerlis geben. Impfpass geprüft: Staupe, Hepatitis, Parvovirose und Tollwut gültig bis März 2027. Tierarztpraxis am Park, 030 554 82 19.', specialFood: true },
-  { id: 'p-2', customerId: 'c-2', name: 'Milo', species: 'cat', initials: 'MI', color: '#F3E3D7' },
-  { id: 'p-3', customerId: 'c-3', name: 'Luna', species: 'dog', initials: 'LU', color: '#E8E1F0' },
-  { id: 'p-4', customerId: 'c-4', name: 'Nala', species: 'cat', initials: 'NA', color: '#E5E9D8', note: 'Bitte nur das mitgebrachte Futter verwenden.', specialFood: true },
-  { id: 'p-5', customerId: 'c-5', name: 'Rocky', species: 'dog', initials: 'RO', color: '#DCE7F0' },
-  { id: 'p-6', customerId: 'c-6', name: 'Frieda', species: 'dog', initials: 'FR', color: '#F1E1D5' },
-  { id: 'p-7', customerId: 'c-7', name: 'Simba', species: 'cat', initials: 'SI', color: '#E2E8D8' },
+  { id: 'p-1', customerId: 'c-1', name: 'Balu', species: 'dog', initials: 'BA', color: '#DCE9E5', note: 'Bitte mit dem gewohnten Futter füttern. Morgens und abends je 180 g des mitgebrachten Trockenfutters; kein Rind. Schilddrüsenmedikament: 1 Tablette täglich um 18 Uhr mit dem Abendfutter. Unverträglichkeit gegen Rind; keine Rinderleckerlis geben. Impfpass geprüft: Staupe, Hepatitis, Parvovirose und Tollwut gültig bis März 2027. Tierarztpraxis am Park, 030 554 82 19.', specialFood: true, photoUrl: petPhoto('dog', '#DCE9E5') },
+  { id: 'p-2', customerId: 'c-2', name: 'Milo', species: 'cat', initials: 'MI', color: '#F3E3D7', photoUrl: petPhoto('cat', '#F3E3D7') },
+  { id: 'p-3', customerId: 'c-3', name: 'Luna', species: 'dog', initials: 'LU', color: '#E8E1F0', photoUrl: petPhoto('dog', '#E8E1F0') },
+  { id: 'p-4', customerId: 'c-4', name: 'Nala', species: 'cat', initials: 'NA', color: '#E5E9D8', note: 'Bitte nur das mitgebrachte Futter verwenden.', specialFood: true, photoUrl: petPhoto('cat', '#E5E9D8') },
+  { id: 'p-5', customerId: 'c-5', name: 'Rocky', species: 'dog', initials: 'RO', color: '#DCE7F0', photoUrl: petPhoto('dog', '#DCE7F0') },
+  { id: 'p-6', customerId: 'c-6', name: 'Frieda', species: 'dog', initials: 'FR', color: '#F1E1D5', photoUrl: petPhoto('dog', '#F1E1D5') },
+  { id: 'p-7', customerId: 'c-7', name: 'Simba', species: 'cat', initials: 'SI', color: '#E2E8D8', photoUrl: petPhoto('cat', '#E2E8D8') },
   { id: 'p-8', customerId: 'c-8', name: 'Oskar', species: 'dog', initials: 'OS', color: '#E9DDE8' },
   { id: 'p-9', customerId: 'c-9', name: 'Loki', species: 'cat', initials: 'LO', color: '#DCE8ED' },
-  { id: 'p-10', customerId: 'c-10', name: 'Maja', species: 'dog', initials: 'MA', color: '#EEE5D6' },
+  { id: 'p-10', customerId: 'c-10', name: 'Maja', species: 'dog', initials: 'MA', color: '#EEE5D6', photoUrl: petPhoto('dog', '#EEE5D6') },
   { id: 'p-11', customerId: 'c-11', name: 'Pepe', species: 'dog', initials: 'PE', color: '#DFE7DC' },
   { id: 'p-12', customerId: 'c-12', name: 'Minou', species: 'cat', initials: 'MN', color: '#E5E1EF' },
   { id: 'p-13', customerId: 'c-6', name: 'Willi', species: 'dog', initials: 'WI', color: '#E7E0D4', note: 'Reist gemeinsam mit Frieda an.' }
