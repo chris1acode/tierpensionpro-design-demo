@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { RouterLink } from 'vue-router'
 import { Cat, Check, CircleAlert, CircleCheck, Dog, Download, Inbox, ThumbsDown, ThumbsUp } from '@lucide/vue'
 import type { BookingRequest } from '../domain'
 import AppButton from './AppButton.vue'
+import AppCustomerLink from './AppCustomerLink.vue'
 import AppContainer from './AppContainer.vue'
 import AppEmptyState from './AppEmptyState.vue'
 import AppPageHeading from './AppPageHeading.vue'
@@ -124,7 +124,7 @@ function exportRequests(scope: 'pending' | 'history') {
             class="grid items-start gap-3 border-b border-[#eeeae6] px-[22px] py-[15px] last:border-0 grid-cols-[1fr_auto] min-[900px]:grid-cols-[1fr_1fr_minmax(105px,auto)]"
           >
             <div>
-              <RouterLink v-if="request.customerId" class="customer-profile-link" :to="{ name: 'customers', query: { customerId: request.customerId } }">{{ request.customerFirstName }} {{ request.customerLastName }}</RouterLink>
+              <AppCustomerLink v-if="request.customerId" :customer-id="request.customerId">{{ request.customerFirstName }} {{ request.customerLastName }}</AppCustomerLink>
               <strong v-else class="block text-[15px]">{{ request.customerFirstName }} {{ request.customerLastName }}</strong>
               <span class="block text-[13px] text-[var(--muted)] mt-0.5">{{ request.petName }}</span>
             </div>
