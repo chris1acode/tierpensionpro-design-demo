@@ -33,3 +33,4 @@
 - Consolidated recurring form error messages in the Tailwind-based `AppFormError` component, used it in five form views, and removed the global `.form-error` rule; build successful — Session 56eec, 2026-08-16 14:38
 - Wiederkehrende Eyebrow-Überschriften als Tailwind-Komponente `AppEyebrow` gebündelt, in Seiten- und Modalüberschriften verwendet und die globalen `.eyebrow`-Regeln entfernt; Build und Typprüfung erfolgreich — Session 18de5, 2026-08-16 14:36
 - Occupancy date controls migrated to Tailwind layout utilities and reusable AppButton/AppIconButton components; removed the remaining global controls, date-navigation, and mobile media-query CSS rules; build successful — Session c7484, 2026-08-16 14:37
+- Den gesperrten Zimmerstatus der Belegungsansicht als Tailwind-basierte `AppStatusBadge`-Komponente gekapselt und die globale `.status-badge`-CSS-Regel entfernt; Build erfolgreich — Session 6ac4d, 2026-08-16 14:38

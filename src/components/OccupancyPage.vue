@@ -10,6 +10,7 @@ import AppContainer from './AppContainer.vue'
 import AppEmptyState from './AppEmptyState.vue'
 import AppIconButton from './AppIconButton.vue'
 import AppPageHeading from './AppPageHeading.vue'
+import AppStatusBadge from './AppStatusBadge.vue'
 import AppTab from './AppTab.vue'
 import AppTabs from './AppTabs.vue'
 import OccupancyReservationModal from './OccupancyReservationModal.vue'
@@ -161,7 +162,7 @@ function closureLabel(startDate: string, endDate: string): string {
             <div class="occupancy-room-label">
               <strong>{{ room.name }}</strong>
               <span>{{ room.category }} · {{ room.capacity }} {{ room.capacity === 1 ? 'Platz' : 'Plätze' }}</span>
-              <span v-if="room.operationalState.status === 'maintenance'" class="status-badge locked"><Lock :size="11" /> Gesperrt</span>
+              <AppStatusBadge v-if="room.operationalState.status === 'maintenance'"><Lock :size="11" /> Gesperrt</AppStatusBadge>
             </div>
             <div
               v-for="segment in room.segments"
