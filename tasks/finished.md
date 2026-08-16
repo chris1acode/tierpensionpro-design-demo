@@ -43,3 +43,4 @@
 - Die klickbare Tierzeile in der Buchungszeitachse lokal mit Tailwind-Utilities gestylt und die verbleibende globale `.booking-timeline-lane article button`-CSS-Regel entfernt — Session 91bf4, 2026-08-16 15:03
 - Die Check-in/out-Kennzahl-Icons als Tailwind-basierte `AppMetricIcon`-Komponente gekapselt, die drei Varianten eingebunden und die globalen `.metric-icon`-/Farbregeln entfernt; Produktionsbuild erfolgreich - Session 762e0, 2026-08-16 15:04
 - Mobile Tageslisten-Ansicht der Belegung in `OccupancyPage.vue` auf lokale Tailwind-Grid-/Utility-Klassen umgestellt und den zugehörigen globalen CSS- sowie Media-Query-Block entfernt; Produktionsbuild erfolgreich — Session ed8ff, 2026-08-16 15:06
+- Desktop-Belegungsraster in `OccupancyPage.vue` auf lokale Tailwind-Grid-/Utility-Klassen umgestellt und die globalen Raster-, Status- und Zellenregeln entfernt; Produktionsbuild erfolgreich — Session b3161, 2026-08-16 15:07

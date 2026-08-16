@@ -26,6 +26,21 @@ const rangeOptions: { value: OccupancyRangeDays; label: string }[] = [
   { value: 30, label: '30 Tage' }
 ]
 
+const occupancyRateClasses: Record<OccupancyLevel, string> = {
+  low: 'text-[#315f48] [&>i>b]:bg-[#77a88a]',
+  medium: 'text-[#84601c] [&>i>b]:bg-[#d2a13c]',
+  high: 'text-[#9b5a31] [&>i>b]:bg-[#c77742]',
+  full: 'text-[#344677] [&>i>b]:bg-[#4c5f99]',
+  unavailable: 'text-[#9b4444] [&>i>b]:bg-[#bd5a5a]',
+  overbooked: 'text-[#7a1f2c] [&>i>b]:bg-[#8f2f3c]',
+}
+
+const occupancyCellClasses: Record<OccupancyLevel, string> = {
+  low: '', medium: '', high: '', unavailable: '',
+  full: 'bg-[#eef1fa] [&_.occupancy-count>i>b]:bg-[#4c5f99]',
+  overbooked: 'bg-[#f9e6e8] [&_.occupancy-count>i>b]:bg-[#8f2f3c]',
+}
+
 const todayIso = computed(() => store.businessDate.value)
 const reservationOpen = ref(false)
 const closureModalMode = ref<'create' | 'edit' | null>(null)
@@ -130,9 +145,9 @@ function closureLabel(startDate: string, endDate: string): string {
         <div class="flex items-center justify-end gap-[13px] max-[680px]:flex-col max-[680px]:items-start"><AppButton variant="text" type="button" aria-label="Belegung als CSV exportieren" @click="exportOccupancy"><Download :size="15" /> Exportieren</AppButton><AppOccupancyLegend /></div>
       </header>
 
-      <div class="occupancy-scroll">
-        <div class="occupancy-grid" :style="gridStyle">
-          <div class="occupancy-corner">Zimmer</div>
+      <div class="overflow-x-auto">
+        <div class="grid min-w-max" :style="gridStyle">
+          <div class="sticky left-0 z-[1] flex flex-col justify-center gap-[3px] border-b border-r border-[#eeeae6] bg-white px-4 py-3 text-[11px] font-bold uppercase tracking-[.05em] text-[var(--muted)]">Zimmer</div>
           <button
             v-for="day in store.dailyOccupancy.value"
             :key="day.date"
@@ -144,25 +159,25 @@ function closureLabel(startDate: string, endDate: string): string {
             :aria-label="`Buchungen am ${day.date} anzeigen`"
             @click="openBookingsForDate(day.date)"
           >
-            <span class="occupancy-weekday">{{ formatShortWeekday(day.date) }}</span>
-            <span class="occupancy-daynum">{{ formatDayAndMonth(day.date) }}</span>
-            <span class="occupancy-rate" :class="levelClass(day.level)" :aria-label="`${occupancyLabel(day)}: ${occupancyCount(day.occupied, day.capacity)} belegt`">
-              <i aria-hidden="true"><b :style="{ width: `${Math.min(100, day.rate)}%` }" /></i>
+            <span class="text-[10px] font-bold uppercase text-[var(--muted)]">{{ formatShortWeekday(day.date) }}</span>
+            <span class="text-sm font-bold">{{ formatDayAndMonth(day.date) }}</span>
+            <span class="grid w-full gap-[3px] text-center text-[10px] font-bold" :class="[levelClass(day.level), occupancyRateClasses[day.level]]" :aria-label="`${occupancyLabel(day)}: ${occupancyCount(day.occupied, day.capacity)} belegt`">
+              <i aria-hidden="true" class="block h-1 overflow-hidden rounded-full bg-[#e6ebe7]"><b class="block h-full rounded-[inherit]" :style="{ width: `${Math.min(100, day.rate)}%` }" /></i>
               {{ day.isClosed ? 'Zu' : occupancyCount(day.occupied, day.capacity) }}
             </span>
           </button>
 
           <template v-for="room in store.roomTimelines.value" :key="room.id">
-            <div class="occupancy-room-label">
-              <strong>{{ room.name }}</strong>
+            <div class="sticky left-0 z-[1] flex flex-col justify-center gap-[3px] border-b border-r border-[#eeeae6] bg-white px-4 py-3">
+              <strong class="text-[15px]">{{ room.name }}</strong>
               <span>{{ room.category }} · {{ room.capacity }} {{ room.capacity === 1 ? 'Platz' : 'Plätze' }}</span>
               <AppStatusBadge v-if="room.operationalState.status === 'maintenance'"><Lock :size="11" /> Gesperrt</AppStatusBadge>
             </div>
             <div
               v-for="segment in room.segments"
               :key="segment.date"
-              class="occupancy-cell"
-              :class="[levelClass(segment.level), { maintenance: room.operationalState.status === 'maintenance', closed: segment.isClosed, today: segment.date === todayIso }]"
+              class="flex min-h-12 items-center justify-center border-b border-r border-[#eeeae6] p-1.5 text-[#a8a29b]"
+              :class="[levelClass(segment.level), occupancyCellClasses[segment.level], { 'bg-[repeating-linear-gradient(45deg,#f3f0ec,#f3f0ec_6px,#ebe7e2_6px,#ebe7e2_12px)] text-[#8b847e]': room.operationalState.status === 'maintenance' && !segment.isClosed, 'bg-[#f7ece8] text-[#9a4a35]': segment.isClosed, 'bg-[#fffaf5]': segment.date === todayIso && !segment.isClosed && room.operationalState.status !== 'maintenance' }]"
               :data-date="segment.date"
               :data-occupancy-level="segment.level"
             >
@@ -173,8 +188,8 @@ function closureLabel(startDate: string, endDate: string): string {
                 <Lock :size="13" />
               </template>
               <template v-else-if="segment.bookings.length">
-                <span class="occupancy-count" :aria-label="`${segment.bookings.length} von ${room.capacity} Plätzen belegt`">
-                  <i aria-hidden="true"><b :style="{ width: `${Math.min(100, (segment.bookings.length / room.capacity) * 100)}%` }" /></i>
+                <span class="occupancy-count grid w-full max-w-[42px] gap-[3px] text-center text-[10px] font-bold text-[var(--text)]" :aria-label="`${segment.bookings.length} von ${room.capacity} Plätzen belegt`">
+                  <i aria-hidden="true" class="block h-[5px] overflow-hidden rounded-full bg-[#e6ebe7]"><b class="block h-full rounded-[inherit] bg-[#77a88a]" :style="{ width: `${Math.min(100, (segment.bookings.length / room.capacity) * 100)}%` }" /></i>
                   {{ occupancyCount(segment.bookings.length, room.capacity) }}
                 </span>
               </template>
