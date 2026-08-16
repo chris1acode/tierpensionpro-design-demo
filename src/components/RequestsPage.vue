@@ -54,7 +54,7 @@ function exportRequests(scope: 'pending' | 'history') {
 <template>
   <AppContainer class="requests-page">
     <AppPageHeading eyebrow="Externe Anfragen" title="Anfragen" description="Buchungsanfragen prüfen, Kunde zuordnen und anschließend als Reservierung übernehmen.">
-      <span class="page-count"><Inbox :size="17" /> {{ store.pendingRequests.value.length }} offen</span>
+      <span class="inline-flex items-center gap-[7px] rounded-lg border border-[var(--border)] bg-white px-3 py-[9px] text-xs font-bold text-[var(--muted)]"><Inbox :size="17" /> {{ store.pendingRequests.value.length }} offen</span>
     </AppPageHeading>
 
     <div v-if="!store.settings.requestsEnabled" class="panel">
@@ -66,22 +66,28 @@ function exportRequests(scope: 'pending' | 'history') {
     </div>
 
     <template v-else>
-      <section class="panel requests-list">
+      <section class="panel mb-[22px]">
         <header><div><h2>Offene Anfragen</h2><p>{{ store.pendingRequests.value.length }} Anfragen warten auf eine Entscheidung</p></div><AppButton variant="text" type="button" aria-label="Offene Anfragen als CSV exportieren" @click="exportRequests('pending')"><Download :size="15" /> Exportieren</AppButton></header>
-        <div v-if="store.pendingRequests.value.length" class="request-cards">
-          <article v-for="requestDetail in pendingRequestDetails" :key="requestDetail.request.id" class="request-card">
+        <div v-if="store.pendingRequests.value.length" class="grid gap-px bg-[#eeeae6]">
+          <article v-for="requestDetail in pendingRequestDetails" :key="requestDetail.request.id" class="request-card grid grid-cols-1 items-stretch gap-6 bg-white p-4 min-[900px]:grid-cols-[minmax(0,1fr)_minmax(270px,340px)] min-[900px]:p-[18px_22px]">
             <template v-for="request in [requestDetail.request]" :key="request.id">
-            <div class="request-summary">
-              <span class="request-species-icon" :class="{ cat: request.species === 'cat' }"><Cat v-if="request.species === 'cat'" :size="19" /><Dog v-else :size="19" /></span>
-              <div class="request-info">
-                <strong>{{ request.customerFirstName }} {{ request.customerLastName }} · {{ request.phone }}</strong>
-                <span>{{ request.petName }}</span>
-                <span v-if="request.note" class="note-badge">{{ request.note }}</span>
+            <div class="request-summary grid min-w-0 items-center gap-x-4 gap-y-3 grid-cols-[auto_1fr] grid-rows-[auto_auto_auto] min-[900px]:grid-cols-[auto_minmax(190px,1fr)_minmax(175px,.9fr)] min-[900px]:grid-rows-[auto_auto]">
+              <span
+                class="row-start-1 row-span-2 col-start-1 grid h-[42px] w-[42px] place-items-center self-center rounded-full"
+                :class="request.species === 'cat' ? 'bg-[#f3e8dd] text-[#8e582b]' : 'bg-[#e4eff0] text-[var(--petrol)]'"
+              ><Cat v-if="request.species === 'cat'" :size="19" /><Dog v-else :size="19" /></span>
+              <div class="row-start-1 col-start-2 min-w-0">
+                <strong class="block text-sm">{{ request.customerFirstName }} {{ request.customerLastName }} · {{ request.phone }}</strong>
+                <span class="block text-[13px] text-[var(--muted)] mt-[3px]">{{ request.petName }}</span>
+                <span v-if="request.note" class="note-badge mt-1.5 inline-block">{{ request.note }}</span>
               </div>
-              <div class="request-dates"><small>Aufenthalt</small><strong>{{ request.arrivalDate }} · {{ request.arrival }} Uhr – {{ request.departure }}</strong></div>
+              <div class="row-start-2 col-start-2 min-[900px]:row-start-1 min-[900px]:col-start-3">
+                <small class="block text-xs text-[var(--muted)] mb-1">Aufenthalt</small>
+                <strong class="block text-[13px]">{{ request.arrivalDate }} · {{ request.arrival }} Uhr – {{ request.departure }}</strong>
+              </div>
               <p
-                class="request-availability"
-                :class="requestDetail.availability.status"
+                class="request-availability row-start-3 col-start-1 col-span-2 min-[900px]:row-start-2 min-[900px]:col-start-2 min-[900px]:col-span-2 flex items-center gap-[5px] rounded-[7px] px-[9px] py-[7px] text-xs font-bold leading-[1.35]"
+                :class="requestDetail.availability.status === 'available' ? 'bg-[#e7f2eb] text-[#315f48]' : 'bg-[#fdf2f2] text-[#9b4444]'"
                 :aria-label="`Verfügbarkeit: ${requestDetail.availability.status === 'available' ? 'frei' : 'nicht frei'}`"
               >
                 <CircleCheck v-if="requestDetail.availability.status === 'available'" :size="15" />
@@ -93,8 +99,8 @@ function exportRequests(scope: 'pending' | 'history') {
                 <template v-else>Zeitraum derzeit nicht frei</template>
               </p>
             </div>
-            <div class="request-actions">
-              <div class="request-buttons">
+            <div class="request-actions grid content-center items-stretch justify-items-stretch gap-2 rounded-[10px] border border-[#e7e3de] bg-[#fafaf8] p-3 max-[900px]:mt-[2px]">
+              <div class="flex gap-2 max-[900px]:flex-col [&>*]:flex-1">
                 <AppButton variant="primary" @click="requestToAssign = request"><ThumbsUp :size="15" /> Annehmen</AppButton>
                 <AppButton variant="secondary" @click="requestToDecline = request"><ThumbsDown :size="15" /> Ablehnen</AppButton>
               </div>
@@ -109,20 +115,30 @@ function exportRequests(scope: 'pending' | 'history') {
         </AppEmptyState>
       </section>
 
-      <section class="panel requests-list">
+      <section class="panel">
         <header><div><h2>Verlauf</h2><p>Bereits entschiedene Anfragen</p></div><AppButton variant="text" type="button" aria-label="Anfragenverlauf als CSV exportieren" @click="exportRequests('history')"><Download :size="15" /> Exportieren</AppButton></header>
         <div v-if="store.requestHistory.value.length" class="request-history">
-          <article v-for="request in store.requestHistory.value" :key="request.id">
-            <div class="request-history-customer">
+          <article
+            v-for="request in store.requestHistory.value"
+            :key="request.id"
+            class="grid items-start gap-3 border-b border-[#eeeae6] px-[22px] py-[15px] last:border-0 grid-cols-[1fr_auto] min-[900px]:grid-cols-[1fr_1fr_minmax(105px,auto)]"
+          >
+            <div>
               <RouterLink v-if="request.customerId" class="customer-profile-link" :to="{ name: 'customers', query: { customerId: request.customerId } }">{{ request.customerFirstName }} {{ request.customerLastName }}</RouterLink>
-              <strong v-else>{{ request.customerFirstName }} {{ request.customerLastName }}</strong>
-              <span>{{ request.petName }}</span>
+              <strong v-else class="block text-[15px]">{{ request.customerFirstName }} {{ request.customerLastName }}</strong>
+              <span class="block text-[13px] text-[var(--muted)] mt-0.5">{{ request.petName }}</span>
             </div>
-            <div class="request-history-dates"><small>Aufenthalt</small><span>{{ request.arrivalDate }} – {{ request.departure }}</span></div>
-            <span class="booking-status" :class="request.status === 'accepted' ? 'accepted' : 'checked-out'">{{ requestStatusLabels[request.status] }}</span>
-            <div v-if="request.declineReason || request.declineNotification" class="request-history-notes">
-              <span v-if="request.declineReason" class="note-badge">Grund: {{ request.declineReason }}</span>
-              <span v-if="request.declineNotification" class="request-notification">E-Mail-Benachrichtigung an {{ request.declineNotification.recipient }} vorgemerkt</span>
+            <div class="col-start-1 row-start-2 min-[900px]:col-start-2 min-[900px]:row-start-1">
+              <small class="block text-[10px] text-[var(--muted)] mb-[3px]">Aufenthalt</small>
+              <span class="block text-[13px] text-[var(--muted)] mt-0.5">{{ request.arrivalDate }} – {{ request.departure }}</span>
+            </div>
+            <span
+              class="booking-status col-start-2 row-start-1 row-span-2 min-[900px]:col-start-3 min-[900px]:row-span-1 self-center justify-self-end"
+              :class="request.status === 'accepted' ? 'accepted' : 'checked-out'"
+            >{{ requestStatusLabels[request.status] }}</span>
+            <div v-if="request.declineReason || request.declineNotification" class="col-span-full mt-1">
+              <span v-if="request.declineReason" class="note-badge mt-1">Grund: {{ request.declineReason }}</span>
+              <span v-if="request.declineNotification" class="mt-1.5 block text-[10px] font-bold text-[#466b62]">E-Mail-Benachrichtigung an {{ request.declineNotification.recipient }} vorgemerkt</span>
             </div>
           </article>
         </div>

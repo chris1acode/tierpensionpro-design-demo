@@ -172,25 +172,25 @@ onBeforeUnmount(() => {
           <AppMetricCard :to="{ path: '/check-in-out', query: { view: 'checked-in' } }" ariaLabel="Tiere im Haus in Check-in und Check-out öffnen" :icon="Dog" color="teal" label="Tiere im Haus" :hint="`${store.occupancyRate.value} % der Plätze belegt`">{{ store.checkedIn.value.length }}<em class="not-italic"> / {{ store.totalCapacity.value }}</em></AppMetricCard>
         </section>
 
-        <div class="dashboard-grid">
-          <section class="panel arrivals-panel">
+        <div class="grid grid-cols-1 gap-[22px] min-[921px]:grid-cols-[minmax(0,1.75fr)_minmax(280px,.75fr)]">
+          <section class="panel">
             <header><div><h2>{{ scheduleView === 'arrivals' ? 'Heutige Anreisen' : 'Heutige Abreisen' }}</h2><p>{{ scheduleView === 'arrivals' ? `${filteredArrivals.length} Tiere warten auf ihren Check-in` : `${filteredDepartures.length} Tiere sind abholbereit` }}</p></div><AppTabs><AppTab :active="scheduleView === 'arrivals'" @click="scheduleView = 'arrivals'">Anreisen</AppTab><AppTab :active="scheduleView === 'departures'" @click="scheduleView = 'departures'">Abreisen</AppTab></AppTabs></header>
-            <div v-if="scheduleView === 'arrivals' && filteredArrivals.length" class="arrival-list">
-              <article v-for="booking in filteredArrivals" :key="booking.id" class="arrival-row">
+            <div v-if="scheduleView === 'arrivals' && filteredArrivals.length">
+              <article v-for="booking in filteredArrivals" :key="booking.id" class="grid grid-cols-[auto_minmax(155px,1fr)_110px_61px_max-content] items-center gap-[13px] border-b border-b-[#eeeae6] px-[22px] py-4 last:border-b-0 max-[680px]:grid-cols-[auto_1fr_auto] max-[680px]:p-[15px]">
                 <div class="pet-avatar" :style="{ background: booking.pet.color }">{{ booking.pet.initials }}</div>
                 <div class="pet-info"><strong>{{ booking.customer.firstName }} {{ booking.customer.lastName }}</strong><span>{{ booking.pet.name }}</span></div>
-                <div class="arrival-meta"><strong>{{ booking.arrival }} Uhr</strong><span>{{ booking.room.name }}</span></div>
-                <span class="arrival-note-slot">
+                <div class="max-[680px]:col-start-2"><strong class="block text-[13px]">{{ booking.arrival }} Uhr</strong><span class="mt-[3px] block text-[11px] text-[var(--muted)]">{{ booking.room.name }}</span></div>
+                <span class="min-w-0 max-[680px]:col-start-3 max-[680px]:row-start-1">
                   <span v-if="booking.pet.note" class="note-badge">Hinweis</span>
                 </span>
                 <AppButton variant="link" @click="selectedBooking = booking">Einchecken</AppButton>
               </article>
             </div>
-            <div v-else-if="scheduleView === 'departures' && filteredDepartures.length" class="arrival-list">
-              <article v-for="departure in filteredDepartures" :key="departure.id" class="arrival-row departure-row">
+            <div v-else-if="scheduleView === 'departures' && filteredDepartures.length">
+              <article v-for="departure in filteredDepartures" :key="departure.id" class="grid grid-cols-[auto_minmax(155px,1fr)_110px_auto] items-center gap-[13px] border-b border-b-[#eeeae6] px-[22px] py-4 last:border-b-0 max-[680px]:grid-cols-[auto_1fr_auto] max-[680px]:p-[15px]">
                 <div class="pet-avatar" :style="{ background: departure.pet.color }">{{ departure.pet.initials }}</div>
                 <div class="pet-info"><strong>{{ departure.customer.firstName }} {{ departure.customer.lastName }}</strong><span>{{ departure.pet.name }}</span></div>
-                <div class="arrival-meta"><strong>Abreise heute</strong><span>{{ departure.room.name }}</span></div>
+                <div class="max-[680px]:col-start-2"><strong class="block text-[13px]">Abreise heute</strong><span class="mt-[3px] block text-[11px] text-[var(--muted)]">{{ departure.room.name }}</span></div>
                 <AppButton variant="link" @click="selectedDeparture = departure"><LogOut :size="16" /> Auschecken</AppButton>
               </article>
             </div>
@@ -199,16 +199,16 @@ onBeforeUnmount(() => {
               <template #title>{{ scheduleView === 'arrivals' ? 'Alle erwarteten Tiere sind angekommen.' : 'Alle Abreisen sind abgeschlossen.' }}</template>
               <template #description>{{ scheduleView === 'arrivals' ? 'Für heute steht kein weiterer Check-in an.' : 'Für heute steht kein weiterer Check-out an.' }}</template>
             </AppEmptyState>
-            <RouterLink class="panel-navigation" to="/check-in-out">Alle Check-ins und Check-outs <ArrowRight :size="16" /></RouterLink>
+            <RouterLink class="flex items-center justify-end gap-[7px] border-t border-t-[#eeeae6] px-[22px] py-[13px] text-xs font-bold text-[var(--primary)] hover:underline" to="/check-in-out">Alle Check-ins und Check-outs <ArrowRight :size="16" /></RouterLink>
           </section>
 
-          <aside class="panel occupancy-panel">
-            <header><div><h2><RouterLink class="panel-title-link" to="/occupancy">Belegung ansehen</RouterLink></h2><p>Aktueller Stand</p></div><span class="occupancy-number">{{ store.occupancyRate.value }} %</span></header>
-            <div class="progress"><span :style="{ width: `${store.occupancyRate.value}%` }" /></div>
-            <div class="room-summary">
-              <div v-for="summary in store.occupancyByCategory.value" :key="summary.category">
+          <aside class="panel">
+            <header><div><h2><RouterLink class="text-inherit no-underline hover:text-[var(--primary)] hover:underline" to="/occupancy">Belegung ansehen</RouterLink></h2><p>Aktueller Stand</p></div><span class="text-[20px] font-bold [font-family:'Manrope',sans-serif] text-[var(--primary)]">{{ store.occupancyRate.value }} %</span></header>
+            <div class="mx-[22px] mt-[23px] h-2 overflow-hidden rounded-full bg-[#eeeae6]"><span class="block h-full rounded-[inherit] bg-[var(--primary)] transition-[width] duration-[350ms]" :style="{ width: `${store.occupancyRate.value}%` }" /></div>
+            <div class="px-[22px] py-[10px]">
+              <div v-for="summary in store.occupancyByCategory.value" :key="summary.category" class="grid grid-cols-[auto_1fr_auto] items-center gap-[10px] border-b border-b-[#eeeae6] py-[15px]">
                 <span class="room-icon" :class="{ cat: summary.category === 'Katzenzimmer' }"><Dog v-if="summary.category === 'Hundezimmer'" :size="19" /><template v-else>K</template></span>
-                <p><strong>{{ summary.category }}</strong><small>{{ summary.occupied }} von {{ summary.capacity }} belegt</small></p><span>{{ summary.capacity }} Plätze</span>
+                <p class="m-0"><strong class="block text-xs">{{ summary.category }}</strong><small class="mt-[2px] block text-[10px] text-[var(--muted)]">{{ summary.occupied }} von {{ summary.capacity }} belegt</small></p><span class="mt-[2px] block text-[10px] text-[var(--muted)]">{{ summary.capacity }} Plätze</span>
               </div>
             </div>
           </aside>

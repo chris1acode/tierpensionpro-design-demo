@@ -19,6 +19,11 @@ import { usePensionStore } from '../usePensionStore'
 import RoomChangeModal from './RoomChangeModal.vue'
 
 const emit = defineEmits<{ checkIn: [booking: BookingView]; checkOut: [departure: DepartureView] }>()
+const historyEventIconClasses: Record<string, string> = {
+  'check-in': 'bg-[#e4eff0] text-[#2f5d62]',
+  'check-in-reverted': 'bg-[#fff1e8] text-[#a74613]',
+  'check-out': 'bg-[#eeeae6] text-[#67615c]',
+}
 const store = usePensionStore()
 const route = useRoute()
 type OperationsView = 'arrivals' | 'departures' | 'checked-in'
@@ -95,31 +100,47 @@ function exportHistory() {
 <template>
   <AppContainer class="operations-page">
     <AppPageHeading eyebrow="Tagesgeschäft" title="Check-in/out" description="Eingecheckte Tiere sowie anstehende Anreisen und Abreisen zentral bearbeiten." />
-    <div class="operations-date-nav" :class="{ disabled: activeView === 'checked-in' }" role="group" aria-label="Vorgangsdatum">
-      <button type="button" aria-label="Einen Tag zurück" :disabled="activeView === 'checked-in'" @click="shiftSelectedDate(-1)"><ChevronLeft :size="16" /></button>
-      <label class="operations-date-input"><span>Datum</span><input type="date" aria-label="Datum für Check-in und Check-out" :value="selectedDate" :disabled="activeView === 'checked-in'" @change="setSelectedDate" /></label>
-      <button type="button" aria-label="Einen Tag vor" :disabled="activeView === 'checked-in'" @click="shiftSelectedDate(1)"><ChevronRight :size="16" /></button>
-      <button type="button" class="operations-today" :disabled="selectedDate === store.businessDate.value || activeView === 'checked-in'" @click="selectedDate = store.businessDate.value">Heute</button>
-      <span class="operations-date-label">{{ selectedDateLabel }}</span>
+    <div
+      class="-mt-1 mb-[18px] flex flex-wrap items-center gap-[10px]"
+      :class="{ 'pointer-events-none opacity-45': activeView === 'checked-in' }"
+      role="group" aria-label="Vorgangsdatum"
+    >
+      <button type="button" class="grid h-10 w-10 place-items-center rounded-lg border border-[var(--border)] bg-white text-[var(--text)] disabled:cursor-default disabled:opacity-45" aria-label="Einen Tag zurück" :disabled="activeView === 'checked-in'" @click="shiftSelectedDate(-1)"><ChevronLeft :size="16" /></button>
+      <label class="flex items-center gap-2 text-[11px] font-bold text-[var(--muted)] max-[680px]:flex-1"><span>Datum</span><input type="date" class="h-10 rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)] [font:inherit] disabled:cursor-not-allowed max-[680px]:min-w-0 max-[680px]:flex-1" aria-label="Datum für Check-in und Check-out" :value="selectedDate" :disabled="activeView === 'checked-in'" @change="setSelectedDate" /></label>
+      <button type="button" class="grid h-10 w-10 place-items-center rounded-lg border border-[var(--border)] bg-white text-[var(--text)] disabled:cursor-default disabled:opacity-45" aria-label="Einen Tag vor" :disabled="activeView === 'checked-in'" @click="shiftSelectedDate(1)"><ChevronRight :size="16" /></button>
+      <button type="button" class="grid h-10 w-auto min-w-[72px] place-items-center rounded-lg border border-[var(--border)] bg-white px-[14px] text-[13px] font-bold text-[var(--text)] disabled:cursor-default disabled:opacity-45" :disabled="selectedDate === store.businessDate.value || activeView === 'checked-in'" @click="selectedDate = store.businessDate.value">Heute</button>
+      <span class="text-xs font-bold text-[var(--muted)] max-[680px]:w-full">{{ selectedDateLabel }}</span>
     </div>
-    <section class="operations-summary" aria-label="Offene Vorgänge">
-      <button :class="{ active: activeView === 'checked-in' }" :aria-pressed="activeView === 'checked-in'" @click="activeView = 'checked-in'"><span class="metric-icon rose"><Check /></span><span><small>Jetzt eingecheckt</small><strong>{{ checkedIn.length }}</strong><em>jederzeit auscheckbar</em></span></button>
-      <button :class="{ active: activeView === 'arrivals' }" :aria-pressed="activeView === 'arrivals'" @click="activeView = 'arrivals'"><span class="metric-icon orange"><ArrowDownToLine /></span><span><small>Geplante Anreisen</small><strong>{{ arrivals.length }}</strong><em>noch einzuchecken</em></span></button>
-      <button :class="{ active: activeView === 'departures' }" :aria-pressed="activeView === 'departures'" @click="activeView = 'departures'"><span class="metric-icon teal"><ArrowUpFromLine /></span><span><small>Geplante Abreisen</small><strong>{{ departures.length }}</strong><em>heute auszuchecken</em></span></button>
+    <section class="mb-[22px] grid grid-cols-3 gap-4 max-[680px]:grid-cols-1" aria-label="Offene Vorgänge">
+      <button
+        class="flex items-center gap-[14px] rounded-xl border border-[var(--border)] bg-white p-[18px] text-left text-[var(--text)] hover:border-[#e3a27d] hover:shadow-[0_3px_12px_rgba(90,56,36,.08)]"
+        :class="{ 'border-[#e3a27d] shadow-[0_3px_12px_rgba(90,56,36,.08)]': activeView === 'checked-in' }"
+        :aria-pressed="activeView === 'checked-in'" @click="activeView = 'checked-in'"
+      ><span class="metric-icon rose"><Check /></span><span class="grid flex-1 grid-cols-[1fr_auto] items-center"><small class="font-bold text-[var(--muted)]">Jetzt eingecheckt</small><strong class="col-start-2 row-start-1 row-span-2 text-[25px] font-bold [font-family:'Manrope',sans-serif]">{{ checkedIn.length }}</strong><em class="mt-[3px] text-[11px] not-italic text-[var(--muted)]">jederzeit auscheckbar</em></span></button>
+      <button
+        class="flex items-center gap-[14px] rounded-xl border border-[var(--border)] bg-white p-[18px] text-left text-[var(--text)] hover:border-[#e3a27d] hover:shadow-[0_3px_12px_rgba(90,56,36,.08)]"
+        :class="{ 'border-[#e3a27d] shadow-[0_3px_12px_rgba(90,56,36,.08)]': activeView === 'arrivals' }"
+        :aria-pressed="activeView === 'arrivals'" @click="activeView = 'arrivals'"
+      ><span class="metric-icon orange"><ArrowDownToLine /></span><span class="grid flex-1 grid-cols-[1fr_auto] items-center"><small class="font-bold text-[var(--muted)]">Geplante Anreisen</small><strong class="col-start-2 row-start-1 row-span-2 text-[25px] font-bold [font-family:'Manrope',sans-serif]">{{ arrivals.length }}</strong><em class="mt-[3px] text-[11px] not-italic text-[var(--muted)]">noch einzuchecken</em></span></button>
+      <button
+        class="flex items-center gap-[14px] rounded-xl border border-[var(--border)] bg-white p-[18px] text-left text-[var(--text)] hover:border-[#e3a27d] hover:shadow-[0_3px_12px_rgba(90,56,36,.08)]"
+        :class="{ 'border-[#e3a27d] shadow-[0_3px_12px_rgba(90,56,36,.08)]': activeView === 'departures' }"
+        :aria-pressed="activeView === 'departures'" @click="activeView = 'departures'"
+      ><span class="metric-icon teal"><ArrowUpFromLine /></span><span class="grid flex-1 grid-cols-[1fr_auto] items-center"><small class="font-bold text-[var(--muted)]">Geplante Abreisen</small><strong class="col-start-2 row-start-1 row-span-2 text-[25px] font-bold [font-family:'Manrope',sans-serif]">{{ departures.length }}</strong><em class="mt-[3px] text-[11px] not-italic text-[var(--muted)]">heute auszuchecken</em></span></button>
     </section>
-    <section class="panel operations-list">
-      <header class="operations-list-header"><div><h2>{{ activeViewTitle }}</h2><p>{{ activeViewDescription }}</p></div><label class="directory-search operations-search"><Search :size="19" /><input v-model="localQuery" aria-label="Aktuelle Vorgänge durchsuchen" placeholder="Tier, Kunde oder Zimmer suchen …" /></label><div class="list-header-actions"><AppButton variant="text" type="button" aria-label="Aktuelle Vorgänge als CSV exportieren" @click="exportOperations"><Download :size="15" /> Exportieren</AppButton></div></header>
-      <div v-if="visibleBookings.length" class="operation-rows">
-        <article v-for="booking in visibleBookings" :key="booking.id" class="operation-row">
+    <section class="panel">
+      <header class="!grid grid-cols-[minmax(0,1fr)_minmax(340px,460px)_minmax(0,1fr)] items-center gap-[18px] border-b border-b-[#e8e4df] px-[22px] py-[21px] max-[760px]:grid-cols-1 max-[760px]:items-stretch"><div><h2>{{ activeViewTitle }}</h2><p>{{ activeViewDescription }}</p></div><label class="flex h-12 w-full items-center gap-2 rounded-[10px] border border-[var(--border)] bg-[#faf9f7] px-[14px] text-[15px] text-[var(--muted)]"><Search :size="19" /><input v-model="localQuery" class="w-full border-0 bg-transparent text-[15px] outline-none" aria-label="Aktuelle Vorgänge durchsuchen" placeholder="Tier, Kunde oder Zimmer suchen …" /></label><div class="list-header-actions max-[760px]:justify-start"><AppButton variant="text" type="button" aria-label="Aktuelle Vorgänge als CSV exportieren" @click="exportOperations"><Download :size="15" /> Exportieren</AppButton></div></header>
+      <div v-if="visibleBookings.length">
+        <article v-for="booking in visibleBookings" :key="booking.id" class="grid grid-cols-[auto_minmax(190px,1.4fr)_minmax(130px,1fr)_105px_auto] items-center gap-4 border-b border-b-[#eeeae6] px-[22px] py-4 last:border-b-0 max-[680px]:grid-cols-[auto_1fr] max-[680px]:p-[15px]">
           <div class="pet-avatar" :style="{ background: booking.pet.color }">{{ booking.pet.initials }}</div>
           <div class="pet-info"><RouterLink class="customer-profile-link" :to="{ name: 'customers', query: { customerId: booking.customer.id } }">{{ booking.customer.firstName }} {{ booking.customer.lastName }}</RouterLink><span>{{ booking.pet.name }}</span></div>
-          <div class="operation-room"><small>Zimmer</small><strong>{{ booking.room.name }}</strong></div>
-          <div class="operation-time"><small>{{ activeView === 'arrivals' ? 'Ankunft' : activeView === 'departures' ? 'Abholung' : 'Geplante Abreise' }}</small><strong>{{ activeView === 'arrivals' ? `${booking.arrival} Uhr` : activeView === 'departures' ? (booking.pickupTime ? `${booking.pickupTime} Uhr` : 'Nicht vereinbart') : formatDayAndMonth(booking.departure) }}</strong></div>
-          <div v-if="activeView === 'arrivals'" class="operation-actions">
+          <div class="max-[680px]:col-start-2"><small class="mb-1 block text-xs text-[var(--muted)]">Zimmer</small><strong class="block text-sm">{{ booking.room.name }}</strong></div>
+          <div class="max-[680px]:col-start-2"><small class="mb-1 block text-xs text-[var(--muted)]">{{ activeView === 'arrivals' ? 'Ankunft' : activeView === 'departures' ? 'Abholung' : 'Geplante Abreise' }}</small><strong class="block text-sm">{{ activeView === 'arrivals' ? `${booking.arrival} Uhr` : activeView === 'departures' ? (booking.pickupTime ? `${booking.pickupTime} Uhr` : 'Nicht vereinbart') : formatDayAndMonth(booking.departure) }}</strong></div>
+          <div v-if="activeView === 'arrivals'" class="flex items-center justify-end gap-3 max-[680px]:col-start-2 max-[680px]:flex-col max-[680px]:items-start max-[680px]:justify-start max-[680px]:gap-2">
             <AppButton variant="text" :to="{ name: 'bookings', query: { bookingId: booking.id, edit: 'true' } }">Buchung bearbeiten <ExternalLink :size="14" /></AppButton>
             <AppButton variant="link" @click="emit('checkIn', booking)"><ArrowDownToLine :size="16" /> Einchecken</AppButton>
           </div>
-          <div v-else class="operation-actions">
+          <div v-else class="flex items-center justify-end gap-3 max-[680px]:col-start-2 max-[680px]:flex-col max-[680px]:items-start max-[680px]:justify-start max-[680px]:gap-2">
             <AppButton variant="text" type="button" @click="bookingToMove = booking"><DoorOpen :size="14" /> Zimmer wechseln</AppButton>
             <AppButton variant="link" @click="emit('checkOut', booking as DepartureView)"><ArrowUpFromLine :size="16" /> Auschecken</AppButton>
           </div>
@@ -132,13 +153,13 @@ function exportHistory() {
       </AppEmptyState>
     </section>
     <RoomChangeModal v-if="bookingToMove" :booking="bookingToMove" @close="bookingToMove = null" />
-    <section class="panel operations-history">
+    <section class="panel mt-[22px]">
       <header><div><h2>Letzte Vorgänge</h2><p>Zuletzt ein- und ausgecheckte Tiere · {{ store.checkInOutHistory.value.length }} insgesamt</p></div><div class="list-header-actions"><AppButton variant="text" type="button" aria-label="Check-in-out-Verlauf als CSV exportieren" @click="exportHistory"><Download :size="15" /> Exportieren</AppButton><History :size="20" /></div></header>
-      <div class="history-rows">
-        <article v-for="event in pagedHistory" :key="event.id">
-          <span class="history-event-icon" :class="event.type"><ArrowDownToLine v-if="event.type === 'check-in'" :size="17" /><RotateCcw v-else-if="event.type === 'check-in-reverted'" :size="17" /><ArrowUpFromLine v-else :size="17" /></span>
+      <div>
+        <article v-for="event in pagedHistory" :key="event.id" class="grid grid-cols-[auto_minmax(150px,1fr)_minmax(170px,.7fr)_auto_auto] items-center gap-[14px] border-b border-b-[#eeeae6] px-[22px] py-[14px] last:border-b-0 max-sm:grid-cols-[auto_1fr] max-sm:px-4">
+          <span class="grid h-[35px] w-[35px] place-items-center rounded-[9px]" :class="historyEventIconClasses[event.type]"><ArrowDownToLine v-if="event.type === 'check-in'" :size="17" /><RotateCcw v-else-if="event.type === 'check-in-reverted'" :size="17" /><ArrowUpFromLine v-else :size="17" /></span>
           <div class="pet-info"><RouterLink class="customer-profile-link" :to="{ name: 'customers', query: { customerId: event.booking.customer.id } }">{{ event.booking.customer.firstName }} {{ event.booking.customer.lastName }}</RouterLink><span>{{ event.booking.pet.name }} · {{ event.booking.room.name }}</span></div>
-          <div class="history-event-time"><strong>{{ checkInOutEventLabels[event.type] }}</strong><span>{{ formatEventTime(event.occurredAt) }} Uhr</span></div>
+          <div class="max-sm:col-start-2"><strong class="block text-[11px]">{{ checkInOutEventLabels[event.type] }}</strong><span class="mt-[3px] block text-[11px] text-[var(--muted)]">{{ formatEventTime(event.occurredAt) }} Uhr</span></div>
           <AppButton v-if="event.type === 'check-in' && store.canUndoCheckIn(event.bookingId)" variant="text" class="text-[11px] text-[var(--primary-dark)] max-sm:col-start-2 max-sm:justify-self-start" type="button" @click="store.undoCheckIn(event.bookingId)"><RotateCcw :size="14" /> Rückgängig</AppButton>
           <AppButton variant="text" class="max-sm:col-start-2 max-sm:justify-self-start" :to="{ name: 'bookings', query: { bookingId: event.bookingId } }">Zur Buchung <ExternalLink :size="14" /></AppButton>
         </article>

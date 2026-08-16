@@ -34,11 +34,11 @@ function submit() {
   <BaseModal labelled-by="closure-form-heading" modal-class="closure-form-modal max-w-[420px]" @close="$emit('close')">
     <p class="eyebrow">Kapazitätsplanung</p>
     <h2 id="closure-form-heading" class="mb-[10px] mt-[5px] text-[22px] font-bold [font-family:'Manrope',sans-serif]">{{ mode === 'edit' ? 'Schließzeit bearbeiten' : 'Schließzeit hinterlegen' }}</h2>
-    <form class="closure-form-modal-form" @submit.prevent="submit">
-      <label>Von<input v-model="form.startDate" aria-label="Schließzeit von" type="date" required /></label>
-      <label>Bis<input v-model="form.endDate" aria-label="Schließzeit bis" type="date" :min="form.startDate" required /></label>
-      <label>Hinweis <small>optional</small><input v-model="form.reason" aria-label="Hinweis zur Schließzeit" type="text" placeholder="z. B. Betriebsferien" /></label>
-      <p v-if="error" class="form-error" role="alert">Bitte einen gültigen Zeitraum für die Schließzeit angeben.</p>
+    <form class="mt-5 grid gap-[13px]" @submit.prevent="submit">
+      <label class="grid gap-[6px] text-[11px] font-bold text-[var(--muted)]">Von<input v-model="form.startDate" class="h-10 min-w-0 rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" aria-label="Schließzeit von" type="date" required /></label>
+      <label class="grid gap-[6px] text-[11px] font-bold text-[var(--muted)]">Bis<input v-model="form.endDate" class="h-10 min-w-0 rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" aria-label="Schließzeit bis" type="date" :min="form.startDate" required /></label>
+      <label class="grid gap-[6px] text-[11px] font-bold text-[var(--muted)]">Hinweis <small>optional</small><input v-model="form.reason" class="h-10 min-w-0 rounded-lg border border-[var(--border)] bg-white px-[10px] text-[var(--text)]" aria-label="Hinweis zur Schließzeit" type="text" placeholder="z. B. Betriebsferien" /></label>
+      <p v-if="error" class="m-0 text-xs text-[#9b4444]" role="alert">Bitte einen gültigen Zeitraum für die Schließzeit angeben.</p>
       <div class="mt-[23px] flex flex-col-reverse gap-[9px] [&>*]:w-full sm:flex-row sm:justify-end sm:[&>*]:w-auto"><AppButton type="button" variant="secondary" @click="$emit('close')">Abbrechen</AppButton><AppButton variant="primary" type="submit">{{ mode === 'edit' ? 'Änderungen speichern' : 'Schließzeit hinterlegen' }}</AppButton></div>
     </form>
   </BaseModal>
