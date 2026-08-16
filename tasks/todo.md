@@ -14,4 +14,4 @@
 [x] Entferne den hinweis "Ein ausführlichere Tarifkonfiguration ist noch in der Entwicklung..."
 [x] Baue Tierfotos in die Detailansicht ein (nicht in die Liste)
 [x] Baue Tierfotos in die Detailansicht ein (nicht in die Liste). Nutze dafür die Bilder aus public/assets. Mach das Vorschaubild größer
-[ ] Die Preisübersicht in der Anfrage Seite soll keine Berechnung sein, sondern eine Auflistung der Tarifkonditionen.
+[x] Die Preisübersicht in der Anfrage Seite soll keine Berechnung sein, sondern eine Auflistung der Tarifkonditionen.

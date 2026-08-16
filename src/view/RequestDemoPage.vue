@@ -3,7 +3,6 @@ import { computed, reactive, ref } from 'vue'
 import { CheckCircle2, Plus, Trash2 } from '@lucide/vue'
 import type { NewBookingRequest } from '../domain'
 import { usePensionStore } from '../usePensionStore'
-import { calculateTariffReservationPrice } from '../domain/stayPrice'
 import { formatEuroCents } from '../presentation/currencyFormat'
 
 const store = usePensionStore()
@@ -15,11 +14,8 @@ const form = reactive<NewBookingRequest>({
   arrivalDate: '', arrival: store.settings.checkInFrom, departure: '', note: ''
 })
 
-const pricePreview = computed(() => calculateTariffReservationPrice(
-  { arrivalDate: form.arrivalDate, arrival: form.arrival, departure: form.departure },
-  (form.animals ?? []).map((animal, index) => ({ id: `preview-${index}` })),
-  store.settings.tariffs.find((tariff) => tariff.id === form.tariffId)
-))
+const selectedTariff = computed(() => store.settings.tariffs.find((tariff) => tariff.id === form.tariffId))
+const sortedTariffTiers = computed(() => [...(selectedTariff.value?.tiers ?? [])].sort((a, b) => a.startsAtAnimal - b.startsAtAnimal))
 
 function addAnimal(): void {
   form.animals!.push({ name: '', species: 'dog' })
@@ -72,13 +68,13 @@ function submit(): void {
           </form>
         </section>
         <aside v-if="!sent" class="rounded-2xl border border-app-border bg-white p-5 shadow-[0_12px_32px_rgba(36,33,31,.08)] lg:sticky lg:top-8">
-          <h2 class="m-0 mb-3 text-sm font-bold text-app-text">Preisübersicht</h2>
-          <div v-if="pricePreview" class="grid gap-2">
-            <div v-for="(stay, index) in pricePreview.stays" :key="stay.bookingId" class="flex items-center justify-between gap-2 text-xs text-app-muted"><span>{{ form.animals?.[index]?.name || `Tier ${index + 1}` }} · {{ stay.billableDays }} {{ stay.billableDays === 1 ? 'Tag' : 'Tage' }}</span><span class="font-bold text-app-text">{{ formatEuroCents(stay.totalCents) }}</span></div>
-            <div class="mt-2 flex items-center justify-between gap-2 border-t border-app-border pt-3"><span class="text-sm font-bold text-app-text">Gesamt</span><span class="text-lg font-bold text-primary">{{ formatEuroCents(pricePreview.totalCents) }}</span></div>
-            <small class="text-[11px] leading-relaxed text-app-muted">Unverbindliche Schätzung auf Basis des gewählten Tarifs.</small>
+          <h2 class="m-0 mb-3 text-sm font-bold text-app-text">Tarifkonditionen</h2>
+          <div v-if="selectedTariff" class="grid gap-2">
+            <p class="m-0 text-xs font-bold text-app-text">{{ selectedTariff.name }}</p>
+            <div v-for="tier in sortedTariffTiers" :key="tier.id" class="flex items-center justify-between gap-2 text-xs text-app-muted"><span>{{ tier.startsAtAnimal === 1 ? '1. Tier' : `Ab dem ${tier.startsAtAnimal}. Tier` }}</span><span class="font-bold text-app-text">{{ formatEuroCents(tier.amountCents) }} / Nacht</span></div>
+            <small class="mt-2 border-t border-app-border pt-3 text-[11px] leading-relaxed text-app-muted">Preise je Tier und Nacht laut gewähltem Tarif, unabhängig vom konkreten Zeitraum.</small>
           </div>
-          <p v-else class="m-0 text-xs leading-relaxed text-app-muted">Wähle Tarif, Anreise- und Abreisedatum, um die voraussichtlichen Kosten zu sehen.</p>
+          <p v-else class="m-0 text-xs leading-relaxed text-app-muted">Wähle einen Tarif, um die Preiskonditionen zu sehen.</p>
         </aside>
       </div>
       <footer class="mt-6 text-center">
