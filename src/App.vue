@@ -155,10 +155,10 @@ onBeforeUnmount(() => {
 
     <div v-if="mobileNavOpen" class="scrim" @click="closeMobileNavigation(true)" />
     <section class="main-area">
-      <header class="topbar">
+      <header class="flex h-[70px] items-center gap-2 border-b border-[var(--border)] bg-white px-[15px] sm:gap-[18px] sm:px-[28px]">
         <AppIconButton ref="mobileNavTrigger" class="hidden max-[920px]:grid" aria-label="Navigation öffnen" @click="openMobileNavigation"><Menu /></AppIconButton>
         <DemoDataControl />
-        <RouterLink class="top-avatar" to="/account" aria-label="Zu den Kontoeinstellungen">{{ accountInitials(store.account) }}</RouterLink>
+        <RouterLink class="grid size-[35px] flex-none place-items-center rounded-full bg-[#dceae7] text-xs font-bold text-[var(--petrol)] no-underline sm:size-[38px]" to="/account" aria-label="Zu den Kontoeinstellungen">{{ accountInitials(store.account) }}</RouterLink>
       </header>
 
       <AppContainer v-if="route.name === 'dashboard'">
