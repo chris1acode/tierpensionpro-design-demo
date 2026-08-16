@@ -4,6 +4,7 @@ import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { CalendarDays, Check, ChevronLeft, ChevronRight, Download, List, LogOut, Pencil, Plus, Search, Trash2 } from '@lucide/vue'
 import type { BookingStatus, BookingView, DepartureView } from '../domain'
 import AppButton from './AppButton.vue'
+import AppBookingStatus from './AppBookingStatus.vue'
 import AppCustomerLink from './AppCustomerLink.vue'
 import AppContainer from './AppContainer.vue'
 import AppEmptyState from './AppEmptyState.vue'
@@ -186,7 +187,7 @@ function openBookingFromTimeline(bookingId: string) {
           <div><small>Zimmer</small><strong>{{ booking.room.name }}</strong></div>
           <div><small>Ankunft</small><strong>{{ booking.arrivalDate }} · {{ booking.arrival }} Uhr</strong></div>
           <div><small>Abreise</small><strong>{{ booking.departure }}<template v-if="booking.pickupTime"> · {{ booking.pickupTime }} Uhr</template></strong></div>
-          <span class="booking-status" :class="booking.status">{{ bookingStatusLabels[booking.status] }}</span>
+          <AppBookingStatus class="max-[900px]:col-start-3 max-[900px]:row-start-1" :status="booking.status">{{ bookingStatusLabels[booking.status] }}</AppBookingStatus>
           <div class="booking-row-actions">
             <RouterLink v-if="booking.status === 'confirmed'" class="edit-booking-button" :to="{ name: 'bookings', query: { bookingId: booking.id, edit: 'true' } }" :aria-label="`Buchung für ${booking.pet.name} bearbeiten`"><Pencil :size="16" /> Bearbeiten</RouterLink>
             <button v-if="booking.status === 'checked-in'" class="checkout-booking-button" :aria-label="`${booking.pet.name} auschecken`" @click="emit('checkOut', booking)"><LogOut :size="16" /> Auschecken</button>

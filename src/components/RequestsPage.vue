@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { Cat, Check, CircleAlert, CircleCheck, Dog, Download, Inbox, ThumbsDown, ThumbsUp } from '@lucide/vue'
 import type { BookingRequest } from '../domain'
 import AppButton from './AppButton.vue'
+import AppBookingStatus from './AppBookingStatus.vue'
 import AppCustomerLink from './AppCustomerLink.vue'
 import AppContainer from './AppContainer.vue'
 import AppEmptyState from './AppEmptyState.vue'
@@ -132,10 +133,10 @@ function exportRequests(scope: 'pending' | 'history') {
               <small class="block text-[10px] text-[var(--muted)] mb-[3px]">Aufenthalt</small>
               <span class="block text-[13px] text-[var(--muted)] mt-0.5">{{ request.arrivalDate }} – {{ request.departure }}</span>
             </div>
-            <span
-              class="booking-status col-start-2 row-start-1 row-span-2 min-[900px]:col-start-3 min-[900px]:row-span-1 self-center justify-self-end"
-              :class="request.status === 'accepted' ? 'accepted' : 'checked-out'"
-            >{{ requestStatusLabels[request.status] }}</span>
+            <AppBookingStatus
+              class="col-start-2 row-start-1 row-span-2 min-[900px]:col-start-3 min-[900px]:row-span-1 self-center justify-self-end"
+              :status="request.status === 'accepted' ? 'accepted' : 'checked-out'"
+            >{{ requestStatusLabels[request.status] }}</AppBookingStatus>
             <div v-if="request.declineReason || request.declineNotification" class="col-span-full mt-1">
               <span v-if="request.declineReason" class="note-badge mt-1">Grund: {{ request.declineReason }}</span>
               <span v-if="request.declineNotification" class="mt-1.5 block text-[10px] font-bold text-[#466b62]">E-Mail-Benachrichtigung an {{ request.declineNotification.recipient }} vorgemerkt</span>

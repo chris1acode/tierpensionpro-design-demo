@@ -10,6 +10,7 @@ import { matchesSearchTerm, resolveSearchTerm } from '../shared/search'
 import { downloadCsv } from '../shared/csvExport'
 import { usePensionStore } from '../usePensionStore'
 import AppButton from './AppButton.vue'
+import AppBookingStatus from './AppBookingStatus.vue'
 import AppContainer from './AppContainer.vue'
 import AppEmptyState from './AppEmptyState.vue'
 import AppPageHeading from './AppPageHeading.vue'
@@ -276,7 +277,7 @@ function exportCustomers() {
           <article v-for="booking in selectedCustomer.bookings" :key="booking.id" class="grid grid-cols-[1fr_1fr_auto] items-center gap-3 border-t border-[#eeeae6] py-3">
             <div><strong class="block text-[12px]">{{ booking.pet.name }}</strong><span class="block text-[10px] text-[var(--muted)]">{{ booking.room.name }}</span></div>
             <div><strong class="block text-[12px]">{{ booking.arrival }} Uhr</strong><span class="mt-[2px] block text-[10px] text-[var(--muted)]">bis {{ booking.departure }}</span></div>
-            <span class="booking-status self-center justify-self-end" :class="booking.status">{{ bookingStatusLabels[booking.status] }}</span>
+            <AppBookingStatus class="self-center justify-self-end" :status="booking.status">{{ bookingStatusLabels[booking.status] }}</AppBookingStatus>
           </article>
           <AppEmptyState v-if="!selectedCustomer.bookings.length">
             <template #title>Noch keine Aufenthalte.</template>
