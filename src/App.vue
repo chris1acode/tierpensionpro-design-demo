@@ -128,33 +128,33 @@ onBeforeUnmount(() => {
 
 <template>
   <IntroPage v-if="route.name === 'intro'" />
-  <div v-else class="app-shell">
-    <aside ref="mobileNavigation" class="sidebar" :class="{ open: mobileNavOpen, collapsed: sidebarCollapsed }" :role="mobileNavOpen ? 'dialog' : undefined" :aria-modal="mobileNavOpen ? 'true' : undefined" aria-label="Seitennavigation">
-      <RouterLink class="brand" to="/dashboard" @click="closeMobileNavigation()">
-        <span class="brand-mark">
+  <div v-else class="flex min-h-screen">
+    <aside ref="mobileNavigation" class="fixed inset-y-0 left-0 z-20 flex w-[250px] flex-col border-r border-[var(--border)] bg-white px-4 pb-[18px] pt-[25px] transition-[width,transform,visibility] duration-[250ms] max-[920px]:invisible max-[920px]:pointer-events-none max-[920px]:-translate-x-full" :class="[{ 'visible pointer-events-auto translate-x-0 shadow-[15px_0_45px_rgba(36,33,31,.15)] max-[920px]:delay-0': mobileNavOpen }, sidebarCollapsed ? 'min-[921px]:w-[72px]' : 'min-[921px]:w-[250px]']" :role="mobileNavOpen ? 'dialog' : undefined" :aria-modal="mobileNavOpen ? 'true' : undefined" aria-label="Seitennavigation">
+      <RouterLink class="flex items-center gap-[10px] px-[9px] pb-8 pt-0 text-[19px] font-bold text-[var(--text)] no-underline transition-[padding] duration-[250ms] [font-family:'Manrope',sans-serif]" :class="sidebarCollapsed ? 'min-[921px]:justify-center min-[921px]:pb-[22px]' : ''" to="/dashboard" @click="closeMobileNavigation()">
+        <span class="grid size-9 shrink-0 place-items-center text-[var(--primary)]">
           <LogoIcon :size="24" color="white" />
         </span>
-        <span>Tierpension <span>Pro</span></span>
+        <span :class="sidebarCollapsed ? 'min-[921px]:hidden' : ''">Tierpension <span class="text-[var(--primary)]">Pro</span></span>
       </RouterLink>
       <AppIconButton ref="mobileNavClose" class="hidden absolute right-[10px] top-[21px] max-[920px]:grid" aria-label="Navigation schließen" @click="closeMobileNavigation(true)"><X /></AppIconButton>
-      <nav aria-label="Hauptnavigation">
-        <RouterLink v-for="item in visibleNavigationItems" :key="item.name" :to="item.path" :class="{ 'router-link-exact-active': item.name === 'settings' && isSettingsRoute }" :title="sidebarCollapsed ? item.title : undefined" @click="closeMobileNavigation()">
-          <component :is="item.icon" :size="19" /><span>{{ item.title }}</span><span v-if="item.name === 'requests' && store.pendingRequests.value.length" class="nav-badge" aria-hidden="true">{{ store.pendingRequests.value.length }}</span>
+      <nav class="grid gap-[6px]" aria-label="Hauptnavigation">
+        <RouterLink v-for="item in visibleNavigationItems" :key="item.name" :to="item.path" class="relative flex min-h-[45px] items-center gap-3 rounded-[9px] px-[13px] text-left font-semibold text-[#5e5955] no-underline hover:bg-[#f6f3ef] [&.router-link-exact-active]:bg-[#fff3eb] [&.router-link-exact-active]:text-[#a74613] [&.router-link-exact-active]:before:absolute [&.router-link-exact-active]:before:-left-4 [&.router-link-exact-active]:before:h-[26px] [&.router-link-exact-active]:before:w-[3px] [&.router-link-exact-active]:before:rounded-r [&.router-link-exact-active]:before:bg-[var(--primary)]" :class="[{ 'router-link-exact-active': item.name === 'settings' && isSettingsRoute }, sidebarCollapsed ? 'min-[921px]:justify-center min-[921px]:px-[10px]' : '']" :title="sidebarCollapsed ? item.title : undefined" @click="closeMobileNavigation()">
+          <component :is="item.icon" :size="19" /><span :class="sidebarCollapsed ? 'min-[921px]:hidden' : ''">{{ item.title }}</span><span v-if="item.name === 'requests' && store.pendingRequests.value.length" class="ml-auto inline-flex size-5 items-center justify-center rounded-[10px] bg-[#faf0d9] px-[6px] text-[10px] font-bold leading-none text-[#84601c] [&.router-link-exact-active]:bg-[#fbe8dd] [&.router-link-exact-active]:text-[#a74613]" :class="sidebarCollapsed ? 'min-[921px]:hidden' : ''" aria-hidden="true">{{ store.pendingRequests.value.length }}</span>
         </RouterLink>
       </nav>
-      <RouterLink class="sidebar-profile" to="/account" aria-label="Zu den Kontoeinstellungen" :title="sidebarCollapsed ? 'Kontoeinstellungen' : undefined" @click="closeMobileNavigation()">
-        <div class="avatar">{{ accountInitials(store.account) }}</div>
-        <div><strong>{{ store.account.firstName }} {{ store.account.lastName }}</strong><small>{{ store.account.role === 'root' ? 'Inhaber' : 'Mitarbeiter' }}</small></div>
+      <RouterLink class="relative mt-auto flex items-center gap-[10px] rounded-lg border-t border-[#ebe7e2] px-2 pb-0 pt-[15px] text-inherit no-underline hover:bg-[#f5f2ee]" :class="sidebarCollapsed ? 'min-[921px]:justify-center min-[921px]:px-0' : ''" to="/account" aria-label="Zu den Kontoeinstellungen" :title="sidebarCollapsed ? 'Kontoeinstellungen' : undefined" @click="closeMobileNavigation()">
+        <div class="grid size-[38px] shrink-0 place-items-center rounded-full bg-[#dceae7] text-xs font-bold text-[var(--petrol)]">{{ accountInitials(store.account) }}</div>
+        <div :class="sidebarCollapsed ? 'min-[921px]:hidden' : ''"><strong class="block text-[13px]">{{ store.account.firstName }} {{ store.account.lastName }}</strong><small class="mt-[2px] block text-[11px] text-[var(--muted)]">{{ store.account.role === 'root' ? 'Inhaber' : 'Mitarbeiter' }}</small></div>
       </RouterLink>
-      <button class="sidebar-toggle-link" :title="sidebarCollapsed ? 'Navigation ausklappen' : 'Navigation einklappen'" @click="sidebarCollapsed = !sidebarCollapsed">
+      <button class="relative mt-[10px] hidden w-full items-center justify-center gap-[6px] rounded-lg border-0 bg-transparent px-2 py-[9px] text-center text-[11px] font-bold text-[var(--muted)] hover:bg-[#f5f2ee] hover:text-[var(--text)] min-[921px]:flex" :title="sidebarCollapsed ? 'Navigation ausklappen' : 'Navigation einklappen'" @click="sidebarCollapsed = !sidebarCollapsed">
         <ChevronRight v-if="sidebarCollapsed" :size="16" />
         <ChevronLeft v-else :size="16" />
-        <span>{{ sidebarCollapsed ? 'Ausklappen' : 'Einklappen' }}</span>
+        <span :class="sidebarCollapsed ? 'hidden' : ''">{{ sidebarCollapsed ? 'Ausklappen' : 'Einklappen' }}</span>
       </button>
     </aside>
 
-    <div v-if="mobileNavOpen" class="scrim" @click="closeMobileNavigation(true)" />
-    <section class="main-area">
+    <div v-if="mobileNavOpen" class="fixed inset-0 z-[15] bg-[rgba(36,33,31,.35)] min-[921px]:hidden" @click="closeMobileNavigation(true)" />
+    <section class="w-full transition-[margin,width] duration-[250ms] min-[921px]:ml-[250px] min-[921px]:w-[calc(100%-250px)]" :class="sidebarCollapsed ? 'min-[921px]:ml-[72px] min-[921px]:w-[calc(100%-72px)]' : ''">
       <header class="flex h-[70px] items-center gap-2 border-b border-[var(--border)] bg-white px-[15px] sm:gap-[18px] sm:px-[28px]">
         <AppIconButton ref="mobileNavTrigger" class="hidden max-[920px]:grid" aria-label="Navigation öffnen" @click="openMobileNavigation"><Menu /></AppIconButton>
         <DemoDataControl />
