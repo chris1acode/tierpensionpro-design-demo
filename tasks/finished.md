@@ -22,3 +22,4 @@
 - Check-out-Preisberechnung in `CheckoutModal.vue` auf lokale Tailwind-Grid-Utilities umgestellt und die globalen `.checkout-price`-/`.checkout-price-unavailable`-Regeln entfernt — ff151, 2026-08-16 13:37
 - Tierauswahl der Buchungs- und Auslastungsreservierungsdialoge als wiederverwendbare Tailwind-Komponente `AppPetSelection` mit `v-model` und Change-Event umgesetzt; doppelte Markup-Blöcke sowie globale `.pet-selection`-/`.pet-choice`-Regeln mit `!important` entfernt — 5a47b, 2026-08-16 13:39
 - Wiederkehrende Checkbox-Felder als Tailwind-Komponente `AppCheckboxField` in Tier- und Einstellungen-Formularen gebündelt und die globale `.checkbox-field`-Regel mit `!important` entfernt — bf15e, 2026-08-16 13:40
+- Schließzeiten-Liste der Belegungsansicht auf lokale Tailwind-Utilities umgestellt und die globalen `.occupancy-closures`-/`.closure-list`-/`.closure-actions`- sowie toten Dialogformular-Regeln entfernt; Build erfolgreich — 68dd5, 2026-08-16 13:41

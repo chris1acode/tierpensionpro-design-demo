@@ -239,16 +239,19 @@ function closureLabel(startDate: string, endDate: string): string {
         </ul>
       </article>
     </section>
-    <section class="panel occupancy-closures" aria-labelledby="closures-heading">
+    <section class="panel mt-[22px]" aria-labelledby="closures-heading">
       <header>
         <div><h2 id="closures-heading">Schließzeiten</h2><p>Während einer Schließzeit stehen keine Plätze für Reservierungen zur Verfügung.</p></div>
         <AppButton variant="secondary" type="button" @click="openClosureCreate"><LockKeyhole :size="15" /> Schließzeit anlegen</AppButton>
       </header>
       <AppEmptyState v-if="!store.pensionClosures.length" variant="inline">Keine Schließzeiten hinterlegt.</AppEmptyState>
-      <ul v-else class="closure-list">
-        <li v-for="closure in store.pensionClosures" :key="closure.id">
-          <div><strong>{{ closureLabel(closure.startDate, closure.endDate) }}</strong><span>{{ closure.reason || 'Ohne Hinweis' }}</span></div>
-          <div class="closure-actions">
+      <ul v-else class="m-0 list-none p-0">
+        <li v-for="closure in store.pensionClosures" :key="closure.id" class="flex items-center justify-between gap-4 border-t border-[var(--border)] px-[22px] py-[14px] first:border-t-0">
+          <div>
+            <strong class="block">{{ closureLabel(closure.startDate, closure.endDate) }}</strong>
+            <span class="mt-[3px] block text-xs text-[var(--muted)]">{{ closure.reason || 'Ohne Hinweis' }}</span>
+          </div>
+          <div class="flex items-center gap-[6px]">
             <AppIconButton type="button" :aria-label="`Schließzeit ${closureLabel(closure.startDate, closure.endDate)} bearbeiten`" @click="openClosureEdit(closure)"><Pencil :size="15" /></AppIconButton>
             <AppIconButton type="button" :aria-label="`Schließzeit ${closureLabel(closure.startDate, closure.endDate)} entfernen`" @click="store.deletePensionClosure(closure.id)"><Trash2 :size="15" /></AppIconButton>
           </div>
