@@ -38,7 +38,6 @@ import ToastRegion from './components/ToastRegion.vue'
 import type { BookingView, DepartureView } from './domain'
 import { accountInitials } from './domain/account'
 import { formatLongWeekdayDate } from './presentation/dateFormat'
-import { calculateStayPrice } from './domain/stayPrice'
 import { navigationItems } from './navigation'
 import { usePensionStore } from './usePensionStore'
 
@@ -70,7 +69,7 @@ const filteredArrivals = computed(() => store.arrivals.value)
 const filteredDepartures = computed(() => store.departures.value)
 
 const selectedDeparturePrice = computed(() => selectedDeparture.value
-  ? calculateStayPrice(selectedDeparture.value, store.settings.dailyPetRates)
+  ? store.previewCheckoutPrice(selectedDeparture.value.id)
   : null)
 
 function confirmCheckIn(booking: BookingView, allowOverbooking = false) {

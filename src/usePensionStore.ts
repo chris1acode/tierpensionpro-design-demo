@@ -1,5 +1,5 @@
 import { computed, reactive, ref } from 'vue'
-import type { AccountUpdate, Booking, BookingRequest, BookingReservation, BookingUpdate, CheckInOutEvent, Customer, CustomerUpdate, NewBooking, NewBookingRequest, NewBookingReservation, NewCustomer, NewPet, NewPensionClosure, OccupancyRangeDays, PensionClosureUpdate, PensionSettingsUpdate, Pet, PetUpdate, RegistrationProfile, RequestPetAssignment, RoomInput, RoomOperationalStatus, ToastNotification } from './domain'
+import type { AccountUpdate, Booking, BookingRequest, BookingReservation, BookingUpdate, CheckInOutEvent, Customer, CustomerUpdate, NewBooking, NewBookingRequest, NewBookingReservation, NewCustomer, NewPet, NewPensionClosure, OccupancyRangeDays, PensionClosureUpdate, PensionSettingsUpdate, Pet, PetUpdate, RegistrationProfile, RequestPetAssignment, RoomInput, RoomOperationalStatus, StayPrice, ToastNotification } from './domain'
 import { isValidAccountUpdate } from './domain/account'
 import { isValidEmail } from './domain/email'
 import { isValidBookingNote, normalizeBookingNote } from './domain/bookingNote'
@@ -12,7 +12,7 @@ import { isValidRoomInput } from './domain/roomConfiguration'
 import { doesStayOverlapClosure, isValidPensionClosure } from './domain/pensionClosure'
 import { hasRoomCapacityForStay } from './domain/roomAvailability'
 import { isRoomCompatibleWithSpecies } from './domain/roomCompatibility'
-import { calculateStayPrice, calculateTariffReservationPrice } from './domain/stayPrice'
+import { calculateTariffReservationPrice } from './domain/stayPrice'
 import {
   selectBookingViews,
   selectArrivals,
@@ -583,26 +583,37 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     return true
   }
 
-  function checkOut(bookingId: string): boolean {
-    const booking = bookings.find((item) => item.id === bookingId)
-    const pet = booking && pets.find((item) => item.id === booking.petId)
-    if (!booking || !pet || booking.status !== 'checked-in') return false
-
+  /** The room's linked tariff is the ultimate fallback so every stay, including
+   * demo bookings created before a tariff was chosen explicitly, still prices. */
+  function resolveCheckoutPrice(booking: Booking, pet: Pet): StayPrice | undefined {
     const reservation = booking.reservationId ? bookingReservations.find((item) => item.id === booking.reservationId) : undefined
-    const tariff = booking.tariffId || reservation?.tariffId
-      ? settings.tariffs.find((item) => item.id === (booking.tariffId ?? reservation?.tariffId))
-      : undefined
+    const room = rooms.find((item) => item.id === booking.roomId)
+    const tariffId = booking.tariffId ?? reservation?.tariffId ?? room?.tariffId
+    const tariff = tariffId ? settings.tariffs.find((item) => item.id === tariffId) : undefined
     const reservationPets = reservation
       ? reservation.petIds.map((id) => pets.find((candidate) => candidate.id === id)).filter((candidate): candidate is Pet => Boolean(candidate))
       : [pet]
     const tariffPrice = calculateTariffReservationPrice(booking, reservationPets, tariff)
     const reservationPrice = tariffPrice?.stays[reservationPets.findIndex((candidate) => candidate.id === pet.id)]
-    const price = reservationPrice
-      ? { ...reservationPrice, bookingId: booking.id }
-      : calculateStayPrice({ ...booking, pet }, settings.dailyPetRates)
+    return reservationPrice ? { ...reservationPrice, bookingId: booking.id } : undefined
+  }
+
+  /** A non-binding preview of the checkout invoice, used by the confirmation dialog. */
+  function previewCheckoutPrice(bookingId: string): StayPrice | null {
+    const booking = bookings.find((item) => item.id === bookingId)
+    const pet = booking && pets.find((item) => item.id === booking.petId)
+    if (!booking || !pet) return null
+    return resolveCheckoutPrice(booking, pet) ?? null
+  }
+
+  function checkOut(bookingId: string): boolean {
+    const booking = bookings.find((item) => item.id === bookingId)
+    const pet = booking && pets.find((item) => item.id === booking.petId)
+    if (!booking || !pet || booking.status !== 'checked-in') return false
+
     booking.status = 'checked-out'
     // Keep the completed invoice independent from future rate changes.
-    booking.checkoutPrice = price ? { ...price } : undefined
+    booking.checkoutPrice = resolveCheckoutPrice(booking, pet)
     recordCheckInOutEvent(booking.id, 'check-out')
     showToast(`${pet.name} wurde ausgecheckt. Das Zimmer ist wieder frei.`)
     return true
@@ -618,7 +629,6 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
 
     Object.assign(settings, {
       ...input,
-      dailyPetRates: input.dailyPetRates.map((rate) => ({ ...rate })),
       tariffs: input.tariffs.map((tariff) => ({ ...tariff, tiers: tariff.tiers.map((tier) => ({ ...tier })) }))
     })
     showToast('Die Einstellungen wurden gespeichert.')
@@ -867,6 +877,7 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
     canUndoCheckIn,
     undoCheckIn,
     checkOut,
+    previewCheckoutPrice,
     acceptRequest,
     declineRequest,
     submitBookingRequest,

@@ -246,19 +246,11 @@ export interface PensionSettings {
   checkInUntil: string
   checkOutUntil: string
   requestsEnabled: boolean
-  /** Simple base rate per accommodated animal and calendar day, in euro cents. */
-  dailyPetRates: DailyPetRate[]
-  /** Configurable accommodation tariffs. Bookings will reference these in the next step. */
+  /** Configurable accommodation tariffs, each linked 1:1 to a room. */
   tariffs: PriceTierTariff[]
 }
 
 export type PensionSettingsUpdate = Omit<PensionSettings, 'id'>
-
-export interface DailyPetRate {
-  id: string
-  species: PetSpecies
-  amountCents: number
-}
 
 /** A transparent, derived checkout amount for one animal stay. */
 export interface StayPrice {

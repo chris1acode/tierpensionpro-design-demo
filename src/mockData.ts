@@ -36,10 +36,6 @@ export const initialPensionSettings: PensionSettings = {
   checkInUntil: '12:00',
   checkOutUntil: '18:00',
   requestsEnabled: true,
-  dailyPetRates: [
-    { id: 'rate-dog', species: 'dog', amountCents: 3500 },
-    { id: 'rate-cat', species: 'cat', amountCents: 2400 }
-  ],
   tariffs: [
     { id: 'tariff-single', name: 'Einzelzimmer', type: 'price-tier', tiers: [{ id: 'tier-single-1', startsAtAnimal: 1, amountCents: 4200 }] },
     { id: 'tariff-standard', name: 'Standardzimmer', type: 'price-tier', tiers: [{ id: 'tier-standard-1', startsAtAnimal: 1, amountCents: 3000 }, { id: 'tier-standard-2', startsAtAnimal: 2, amountCents: 2400 }] }

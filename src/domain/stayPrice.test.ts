@@ -1,51 +1,39 @@
 import { describe, expect, it } from 'vitest'
-import type { BookingView, DailyPetRate } from '../domain'
-import { calculateReservationPrice, calculateStayPrice } from './stayPrice'
+import type { BookingView, PriceTierTariff } from '../domain'
+import { calculateTariffReservationPrice } from './stayPrice'
 
-const rates: DailyPetRate[] = [
-  { id: 'rate-dog', species: 'dog', amountCents: 3500 },
-  { id: 'rate-cat', species: 'cat', amountCents: 2400 }
-]
+const standard: PriceTierTariff = {
+  id: 'standard', name: 'Standardzimmer', type: 'price-tier',
+  tiers: [{ id: 'one', startsAtAnimal: 1, amountCents: 3000 }, { id: 'two', startsAtAnimal: 2, amountCents: 2500 }]
+}
 
-const dogStay = {
-  id: 'b-1',
+const stay = {
   arrivalDate: '2026-08-07',
   arrival: '10:30',
-  departure: '2026-08-10',
-  pet: { species: 'dog' }
-} as Pick<BookingView, 'id' | 'arrivalDate' | 'arrival' | 'departure' | 'pet'>
+  departure: '2026-08-10'
+} as Pick<BookingView, 'arrivalDate' | 'arrival' | 'departure'>
 
-describe('calculateStayPrice', () => {
+describe('calculateTariffReservationPrice', () => {
   it('calculates occupied calendar days and does not charge the departure day', () => {
-    expect(calculateStayPrice(dogStay, rates)).toEqual({
-      bookingId: 'b-1',
-      dailyRateCents: 3500,
-      billableDays: 3,
-      totalCents: 10500
+    expect(calculateTariffReservationPrice(stay, [{ id: 'p-1' }], standard)).toEqual({
+      stays: [{ bookingId: 'preview-p-1', dailyRateCents: 3000, billableDays: 3, totalCents: 9000 }],
+      totalCents: 9000
     })
   })
 
-  it('uses the rate configured for the animal species', () => {
-    expect(calculateStayPrice({ ...dogStay, pet: { ...dogStay.pet, species: 'cat' } }, rates)?.totalCents).toBe(7200)
-  })
-
-  it('does not invent an amount when the matching rate or stay period is invalid', () => {
-    expect(calculateStayPrice(dogStay, rates.filter((rate) => rate.species !== 'dog'))).toBeNull()
-    expect(calculateStayPrice({ ...dogStay, departure: '2026-08-06' }, rates)).toBeNull()
-  })
-
-  it('sums the configured rates for every animal selected in a shared reservation', () => {
-    expect(calculateReservationPrice({
-      arrivalDate: '2026-08-07', arrival: '10:30', departure: '2026-08-10'
-    }, [
-      { id: 'p-1', species: 'dog' },
-      { id: 'p-2', species: 'cat' }
-    ], rates)).toMatchObject({
-      totalCents: 17700,
+  it('prices each additional animal at the tier that applies to its position', () => {
+    expect(calculateTariffReservationPrice(stay, [{ id: 'p-1' }, { id: 'p-2' }], standard)).toMatchObject({
+      totalCents: 16500,
       stays: [
-        { bookingId: 'preview-p-1', billableDays: 3, totalCents: 10500 },
-        { bookingId: 'preview-p-2', billableDays: 3, totalCents: 7200 }
+        { bookingId: 'preview-p-1', billableDays: 3, totalCents: 9000 },
+        { bookingId: 'preview-p-2', billableDays: 3, totalCents: 7500 }
       ]
     })
+  })
+
+  it('does not invent an amount when the tariff is missing or the stay period is invalid', () => {
+    expect(calculateTariffReservationPrice(stay, [{ id: 'p-1' }], undefined)).toBeNull()
+    expect(calculateTariffReservationPrice({ ...stay, departure: '2026-08-06' }, [{ id: 'p-1' }], standard)).toBeNull()
+    expect(calculateTariffReservationPrice(stay, [], standard)).toBeNull()
   })
 })

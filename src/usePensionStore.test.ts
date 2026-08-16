@@ -232,11 +232,11 @@ describe('PensionStore', () => {
     expect(store.checkInOutHistory.value[0]).toMatchObject({ bookingId: 'b-5', type: 'check-out', occurredAt: '2026-08-09T16:30:00.000Z' })
     expect(store.checkInOutHistory.value).toHaveLength(initialHistoryLength + 1)
     expect(store.bookingViews.value.find((booking) => booking.id === 'b-5')?.checkoutPrice).toEqual({
-      bookingId: 'b-5', dailyRateCents: 3500, billableDays: 2, totalCents: 7000
+      bookingId: 'b-5', dailyRateCents: 3000, billableDays: 2, totalCents: 6000
     })
 
-    store.settings.dailyPetRates[0].amountCents = 9999
-    expect(store.bookingViews.value.find((booking) => booking.id === 'b-5')?.checkoutPrice?.totalCents).toBe(7000)
+    store.settings.tariffs.find((tariff) => tariff.id === 'tariff-standard')!.tiers[0].amountCents = 9999
+    expect(store.bookingViews.value.find((booking) => booking.id === 'b-5')?.checkoutPrice?.totalCents).toBe(6000)
 
     store.resetDemo()
     expect(store.checkInOutHistory.value).toHaveLength(initialHistoryLength)
@@ -685,19 +685,19 @@ describe('PensionStore', () => {
 
     expect(store.updateSettings(update)).toBe(true)
     expect(store.settings.businessName).toBe('Tierhotel Waldpfote')
-    expect(store.settings.dailyPetRates).toEqual([
-      { id: 'rate-dog', species: 'dog', amountCents: 3500 },
-      { id: 'rate-cat', species: 'cat', amountCents: 2400 }
+    expect(store.settings.tariffs).toEqual([
+      { id: 'tariff-single', name: 'Einzelzimmer', type: 'price-tier', tiers: [{ id: 'tier-single-1', startsAtAnimal: 1, amountCents: 4200 }] },
+      { id: 'tariff-standard', name: 'Standardzimmer', type: 'price-tier', tiers: [{ id: 'tier-standard-1', startsAtAnimal: 1, amountCents: 3000 }, { id: 'tier-standard-2', startsAtAnimal: 2, amountCents: 2400 }] }
     ])
-    update.dailyPetRates[0].amountCents = 1
-    expect(store.settings.dailyPetRates[0].amountCents).toBe(3500)
+    update.tariffs[0].tiers[0].amountCents = 1
+    expect(store.settings.tariffs[0].tiers[0].amountCents).toBe(4200)
     expect(store.announcement.value).toBe('Die Einstellungen wurden gespeichert.')
     expect(store.updateSettings({ ...update, contactEmail: 'ungueltig' })).toBe(false)
     expect(store.settings.contactEmail).toBe('hallo@tierpension-pro.de')
 
     store.resetDemo()
     expect(store.settings).toMatchObject({ businessName: 'Tierpension Sonnenschein', checkInFrom: '08:00' })
-    expect(store.settings.dailyPetRates[0].amountCents).toBe(3500)
+    expect(store.settings.tariffs[0].tiers[0].amountCents).toBe(4200)
   })
 
   it('configures room master data while preserving existing booking relations', () => {

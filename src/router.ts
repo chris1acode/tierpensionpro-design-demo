@@ -15,7 +15,7 @@ const routes: RouteRecordRaw[] = [
   })),
   { path: '/settings', redirect: '/settings/general' },
   { path: '/settings/general', name: 'settings-general', component: {}, meta: { title: 'Einstellungen', description: 'Passe Standort, Team und Abläufe an deine Pension an.' } },
-  { path: '/settings/rates', name: 'settings-rates', component: {}, meta: { title: 'Einstellungen', description: 'Tagespreise je Tierart verwalten.' } },
+  { path: '/settings/rates', name: 'settings-rates', component: {}, meta: { title: 'Einstellungen', description: 'Preisstaffeltarife je Zimmer verwalten.' } },
   { path: '/settings/rooms', name: 'settings-rooms', component: {}, meta: { title: 'Einstellungen', description: 'Zimmer für Belegung und Buchungen verwalten.' } },
   { path: '/account', name: 'account', component: {}, meta: { title: 'Konto', description: 'Persönliche Kontodaten und Vertragsverwaltung.' } },
   { path: '/login', name: 'login', component: {}, meta: { title: 'Anmelden', description: 'Melde dich bei Tierpension Pro an.' } },

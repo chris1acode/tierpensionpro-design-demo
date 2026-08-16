@@ -39,13 +39,6 @@ export function arePensionSettingsEqual(
     && first.checkOutUntil === second.checkOutUntil
     && first.requestsEnabled === second.requestsEnabled
     && areTariffsEqual(first.tariffs, second.tariffs)
-    && first.dailyPetRates.length === second.dailyPetRates.length
-    && first.dailyPetRates.every((rate, index) => {
-      const otherRate = second.dailyPetRates[index]
-      return rate.id === otherRate?.id
-        && rate.species === otherRate.species
-        && rate.amountCents === otherRate.amountCents
-    })
 }
 
 export function isValidPensionSettingsUpdate(settings: PensionSettingsUpdate): boolean {
@@ -60,13 +53,9 @@ export function isValidPensionSettingsUpdate(settings: PensionSettingsUpdate): b
   const contactIsValid = isValidEmail(settings.contactEmail) && settings.contactPhone.trim().length >= 6
   const handoverTimesAreOrdered = settings.checkInFrom < settings.checkInUntil
     && settings.checkInUntil <= settings.checkOutUntil
-  const dailyRatesAreValid = settings.dailyPetRates.length === 2
-    && new Set(settings.dailyPetRates.map((rate) => rate.species)).size === 2
-    && settings.dailyPetRates.every((rate) => rate.id.trim().length > 0
-      && Number.isInteger(rate.amountCents) && rate.amountCents > 0)
   const tariffsAreValid = settings.tariffs.length > 0
     && new Set(settings.tariffs.map((tariff) => tariff.id)).size === settings.tariffs.length
     && settings.tariffs.every(isValidPriceTierTariff)
 
-  return allFieldsAreFilled && contactIsValid && handoverTimesAreOrdered && dailyRatesAreValid && tariffsAreValid
+  return allFieldsAreFilled && contactIsValid && handoverTimesAreOrdered && tariffsAreValid
 }

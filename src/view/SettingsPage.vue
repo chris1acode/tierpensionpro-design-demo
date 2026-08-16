@@ -3,7 +3,7 @@ import AppPanel from '../components/AppPanel.vue'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { Banknote, Building2, Clock3, Inbox, Info, Pencil, Plus, Save, Trash2 } from '@lucide/vue'
-import type { PensionSettingsUpdate, PetSpecies, PriceTierTariff, Room } from '../domain'
+import type { PensionSettingsUpdate, PriceTierTariff, Room } from '../domain'
 import { useSynchronizedDraft } from '../composables/useSynchronizedDraft'
 import { arePensionSettingsEqual } from '../domain/pensionSettings'
 import { usePensionStore } from '../usePensionStore'
@@ -34,7 +34,7 @@ const activeTab = computed<'general' | 'rates' | 'rooms'>(() => {
 
 function settingsDraft(): PensionSettingsUpdate {
   const { id: _id, ...values } = store.settings
-  return { ...values, dailyPetRates: values.dailyPetRates.map((rate) => ({ ...rate })), tariffs: values.tariffs.map((tariff) => ({ ...tariff, tiers: tariff.tiers.map((tier) => ({ ...tier })) })) }
+  return { ...values, tariffs: values.tariffs.map((tariff) => ({ ...tariff, tiers: tariff.tiers.map((tier) => ({ ...tier })) })) }
 }
 
 const { draft, resetDraft } = useSynchronizedDraft(
@@ -90,23 +90,6 @@ function roomHasBookings(roomId: string): boolean {
 
 function tariffName(tariffId: string): string {
   return store.settings.tariffs.find((tariff) => tariff.id === tariffId)?.name ?? '–'
-}
-
-function dailyRate(species: PetSpecies) {
-  return draft.value.dailyPetRates.find((rate) => rate.species === species)
-}
-
-function rateInEuros(species: PetSpecies): string {
-  const amountCents = dailyRate(species)?.amountCents ?? 0
-  return (amountCents / 100).toFixed(2)
-}
-
-function updateRate(species: PetSpecies, value: string) {
-  const rate = dailyRate(species)
-  if (!rate) return
-
-  const parsed = Number(value.replace(',', '.'))
-  rate.amountCents = Number.isFinite(parsed) ? Math.round(parsed * 100) : 0
 }
 
 function centsInEuros(amountCents: number): string { return (amountCents / 100).toFixed(2) }
@@ -170,16 +153,8 @@ function removeTariff(index: number): void { if (draft.value.tariffs.length > 1)
           <Info :size="20" class="mt-0.5 shrink-0" />
           <p>Ein ausführlichere Tarifkonfiguration ist noch in der Entwicklung (Bsp. Rabatt für mehrere Tiere, Einzelzimmer etc)</p>
         </div>
-        <header class="!justify-start gap-3"><span class="grid size-[42px] flex-none place-items-center rounded-[10px] bg-[#faf0d9] text-[#84601c]"><Banknote :size="20" /></span><div><h2>Preisliste</h2><p>Grundpreis je Tier und angefangenen Betreuungstag. Alle Beträge inklusive Mehrwertsteuer.</p></div></header>
-        <div class="grid grid-cols-2 gap-[17px] p-[22px] max-[680px]:grid-cols-1 max-[680px]:p-4">
-          <label class="grid gap-[7px] text-[13px] font-bold text-app-muted">Hund pro Tag
-            <span class="grid grid-cols-[1fr_auto] items-center overflow-hidden rounded-lg border border-app-border bg-white"><input :value="rateInEuros('dog')" class="h-[42px] w-full border-0 bg-white px-[11px] text-[15px] text-app-text focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-[#f2c3a7]" inputmode="decimal" min="0.01" step="0.01" type="number" required aria-label="Tagespreis für Hunde in Euro" @input="updateRate('dog', ($event.target as HTMLInputElement).value)" /><span class="px-[13px] text-[13px] text-app-muted">€</span></span>
-          </label>
-          <label class="grid gap-[7px] text-[13px] font-bold text-app-muted">Katze pro Tag
-            <span class="grid grid-cols-[1fr_auto] items-center overflow-hidden rounded-lg border border-app-border bg-white"><input :value="rateInEuros('cat')" class="h-[42px] w-full border-0 bg-white px-[11px] text-[15px] text-app-text focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-[#f2c3a7]" inputmode="decimal" min="0.01" step="0.01" type="number" required aria-label="Tagespreis für Katzen in Euro" @input="updateRate('cat', ($event.target as HTMLInputElement).value)" /><span class="px-[13px] text-[13px] text-app-muted">€</span></span>
-          </label>
-        </div>
-        <div class="border-t border-app-border p-[22px] max-[680px]:p-4">
+        <header class="!justify-start gap-3"><span class="grid size-[42px] flex-none place-items-center rounded-[10px] bg-[#faf0d9] text-[#84601c]"><Banknote :size="20" /></span><div><h2>Preisliste</h2><p>Preisstaffeltarife je Zimmer. Alle Beträge inklusive Mehrwertsteuer.</p></div></header>
+        <div class="p-[22px] max-[680px]:p-4">
           <div class="mb-4 flex items-center justify-between gap-3"><div><h3 class="m-0 text-base">Preisstaffeltarife</h3><p class="mb-0 mt-1 text-xs text-app-muted">Jede Preisstufe gilt ab der angegebenen Tierposition.</p></div><AppButton type="button" variant="secondary" @click="addTariff"><Plus :size="15" /> Tarif anlegen</AppButton></div>
           <section v-for="(tariff, tariffIndex) in draft.tariffs" :key="tariff.id" class="mb-3 rounded-lg border border-app-border bg-[#fcfbfa] p-4 last:mb-0">
             <div class="mb-3 flex items-end gap-3"><label class="grid flex-1 gap-1 text-xs font-bold text-app-muted">Tarifname<input v-model.trim="tariff.name" class="h-[40px] rounded-lg border border-app-border bg-white px-3 text-sm text-app-text" required /></label><AppIconButton variant="danger" type="button" :disabled="draft.tariffs.length === 1" :aria-label="`${tariff.name} entfernen`" @click="removeTariff(tariffIndex)"><Trash2 :size="15" /></AppIconButton></div>

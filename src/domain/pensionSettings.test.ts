@@ -10,10 +10,6 @@ const validSettings: PensionSettingsUpdate = {
   checkInUntil: '12:00',
   checkOutUntil: '18:00',
   requestsEnabled: true,
-  dailyPetRates: [
-    { id: 'rate-dog', species: 'dog', amountCents: 3500 },
-    { id: 'rate-cat', species: 'cat', amountCents: 2400 }
-  ],
   tariffs: [{ id: 'tariff-standard', name: 'Standardzimmer', type: 'price-tier', tiers: [{ id: 'tier-1', startsAtAnimal: 1, amountCents: 3000 }, { id: 'tier-2', startsAtAnimal: 2, amountCents: 2500 }] }]
 }
 
@@ -43,15 +39,6 @@ describe('isValidPensionSettingsUpdate', () => {
     expect(isValidPensionSettingsUpdate({ ...validSettings, requestsEnabled: false })).toBe(true)
   })
 
-  it.each([
-    ['a missing animal type', [{ id: 'rate-dog', species: 'dog', amountCents: 3500 }] as PensionSettingsUpdate['dailyPetRates']],
-    ['a duplicated animal type', [{ id: 'rate-dog', species: 'dog', amountCents: 3500 }, { id: 'rate-dog-2', species: 'dog', amountCents: 2400 }] as PensionSettingsUpdate['dailyPetRates']],
-    ['a non-positive amount', [{ id: 'rate-dog', species: 'dog', amountCents: 0 }, { id: 'rate-cat', species: 'cat', amountCents: 2400 }] as PensionSettingsUpdate['dailyPetRates']],
-    ['a fractional cent amount', [{ id: 'rate-dog', species: 'dog', amountCents: 3500.5 }, { id: 'rate-cat', species: 'cat', amountCents: 2400 }] as PensionSettingsUpdate['dailyPetRates']]
-  ])('rejects %s in the daily price list', (_case, dailyPetRates) => {
-    expect(isValidPensionSettingsUpdate({ ...validSettings, dailyPetRates })).toBe(false)
-  })
-
   it.each(invalidTariffs.map((tariffs) => [tariffs]))('rejects an invalid price tier tariff', (tariffs) => {
     expect(isValidPensionSettingsUpdate({ ...validSettings, tariffs })).toBe(false)
   })
@@ -61,15 +48,13 @@ describe('arePensionSettingsEqual', () => {
   it('recognizes an unchanged editable settings model', () => {
     expect(arePensionSettingsEqual(validSettings, {
       ...validSettings,
-      dailyPetRates: validSettings.dailyPetRates.map((rate) => ({ ...rate })),
       tariffs: validSettings.tariffs.map((tariff) => ({ ...tariff, tiers: tariff.tiers.map((tier) => ({ ...tier })) }))
     })).toBe(true)
   })
 
   it.each([
     ['business name', { businessName: 'Tierpension am See' }],
-    ['request setting', { requestsEnabled: false }],
-    ['daily rate', { dailyPetRates: [{ ...validSettings.dailyPetRates[0], amountCents: 3600 }, validSettings.dailyPetRates[1]] }]
+    ['request setting', { requestsEnabled: false }]
   ])('recognizes a changed %s', (_case, change) => {
     expect(arePensionSettingsEqual(validSettings, { ...validSettings, ...change })).toBe(false)
   })

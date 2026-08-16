@@ -46,7 +46,7 @@ Der operative Kern für den täglichen Empfang und die Verabschiedung der Tiere.
 
 - **Tageslisten**: Klare Trennung zwischen geplanten Anreisen und Abreisen für das gewählte Datum.
 - **Check-in Workflow**: Anzeige wichtiger Tierinfos (Medikation, Allergien, Notfallkontakt) direkt beim Check-in.
-- **Check-out Workflow**: Automatische Preisberechnung basierend auf den hinterlegten Tagespreisen (Abreisetag kostenfrei). Der Preis wird nach dem Check-out als unveränderlicher Snapshot gespeichert.
+- **Check-out Workflow**: Automatische Preisberechnung basierend auf dem verknüpften Preisstaffeltarif des Zimmers (Abreisetag kostenfrei). Der Preis wird nach dem Check-out als unveränderlicher Snapshot gespeichert.
 - **Historie & Verlauf**: Protokollierung aller Vorgänge mit der Möglichkeit, Aktionen (wie Check-in) innerhalb desselben Tages rückgängig zu machen.
 - **Tiere im Haus**: Ein separater Bereich listet alle aktuell eingecheckten Tiere auf und erlaubt den direkten Check-out.
 
@@ -72,7 +72,7 @@ Zentrale Konfiguration der Pension und des Benutzerkontos.
 
 - **Pensions-Einstellungen**:
     - Konfiguration von Tierkategorien und Zimmern.
-    - Preislisten (Tagespreise pro Tierart).
+    - Preisstaffeltarife, je 1:1 einem Zimmer zugeordnet.
     - Sicherung der Entwürfe: "Speichern" und "Verwerfen" sind nur bei tatsächlichen Änderungen aktiv.
 - **Kontoverwaltung**:
     - Verwaltung von Profilinformationen.
