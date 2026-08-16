@@ -13,6 +13,7 @@ import AppContainer from './AppContainer.vue'
 import AppEmptyState from './AppEmptyState.vue'
 import AppPageHeading from './AppPageHeading.vue'
 import AppPagination from './AppPagination.vue'
+import AppPetAvatar from './AppPetAvatar.vue'
 import { matchesSearchTerm, resolveSearchTerm } from '../shared/search'
 import { downloadCsv } from '../shared/csvExport'
 import { selectArrivals, selectCheckedIn, selectDepartures } from '../store/pensionSelectors'
@@ -133,8 +134,8 @@ function exportHistory() {
       <header class="!grid grid-cols-[minmax(0,1fr)_minmax(340px,460px)_minmax(0,1fr)] items-center gap-[18px] border-b border-b-[#e8e4df] px-[22px] py-[21px] max-[760px]:grid-cols-1 max-[760px]:items-stretch"><div><h2>{{ activeViewTitle }}</h2><p>{{ activeViewDescription }}</p></div><label class="flex h-12 w-full items-center gap-2 rounded-[10px] border border-[var(--border)] bg-[#faf9f7] px-[14px] text-[15px] text-[var(--muted)]"><Search :size="19" /><input v-model="localQuery" class="w-full border-0 bg-transparent text-[15px] outline-none" aria-label="Aktuelle Vorgänge durchsuchen" placeholder="Tier, Kunde oder Zimmer suchen …" /></label><div class="list-header-actions max-[760px]:justify-start"><AppButton variant="text" type="button" aria-label="Aktuelle Vorgänge als CSV exportieren" @click="exportOperations"><Download :size="15" /> Exportieren</AppButton></div></header>
       <div v-if="visibleBookings.length">
         <article v-for="booking in visibleBookings" :key="booking.id" class="grid grid-cols-[auto_minmax(190px,1.4fr)_minmax(130px,1fr)_105px_auto] items-center gap-4 border-b border-b-[#eeeae6] px-[22px] py-4 last:border-b-0 max-[680px]:grid-cols-[auto_1fr] max-[680px]:p-[15px]">
-          <div class="pet-avatar" :style="{ background: booking.pet.color }">{{ booking.pet.initials }}</div>
-          <div class="pet-info"><AppCustomerLink compact :customer-id="booking.customer.id">{{ booking.customer.firstName }} {{ booking.customer.lastName }}</AppCustomerLink><span>{{ booking.pet.name }}</span></div>
+          <AppPetAvatar :initials="booking.pet.initials" :color="booking.pet.color" />
+          <div><AppCustomerLink compact :customer-id="booking.customer.id">{{ booking.customer.firstName }} {{ booking.customer.lastName }}</AppCustomerLink><span class="mt-[3px] block text-[11px] text-[var(--muted)]">{{ booking.pet.name }}</span></div>
           <div class="max-[680px]:col-start-2"><small class="mb-1 block text-xs text-[var(--muted)]">Zimmer</small><strong class="block text-sm">{{ booking.room.name }}</strong></div>
           <div class="max-[680px]:col-start-2"><small class="mb-1 block text-xs text-[var(--muted)]">{{ activeView === 'arrivals' ? 'Ankunft' : activeView === 'departures' ? 'Abholung' : 'Geplante Abreise' }}</small><strong class="block text-sm">{{ activeView === 'arrivals' ? `${booking.arrival} Uhr` : activeView === 'departures' ? (booking.pickupTime ? `${booking.pickupTime} Uhr` : 'Nicht vereinbart') : formatDayAndMonth(booking.departure) }}</strong></div>
           <div v-if="activeView === 'arrivals'" class="flex items-center justify-end gap-3 max-[680px]:col-start-2 max-[680px]:flex-col max-[680px]:items-start max-[680px]:justify-start max-[680px]:gap-2">
@@ -159,7 +160,7 @@ function exportHistory() {
       <div>
         <article v-for="event in pagedHistory" :key="event.id" class="grid grid-cols-[auto_minmax(150px,1fr)_minmax(170px,.7fr)_auto_auto] items-center gap-[14px] border-b border-b-[#eeeae6] px-[22px] py-[14px] last:border-b-0 max-sm:grid-cols-[auto_1fr] max-sm:px-4">
           <span class="grid h-[35px] w-[35px] place-items-center rounded-[9px]" :class="historyEventIconClasses[event.type]"><ArrowDownToLine v-if="event.type === 'check-in'" :size="17" /><RotateCcw v-else-if="event.type === 'check-in-reverted'" :size="17" /><ArrowUpFromLine v-else :size="17" /></span>
-          <div class="pet-info"><AppCustomerLink compact :customer-id="event.booking.customer.id">{{ event.booking.customer.firstName }} {{ event.booking.customer.lastName }}</AppCustomerLink><span>{{ event.booking.pet.name }} · {{ event.booking.room.name }}</span></div>
+          <div><AppCustomerLink compact :customer-id="event.booking.customer.id">{{ event.booking.customer.firstName }} {{ event.booking.customer.lastName }}</AppCustomerLink><span class="mt-[3px] block text-[11px] text-[var(--muted)]">{{ event.booking.pet.name }} · {{ event.booking.room.name }}</span></div>
           <div class="max-sm:col-start-2"><strong class="block text-[11px]">{{ checkInOutEventLabels[event.type] }}</strong><span class="mt-[3px] block text-[11px] text-[var(--muted)]">{{ formatEventTime(event.occurredAt) }} Uhr</span></div>
           <AppButton v-if="event.type === 'check-in' && store.canUndoCheckIn(event.bookingId)" variant="text" class="text-[11px] text-[var(--primary-dark)] max-sm:col-start-2 max-sm:justify-self-start" type="button" @click="store.undoCheckIn(event.bookingId)"><RotateCcw :size="14" /> Rückgängig</AppButton>
           <AppButton variant="text" class="max-sm:col-start-2 max-sm:justify-self-start" :to="{ name: 'bookings', query: { bookingId: event.bookingId } }">Zur Buchung <ExternalLink :size="14" /></AppButton>

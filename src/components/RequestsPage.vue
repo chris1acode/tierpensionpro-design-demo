@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { Cat, Check, CircleAlert, CircleCheck, Dog, Download, Inbox, ThumbsDown, ThumbsUp } from '@lucide/vue'
 import type { BookingRequest } from '../domain'
 import AppButton from './AppButton.vue'
+import AppNoteBadge from './AppNoteBadge.vue'
 import AppBookingStatus from './AppBookingStatus.vue'
 import AppCustomerLink from './AppCustomerLink.vue'
 import AppContainer from './AppContainer.vue'
@@ -80,7 +81,7 @@ function exportRequests(scope: 'pending' | 'history') {
               <div class="row-start-1 col-start-2 min-w-0">
                 <strong class="block text-sm">{{ request.customerFirstName }} {{ request.customerLastName }} · {{ request.phone }}</strong>
                 <span class="block text-[13px] text-[var(--muted)] mt-[3px]">{{ request.petName }}</span>
-                <span v-if="request.note" class="note-badge mt-1.5 inline-block">{{ request.note }}</span>
+                <AppNoteBadge v-if="request.note" class="mt-1.5 inline-block">{{ request.note }}</AppNoteBadge>
               </div>
               <div class="row-start-2 col-start-2 min-[900px]:row-start-1 min-[900px]:col-start-3">
                 <small class="block text-xs text-[var(--muted)] mb-1">Aufenthalt</small>
@@ -138,7 +139,7 @@ function exportRequests(scope: 'pending' | 'history') {
               :status="request.status === 'accepted' ? 'accepted' : 'checked-out'"
             >{{ requestStatusLabels[request.status] }}</AppBookingStatus>
             <div v-if="request.declineReason || request.declineNotification" class="col-span-full mt-1">
-              <span v-if="request.declineReason" class="note-badge mt-1">Grund: {{ request.declineReason }}</span>
+              <AppNoteBadge v-if="request.declineReason" class="mt-1">Grund: {{ request.declineReason }}</AppNoteBadge>
               <span v-if="request.declineNotification" class="mt-1.5 block text-[10px] font-bold text-[#466b62]">E-Mail-Benachrichtigung an {{ request.declineNotification.recipient }} vorgemerkt</span>
             </div>
           </article>

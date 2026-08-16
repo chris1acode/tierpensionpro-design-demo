@@ -11,6 +11,8 @@ import AppIconButton from './components/AppIconButton.vue'
 import AppEmptyState from './components/AppEmptyState.vue'
 import AppEyebrow from './components/AppEyebrow.vue'
 import AppMetricCard from './components/AppMetricCard.vue'
+import AppNoteBadge from './components/AppNoteBadge.vue'
+import AppPetAvatar from './components/AppPetAvatar.vue'
 import AppPageHeading from './components/AppPageHeading.vue'
 import AppTab from './components/AppTab.vue'
 import AppTabs from './components/AppTabs.vue'
@@ -178,19 +180,19 @@ onBeforeUnmount(() => {
             <header><div><h2>{{ scheduleView === 'arrivals' ? 'Heutige Anreisen' : 'Heutige Abreisen' }}</h2><p>{{ scheduleView === 'arrivals' ? `${filteredArrivals.length} Tiere warten auf ihren Check-in` : `${filteredDepartures.length} Tiere sind abholbereit` }}</p></div><AppTabs><AppTab :active="scheduleView === 'arrivals'" @click="scheduleView = 'arrivals'">Anreisen</AppTab><AppTab :active="scheduleView === 'departures'" @click="scheduleView = 'departures'">Abreisen</AppTab></AppTabs></header>
             <div v-if="scheduleView === 'arrivals' && filteredArrivals.length">
               <article v-for="booking in filteredArrivals" :key="booking.id" class="grid grid-cols-[auto_minmax(155px,1fr)_110px_61px_max-content] items-center gap-[13px] border-b border-b-[#eeeae6] px-[22px] py-4 last:border-b-0 max-[680px]:grid-cols-[auto_1fr_auto] max-[680px]:p-[15px]">
-                <div class="pet-avatar" :style="{ background: booking.pet.color }">{{ booking.pet.initials }}</div>
-                <div class="pet-info"><strong>{{ booking.customer.firstName }} {{ booking.customer.lastName }}</strong><span>{{ booking.pet.name }}</span></div>
+                <AppPetAvatar :initials="booking.pet.initials" :color="booking.pet.color" />
+                <div><strong class="block text-sm">{{ booking.customer.firstName }} {{ booking.customer.lastName }}</strong><span class="mt-[3px] block text-[11px] text-[var(--muted)]">{{ booking.pet.name }}</span></div>
                 <div class="max-[680px]:col-start-2"><strong class="block text-[13px]">{{ booking.arrival }} Uhr</strong><span class="mt-[3px] block text-[11px] text-[var(--muted)]">{{ booking.room.name }}</span></div>
                 <span class="min-w-0 max-[680px]:col-start-3 max-[680px]:row-start-1">
-                  <span v-if="booking.pet.note" class="note-badge">Hinweis</span>
+                  <AppNoteBadge v-if="booking.pet.note">Hinweis</AppNoteBadge>
                 </span>
                 <AppButton variant="link" @click="selectedBooking = booking">Einchecken</AppButton>
               </article>
             </div>
             <div v-else-if="scheduleView === 'departures' && filteredDepartures.length">
               <article v-for="departure in filteredDepartures" :key="departure.id" class="grid grid-cols-[auto_minmax(155px,1fr)_110px_auto] items-center gap-[13px] border-b border-b-[#eeeae6] px-[22px] py-4 last:border-b-0 max-[680px]:grid-cols-[auto_1fr_auto] max-[680px]:p-[15px]">
-                <div class="pet-avatar" :style="{ background: departure.pet.color }">{{ departure.pet.initials }}</div>
-                <div class="pet-info"><strong>{{ departure.customer.firstName }} {{ departure.customer.lastName }}</strong><span>{{ departure.pet.name }}</span></div>
+                <AppPetAvatar :initials="departure.pet.initials" :color="departure.pet.color" />
+                <div><strong class="block text-sm">{{ departure.customer.firstName }} {{ departure.customer.lastName }}</strong><span class="mt-[3px] block text-[11px] text-[var(--muted)]">{{ departure.pet.name }}</span></div>
                 <div class="max-[680px]:col-start-2"><strong class="block text-[13px]">Abreise heute</strong><span class="mt-[3px] block text-[11px] text-[var(--muted)]">{{ departure.room.name }}</span></div>
                 <AppButton variant="link" @click="selectedDeparture = departure"><LogOut :size="16" /> Auschecken</AppButton>
               </article>

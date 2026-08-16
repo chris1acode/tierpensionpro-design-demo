@@ -11,6 +11,7 @@ import AppEmptyState from './AppEmptyState.vue'
 import AppIconButton from './AppIconButton.vue'
 import AppPageHeading from './AppPageHeading.vue'
 import AppPagination from './AppPagination.vue'
+import AppPetAvatar from './AppPetAvatar.vue'
 import AppTab from './AppTab.vue'
 import AppTabs from './AppTabs.vue'
 import DeleteBookingModal from './DeleteBookingModal.vue'
@@ -188,8 +189,8 @@ function openBookingFromTimeline(bookingId: string) {
           class="grid grid-cols-[auto_minmax(140px,1.3fr)_minmax(125px,1fr)_95px_120px_auto_auto] items-center gap-[14px] border-b border-[#eeeae6] px-[22px] py-[15px] last:border-b-0 max-[900px]:grid-cols-[auto_1fr_auto] max-[680px]:px-[15px] [&>div:not(.pet-avatar)_small]:mb-1 [&>div:not(.pet-avatar)_small]:block [&>div:not(.pet-avatar)_small]:text-xs [&>div:not(.pet-avatar)_small]:text-[var(--muted)] [&>div:not(.pet-avatar)>strong]:block [&>div:not(.pet-avatar)>strong]:text-sm max-[900px]:[&>div:not(.pet-avatar):not(.pet-info):not(.booking-row-actions)]:col-start-2"
           :class="{ 'focused-booking bg-[#fff8f2] shadow-[inset_4px_0_#d97845]': booking.id === focusedBookingId }"
         >
-          <div class="pet-avatar" :style="{ background: booking.pet.color }">{{ booking.pet.initials }}</div>
-          <div class="pet-info"><strong>{{ booking.pet.name }}</strong><AppCustomerLink compact :customer-id="booking.customer.id">{{ booking.customer.firstName }} {{ booking.customer.lastName }}</AppCustomerLink><small v-if="booking.bookingNote" class="max-w-[220px] overflow-hidden text-ellipsis whitespace-nowrap !text-[#84601c]">Hinweis · {{ booking.bookingNote }}</small><small v-if="booking.checkoutPrice" class="checkout-price-summary">Abgerechnet · {{ formatEuroCents(booking.checkoutPrice.totalCents) }}</small></div>
+          <AppPetAvatar :initials="booking.pet.initials" :color="booking.pet.color" />
+          <div class="pet-info"><strong class="block text-sm">{{ booking.pet.name }}</strong><AppCustomerLink compact :customer-id="booking.customer.id">{{ booking.customer.firstName }} {{ booking.customer.lastName }}</AppCustomerLink><small v-if="booking.bookingNote" class="max-w-[220px] overflow-hidden text-ellipsis whitespace-nowrap !text-[#84601c]">Hinweis · {{ booking.bookingNote }}</small><small v-if="booking.checkoutPrice" class="checkout-price-summary">Abgerechnet · {{ formatEuroCents(booking.checkoutPrice.totalCents) }}</small></div>
           <div><small>Zimmer</small><strong>{{ booking.room.name }}</strong></div>
           <div><small>Ankunft</small><strong>{{ booking.arrivalDate }} · {{ booking.arrival }} Uhr</strong></div>
           <div><small>Abreise</small><strong>{{ booking.departure }}<template v-if="booking.pickupTime"> · {{ booking.pickupTime }} Uhr</template></strong></div>
