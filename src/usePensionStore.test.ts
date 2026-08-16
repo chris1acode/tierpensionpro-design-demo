@@ -696,7 +696,7 @@ describe('PensionStore', () => {
     expect(store.settings.contactEmail).toBe('hallo@tierpension-pro.de')
 
     store.resetDemo()
-    expect(store.settings).toMatchObject({ businessName: 'Tierpension Pro', checkInFrom: '08:00' })
+    expect(store.settings).toMatchObject({ businessName: 'Tierpension Sonnenschein', checkInFrom: '08:00' })
     expect(store.settings.dailyPetRates[0].amountCents).toBe(3500)
   })
 

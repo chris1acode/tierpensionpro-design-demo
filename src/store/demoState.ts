@@ -77,7 +77,8 @@ export function createDemoState(): DemoState {
     rooms: initialRooms.map((room) => ({ ...room })),
     settings: {
       ...initialPensionSettings,
-      dailyPetRates: initialPensionSettings.dailyPetRates.map((rate) => ({ ...rate }))
+      dailyPetRates: initialPensionSettings.dailyPetRates.map((rate) => ({ ...rate })),
+      tariffs: initialPensionSettings.tariffs.map((tariff) => ({ ...tariff, tiers: tariff.tiers.map((tier) => ({ ...tier })) }))
     }
   }
 }

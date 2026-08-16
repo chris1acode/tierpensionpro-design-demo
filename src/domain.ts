@@ -243,6 +243,8 @@ export interface PensionSettings {
   requestsEnabled: boolean
   /** Simple base rate per accommodated animal and calendar day, in euro cents. */
   dailyPetRates: DailyPetRate[]
+  /** Configurable accommodation tariffs. Bookings will reference these in the next step. */
+  tariffs: PriceTierTariff[]
 }
 
 export type PensionSettingsUpdate = Omit<PensionSettings, 'id'>
@@ -276,6 +278,21 @@ export interface Account {
   email: string
   role: AccountRole
   cancelledAt?: string
+}
+
+/** A price that starts applying at one animal position within a reservation. */
+export interface PriceTier {
+  id: string
+  startsAtAnimal: number
+  amountCents: number
+}
+
+/** A named accommodation tariff with progressively priced animals. */
+export interface PriceTierTariff {
+  id: string
+  name: string
+  type: 'price-tier'
+  tiers: PriceTier[]
 }
 
 export type AccountUpdate = Pick<Account, 'firstName' | 'lastName' | 'email'>

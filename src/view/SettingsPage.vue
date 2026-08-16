@@ -3,7 +3,7 @@ import AppPanel from '../components/AppPanel.vue'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { Banknote, Building2, Clock3, Inbox, Info, Pencil, Plus, Save, Trash2 } from '@lucide/vue'
-import type { PensionSettingsUpdate, PetSpecies, Room } from '../domain'
+import type { PensionSettingsUpdate, PetSpecies, PriceTierTariff, Room } from '../domain'
 import { useSynchronizedDraft } from '../composables/useSynchronizedDraft'
 import { arePensionSettingsEqual } from '../domain/pensionSettings'
 import { usePensionStore } from '../usePensionStore'
@@ -34,7 +34,7 @@ const activeTab = computed<'general' | 'rates' | 'rooms'>(() => {
 
 function settingsDraft(): PensionSettingsUpdate {
   const { id: _id, ...values } = store.settings
-  return { ...values, dailyPetRates: values.dailyPetRates.map((rate) => ({ ...rate })) }
+  return { ...values, dailyPetRates: values.dailyPetRates.map((rate) => ({ ...rate })), tariffs: values.tariffs.map((tariff) => ({ ...tariff, tiers: tariff.tiers.map((tier) => ({ ...tier })) })) }
 }
 
 const { draft, resetDraft } = useSynchronizedDraft(
@@ -99,6 +99,22 @@ function updateRate(species: PetSpecies, value: string) {
   const parsed = Number(value.replace(',', '.'))
   rate.amountCents = Number.isFinite(parsed) ? Math.round(parsed * 100) : 0
 }
+
+function centsInEuros(amountCents: number): string { return (amountCents / 100).toFixed(2) }
+function updateTierPrice(tariff: PriceTierTariff, index: number, value: string): void {
+  const parsed = Number(value.replace(',', '.'))
+  tariff.tiers[index].amountCents = Number.isFinite(parsed) ? Math.round(parsed * 100) : 0
+}
+function addTier(tariff: PriceTierTariff): void {
+  const last = tariff.tiers.at(-1)
+  tariff.tiers.push({ id: `tier-${Date.now()}-${tariff.tiers.length}`, startsAtAnimal: (last?.startsAtAnimal ?? 0) + 1, amountCents: last?.amountCents ?? 3000 })
+}
+function removeTier(tariff: PriceTierTariff, index: number): void { if (index > 0) tariff.tiers.splice(index, 1) }
+function addTariff(): void {
+  const stamp = Date.now()
+  draft.value.tariffs.push({ id: `tariff-${stamp}`, name: `Neuer Tarif ${draft.value.tariffs.length + 1}`, type: 'price-tier', tiers: [{ id: `tier-${stamp}-1`, startsAtAnimal: 1, amountCents: 3000 }] })
+}
+function removeTariff(index: number): void { if (draft.value.tariffs.length > 1) draft.value.tariffs.splice(index, 1) }
 </script>
 
 <template>
@@ -153,6 +169,18 @@ function updateRate(species: PetSpecies, value: string) {
           <label class="grid gap-[7px] text-[13px] font-bold text-app-muted">Katze pro Tag
             <span class="grid grid-cols-[1fr_auto] items-center overflow-hidden rounded-lg border border-app-border bg-white"><input :value="rateInEuros('cat')" class="h-[42px] w-full border-0 bg-white px-[11px] text-[15px] text-app-text focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-[#f2c3a7]" inputmode="decimal" min="0.01" step="0.01" type="number" required aria-label="Tagespreis für Katzen in Euro" @input="updateRate('cat', ($event.target as HTMLInputElement).value)" /><span class="px-[13px] text-[13px] text-app-muted">€</span></span>
           </label>
+        </div>
+        <div class="border-t border-app-border p-[22px] max-[680px]:p-4">
+          <div class="mb-4 flex items-center justify-between gap-3"><div><h3 class="m-0 text-base">Preisstaffeltarife</h3><p class="mb-0 mt-1 text-xs text-app-muted">Jede Preisstufe gilt ab der angegebenen Tierposition.</p></div><AppButton type="button" variant="secondary" @click="addTariff"><Plus :size="15" /> Tarif anlegen</AppButton></div>
+          <section v-for="(tariff, tariffIndex) in draft.tariffs" :key="tariff.id" class="mb-3 rounded-lg border border-app-border bg-[#fcfbfa] p-4 last:mb-0">
+            <div class="mb-3 flex items-end gap-3"><label class="grid flex-1 gap-1 text-xs font-bold text-app-muted">Tarifname<input v-model.trim="tariff.name" class="h-[40px] rounded-lg border border-app-border bg-white px-3 text-sm text-app-text" required /></label><AppIconButton variant="danger" type="button" :disabled="draft.tariffs.length === 1" :aria-label="`${tariff.name} entfernen`" @click="removeTariff(tariffIndex)"><Trash2 :size="15" /></AppIconButton></div>
+            <div v-for="(tier, tierIndex) in tariff.tiers" :key="tier.id" class="mb-2 grid grid-cols-[minmax(105px,1fr)_minmax(125px,1fr)_auto] items-end gap-3 max-[520px]:grid-cols-[1fr_auto]">
+              <label class="grid gap-1 text-xs font-bold text-app-muted">Ab dem Tier<input v-model.number="tier.startsAtAnimal" class="h-[40px] rounded-lg border border-app-border bg-white px-3 text-sm text-app-text" min="1" step="1" type="number" required /></label>
+              <label class="grid gap-1 text-xs font-bold text-app-muted">Preis pro Tier/Nacht<span class="grid grid-cols-[1fr_auto] overflow-hidden rounded-lg border border-app-border bg-white"><input :value="centsInEuros(tier.amountCents)" class="h-[40px] min-w-0 border-0 px-3 text-sm text-app-text" inputmode="decimal" min="0.01" step="0.01" type="number" required @input="updateTierPrice(tariff, tierIndex, ($event.target as HTMLInputElement).value)" /><span class="self-center px-3 text-xs text-app-muted">€</span></span></label>
+              <AppIconButton variant="danger" type="button" :disabled="tierIndex === 0" :aria-label="`Preisstufe ${tierIndex + 1} entfernen`" @click="removeTier(tariff, tierIndex)"><Trash2 :size="15" /></AppIconButton>
+            </div>
+            <AppButton class="mt-2" type="button" variant="secondary" @click="addTier(tariff)"><Plus :size="15" /> Preisstufe</AppButton>
+          </section>
         </div>
       </AppPanel>
 

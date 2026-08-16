@@ -13,8 +13,14 @@ const validSettings: PensionSettingsUpdate = {
   dailyPetRates: [
     { id: 'rate-dog', species: 'dog', amountCents: 3500 },
     { id: 'rate-cat', species: 'cat', amountCents: 2400 }
-  ]
+  ],
+  tariffs: [{ id: 'tariff-standard', name: 'Standardzimmer', type: 'price-tier', tiers: [{ id: 'tier-1', startsAtAnimal: 1, amountCents: 3000 }, { id: 'tier-2', startsAtAnimal: 2, amountCents: 2500 }] }]
 }
+
+const invalidTariffs: PensionSettingsUpdate['tariffs'][] = [
+  [{ id: 'tariff-standard', name: 'Standardzimmer', type: 'price-tier', tiers: [{ id: 'tier-2', startsAtAnimal: 2, amountCents: 3000 }] }],
+  [{ id: 'tariff-standard', name: 'Standardzimmer', type: 'price-tier', tiers: [{ id: 'tier-1', startsAtAnimal: 1, amountCents: 3000 }, { id: 'tier-duplicate', startsAtAnimal: 1, amountCents: 2500 }] }]
+]
 
 describe('isValidPensionSettingsUpdate', () => {
   it('accepts complete contact data and ordered handover times', () => {
@@ -45,13 +51,18 @@ describe('isValidPensionSettingsUpdate', () => {
   ])('rejects %s in the daily price list', (_case, dailyPetRates) => {
     expect(isValidPensionSettingsUpdate({ ...validSettings, dailyPetRates })).toBe(false)
   })
+
+  it.each(invalidTariffs.map((tariffs) => [tariffs]))('rejects an invalid price tier tariff', (tariffs) => {
+    expect(isValidPensionSettingsUpdate({ ...validSettings, tariffs })).toBe(false)
+  })
 })
 
 describe('arePensionSettingsEqual', () => {
   it('recognizes an unchanged editable settings model', () => {
     expect(arePensionSettingsEqual(validSettings, {
       ...validSettings,
-      dailyPetRates: validSettings.dailyPetRates.map((rate) => ({ ...rate }))
+      dailyPetRates: validSettings.dailyPetRates.map((rate) => ({ ...rate })),
+      tariffs: validSettings.tariffs.map((tariff) => ({ ...tariff, tiers: tariff.tiers.map((tier) => ({ ...tier })) }))
     })).toBe(true)
   })
 

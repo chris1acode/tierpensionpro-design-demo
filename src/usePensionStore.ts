@@ -591,7 +591,8 @@ export function createPensionStore(dependencies: PensionStoreDependencies = defa
 
     Object.assign(settings, {
       ...input,
-      dailyPetRates: input.dailyPetRates.map((rate) => ({ ...rate }))
+      dailyPetRates: input.dailyPetRates.map((rate) => ({ ...rate })),
+      tariffs: input.tariffs.map((tariff) => ({ ...tariff, tiers: tariff.tiers.map((tier) => ({ ...tier })) }))
     })
     showToast('Die Einstellungen wurden gespeichert.')
     return true

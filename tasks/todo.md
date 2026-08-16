@@ -3,7 +3,7 @@
 [X] Die externe Anmeldeseite unter /request-demo braucht die möglichkeit mehrere Tiere einzuchecken.
 [x] Bei den Anfragen muss man auch die Möglichkeit haben, die Tiere zuzuordnen.
 [x] Bau die Anfrage Seite so, dasa auch echte Mockdaten enstehen, falls noch nicht geschehen.
-[ ] Implementiere in den Einstellungen docs/tarif-spec.md. Ignoriere zunächst die Buchungen. Das kommt in Folgeschritt. Hinterlege in den Demodaten die Tarife Einzelzimmer und Standardzimmer
+[x] Implementiere in den Einstellungen docs/tarif-spec.md. Ignoriere zunächst die Buchungen. Das kommt in Folgeschritt. Hinterlege in den Demodaten die Tarife Einzelzimmer und Standardzimmer
 [ ] Implementiere in den Buchungen das neue Tarifmodell
 [ ] Implementiere in den Unterbringungen das neue Tarifmodell. Eine Unterbringung wird 1:1 mit einem Tarif verknüpft.
 [ ] Implementiere in den Anfragen von aussen die Auwahl des Tarifes. Es soll Teil der Anfrage sein.
