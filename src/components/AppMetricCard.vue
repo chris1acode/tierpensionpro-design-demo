@@ -22,7 +22,7 @@ const iconColorClasses: Record<'orange' | 'teal', string> = {
   <RouterLink
     :to="to"
     :aria-label="ariaLabel"
-    class="relative flex items-start gap-[15px] rounded-xl border border-[#ded9d3] bg-white py-5 pl-5 pr-12 text-inherit no-underline transition hover:-translate-y-px hover:border-[#c9bcb2] hover:shadow-[0_6px_18px_rgba(36,33,31,.07)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[rgba(184,75,18,.24)] focus-visible:outline-offset-2"
+    class="relative flex items-start gap-[15px] rounded-xl border border-[#ded9d3] bg-white py-5 pl-5 pr-12 text-inherit no-underline transition hover:-translate-y-px hover:border-[#c9bcb2] hover:shadow-[0_6px_18px_rgba(36,33,31,.07)] focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-[rgba(184,75,18,.24)] focus-visible:outline-offset-2 max-sm:flex-col max-sm:gap-3"
   >
     <span class="grid h-[43px] w-[43px] flex-none place-items-center rounded-[10px] [&>svg]:w-[21px]" :class="iconColorClasses[color]">
       <component :is="icon" />
