@@ -126,13 +126,16 @@ const petColors = ['#DCE9E5', '#F3E3D7', '#E8E1F0', '#E5E9D8', '#DCE7F0', '#F1E1
 const additionalPets: Pet[] = additionalCustomers.map((customer, index) => {
   const species = index % 3 === 0 ? 'cat' : 'dog' as const
   const name = `${additionalPetNames[index % additionalPetNames.length]}${index >= additionalPetNames.length ? ` ${Math.floor(index / additionalPetNames.length) + 1}` : ''}`
+  // Every 7th pet is left without a photo to still show the fallback-avatar state.
+  const hasPhoto = index % 7 !== 0
   return {
     id: `p-${index + 14}`,
     customerId: customer.id,
     name,
     species,
     initials: name.split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase(),
-    color: petColors[index % petColors.length]
+    color: petColors[index % petColors.length],
+    ...(hasPhoto ? { photoUrl: petPhoto(species, (index % 6) + 1) } : {})
   }
 })
 
