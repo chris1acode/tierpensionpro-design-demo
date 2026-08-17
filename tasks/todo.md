@@ -19,3 +19,5 @@
 [x] Auf der Login Seite sollte ein Hinweis stehen (lila demodaten farbe). Man kann irgendwetwas eingeben um sich anzumelden.
 [x] Die Tarifkonditionen auf der request-demo seite sollen alle tarife anzeigen, nicht den ausgewählten. Die Auswahl sollte keine rolle spielen.
 [x] Die Dashboard Zahlen sollten auf kleinster auflösung als 2 pro zeile angezeigt werden.
+[x] Entferne die /info seite. Verwende stattdessen den login als Startseite. Schreibe im Login bereits vorausgefüllt robin@muster.de PW:123
+[x] Schreibe bei "Jetzt registrieren" auch einen Hinweis, dass es nur eine Demo ist und dass eine echte Registrierung nicht möglich ist.

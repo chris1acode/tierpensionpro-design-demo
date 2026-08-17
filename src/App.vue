@@ -24,7 +24,6 @@ import BookingsPage from './view/BookingsPage.vue'
 import CheckoutModal from './components/CheckoutModal.vue'
 import CustomersPage from './view/CustomersPage.vue'
 import DemoDataControl from './components/DemoDataControl.vue'
-import IntroPage from './view/IntroPage.vue'
 import LoginPage from './components/LoginPage.vue'
 import RegisterPage from './components/RegisterPage.vue'
 import RegisterVerifyPage from './components/RegisterVerifyPage.vue'
@@ -147,7 +146,6 @@ onBeforeUnmount(() => {
 
 <template>
   <RequestDemoPage v-if="route.name === 'request-demo'" />
-  <IntroPage v-else-if="route.name === 'intro'" />
   <RegisterPage v-else-if="route.name === 'register'" />
   <RegisterVerifyPage v-else-if="route.name === 'register-verify'" />
   <RegisterPensionPage v-else-if="route.name === 'register-pension'" />
@@ -264,7 +262,7 @@ onBeforeUnmount(() => {
       <RequestsPage v-else-if="route.name === 'requests'" />
       <SettingsPage v-else-if="isSettingsRoute" />
       <AccountSettingsPage v-else-if="route.name === 'account'" />
-      <AppContainer v-else-if="route.name !== 'intro'" class="grid min-h-[calc(100vh-70px)] place-items-center">
+      <AppContainer v-else class="grid min-h-[calc(100vh-70px)] place-items-center">
         <div class="w-full max-w-[520px] rounded-[14px] border border-app-border bg-white p-12 text-center">
           <span class="mx-auto mb-[19px] grid size-[58px] place-items-center rounded-[15px] bg-[#fbe8dd] text-primary-dark">
             <LogoIcon v-if="route.name === 'not-found'" :size="32" />

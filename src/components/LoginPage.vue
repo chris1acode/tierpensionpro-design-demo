@@ -8,8 +8,8 @@ import LogoIcon from './LogoIcon.vue'
 
 const store = usePensionStore()
 const router = useRouter()
-const email = ref('')
-const password = ref('')
+const email = ref('robin@muster.de')
+const password = ref('123')
 
 function submitLogin() {
   store.logIn()
@@ -34,6 +34,7 @@ function submitLogin() {
         <AppButton class="mt-2" variant="primary" type="submit">Anmelden <ArrowRight :size="17" /></AppButton>
       </form>
       <p class="mb-0 mt-7 text-center text-sm text-app-muted">Noch kein Konto? <RouterLink class="font-bold text-primary" to="/register">Jetzt registrieren</RouterLink></p>
+      <p class="mb-0 mt-2 text-center text-xs text-app-muted">Hinweis: Dies ist nur eine Demo, eine echte Registrierung ist nicht möglich.</p>
     </section>
   </main>
 </template>
