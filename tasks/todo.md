@@ -15,3 +15,6 @@
 [x] Baue Tierfotos in die Detailansicht ein (nicht in die Liste)
 [x] Baue Tierfotos in die Detailansicht ein (nicht in die Liste). Nutze dafür die Bilder aus public/assets. Mach das Vorschaubild größer
 [x] Die Preisübersicht in der Anfrage Seite soll keine Berechnung sein, sondern eine Auflistung der Tarifkonditionen.
+[ ] Verwende Modulo 7, sodass fast jedes Tier ein Bild hat.
+[ ] Auf der Login Seite sollte ein Hinweis stehen (lila demodaten farbe). Man kann irgendwetwas eingeben um sich anzumelden.
+[ ] Die Tarifkonditionen auf der request-demo seite sollen alle tarife anzeigen, nicht den ausgewählten. Die Auswahl sollte keine rolle spielen.

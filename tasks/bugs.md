@@ -3,3 +3,5 @@
 [x] Die Cards auf dem Dashboard sollten auch bei mittler Auflösung so umbrechen, dass das Symbol in einer eigenenen Reihe steht.
 [x] Letzte Vorgänge im CheckIn, der Rückgängig button verschiebt das Layout.
 [x] Die externe Anmeldeseite unter /request-demo braucht oben im titel kein komisches badge symbol
+[x] Der Drawer ist nicht ganz oben in der Z-Position. Die Buttons aus dem Menu ragen rein
+[x] Das X vom Drawer sieht komisch aus und ragt in das Pro vom Titel

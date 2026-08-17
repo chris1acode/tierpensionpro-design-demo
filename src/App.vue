@@ -153,14 +153,16 @@ onBeforeUnmount(() => {
   <RegisterPensionPage v-else-if="route.name === 'register-pension'" />
   <LoginPage v-else-if="route.name === 'login' || !store.isAuthenticated" />
   <div v-else class="flex min-h-screen">
-    <aside ref="mobileNavigation" class="fixed inset-y-0 left-0 z-20 flex w-[250px] flex-col border-r border-app-border bg-white px-4 pb-[18px] pt-[25px] transition-[width,transform,visibility] duration-[250ms] max-[920px]:invisible max-[920px]:pointer-events-none max-[920px]:-translate-x-full" :class="[{ 'max-[920px]:!visible max-[920px]:!pointer-events-auto max-[920px]:!translate-x-0 shadow-[15px_0_45px_rgba(36,33,31,.15)] max-[920px]:delay-0': mobileNavOpen }, sidebarCollapsed ? 'min-[921px]:w-[72px]' : 'min-[921px]:w-[250px]']" :role="mobileNavOpen ? 'dialog' : undefined" :aria-modal="mobileNavOpen ? 'true' : undefined" aria-label="Seitennavigation">
-      <RouterLink class="flex items-center gap-[10px] px-[9px] pb-8 pt-0 text-[19px] font-bold text-app-text no-underline transition-[padding] duration-[250ms] [font-family:'Manrope',sans-serif]" :class="sidebarCollapsed ? 'min-[921px]:justify-center min-[921px]:pb-[22px]' : ''" to="/dashboard" @click="closeMobileNavigation()">
-        <span class="grid size-9 shrink-0 place-items-center text-primary">
-          <LogoIcon :size="24" color="white" />
-        </span>
-        <span :class="sidebarCollapsed ? 'min-[921px]:hidden' : ''">Tierpension <span class="text-primary">Pro</span></span>
-      </RouterLink>
-      <AppIconButton ref="mobileNavClose" class="hidden absolute right-[10px] top-[21px] max-[920px]:grid" aria-label="Navigation schließen" @click="closeMobileNavigation(true)"><X /></AppIconButton>
+    <aside ref="mobileNavigation" class="fixed inset-y-0 left-0 z-[42] flex w-[250px] flex-col border-r border-app-border bg-white px-4 pb-[18px] pt-[25px] transition-[width,transform,visibility] duration-[250ms] max-[920px]:invisible max-[920px]:pointer-events-none max-[920px]:-translate-x-full" :class="[{ 'max-[920px]:!visible max-[920px]:!pointer-events-auto max-[920px]:!translate-x-0 shadow-[15px_0_45px_rgba(36,33,31,.15)] max-[920px]:delay-0': mobileNavOpen }, sidebarCollapsed ? 'min-[921px]:w-[72px]' : 'min-[921px]:w-[250px]']" :role="mobileNavOpen ? 'dialog' : undefined" :aria-modal="mobileNavOpen ? 'true' : undefined" aria-label="Seitennavigation">
+      <div class="flex items-center justify-between gap-2 pb-8">
+        <RouterLink class="flex min-w-0 items-center gap-[10px] px-[9px] pt-0 text-[19px] font-bold text-app-text no-underline transition-[padding] duration-[250ms] [font-family:'Manrope',sans-serif]" :class="sidebarCollapsed ? 'min-[921px]:justify-center min-[921px]:pb-[22px]' : ''" to="/dashboard" @click="closeMobileNavigation()">
+          <span class="grid size-9 shrink-0 place-items-center text-primary">
+            <LogoIcon :size="24" color="white" />
+          </span>
+          <span class="truncate" :class="sidebarCollapsed ? 'min-[921px]:hidden' : ''">Tierpension <span class="text-primary">Pro</span></span>
+        </RouterLink>
+        <AppIconButton ref="mobileNavClose" class="hidden shrink-0 max-[920px]:grid" aria-label="Navigation schließen" @click="closeMobileNavigation(true)"><X :size="20" /></AppIconButton>
+      </div>
       <nav class="grid gap-[6px]" aria-label="Hauptnavigation">
         <RouterLink v-for="item in visibleNavigationItems" :key="item.name" :to="item.path" class="relative flex min-h-[45px] items-center gap-3 rounded-[9px] px-[13px] text-left font-semibold text-[#5e5955] no-underline hover:bg-[#f6f3ef] [&.router-link-exact-active]:bg-[#fff3eb] [&.router-link-exact-active]:text-[#a74613] [&.router-link-exact-active]:before:absolute [&.router-link-exact-active]:before:-left-4 [&.router-link-exact-active]:before:h-[26px] [&.router-link-exact-active]:before:w-[3px] [&.router-link-exact-active]:before:rounded-r [&.router-link-exact-active]:before:bg-primary" :class="[{ 'router-link-exact-active': item.name === 'settings' && isSettingsRoute }, sidebarCollapsed ? 'min-[921px]:justify-center min-[921px]:px-[10px]' : '']" :title="sidebarCollapsed ? item.title : undefined" @click="closeMobileNavigation()">
           <component :is="item.icon" :size="19" /><span :class="sidebarCollapsed ? 'min-[921px]:hidden' : ''">{{ item.title }}</span><span v-if="item.name === 'requests' && store.pendingRequests.value.length" class="ml-auto inline-flex size-5 items-center justify-center rounded-[10px] bg-[#faf0d9] px-[6px] text-[10px] font-bold leading-none text-[#84601c] [&.router-link-exact-active]:bg-[#fbe8dd] [&.router-link-exact-active]:text-[#a74613]" :class="sidebarCollapsed ? 'min-[921px]:hidden' : ''" aria-hidden="true">{{ store.pendingRequests.value.length }}</span>
@@ -177,7 +179,7 @@ onBeforeUnmount(() => {
       </button>
     </aside>
 
-    <div v-if="mobileNavOpen" class="fixed inset-0 z-[15] bg-[rgba(36,33,31,.35)] min-[921px]:hidden" @click="closeMobileNavigation(true)" />
+    <div v-if="mobileNavOpen" class="fixed inset-0 z-[41] bg-[rgba(36,33,31,.35)] min-[921px]:hidden" @click="closeMobileNavigation(true)" />
     <section class="w-full transition-[margin,width] duration-[250ms] min-[921px]:ml-[250px] min-[921px]:w-[calc(100%-250px)]" :class="sidebarCollapsed ? 'min-[921px]:ml-[72px] min-[921px]:w-[calc(100%-72px)]' : ''">
       <header class="flex h-[70px] items-center gap-2 border-b border-app-border bg-white px-[15px] sm:gap-[18px] sm:px-[28px]">
         <AppIconButton ref="mobileNavTrigger" class="hidden max-[920px]:grid" aria-label="Navigation öffnen" @click="openMobileNavigation"><Menu /></AppIconButton>
