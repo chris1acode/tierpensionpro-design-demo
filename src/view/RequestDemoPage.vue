@@ -14,8 +14,10 @@ const form = reactive<NewBookingRequest>({
   arrivalDate: '', arrival: store.settings.checkInFrom, departure: '', note: ''
 })
 
-const selectedTariff = computed(() => store.settings.tariffs.find((tariff) => tariff.id === form.tariffId))
-const sortedTariffTiers = computed(() => [...(selectedTariff.value?.tiers ?? [])].sort((a, b) => a.startsAtAnimal - b.startsAtAnimal))
+const tariffsWithSortedTiers = computed(() => store.settings.tariffs.map((tariff) => ({
+  ...tariff,
+  tiers: [...tariff.tiers].sort((a, b) => a.startsAtAnimal - b.startsAtAnimal)
+})))
 
 function addAnimal(): void {
   form.animals!.push({ name: '', species: 'dog' })
@@ -69,12 +71,14 @@ function submit(): void {
         </section>
         <aside v-if="!sent" class="rounded-2xl border border-app-border bg-white p-5 shadow-[0_12px_32px_rgba(36,33,31,.08)] lg:sticky lg:top-8">
           <h2 class="m-0 mb-3 text-sm font-bold text-app-text">Tarifkonditionen</h2>
-          <div v-if="selectedTariff" class="grid gap-2">
-            <p class="m-0 text-xs font-bold text-app-text">{{ selectedTariff.name }}</p>
-            <div v-for="tier in sortedTariffTiers" :key="tier.id" class="flex items-center justify-between gap-2 text-xs text-app-muted"><span>{{ tier.startsAtAnimal === 1 ? '1. Tier' : `Ab dem ${tier.startsAtAnimal}. Tier` }}</span><span class="font-bold text-app-text">{{ formatEuroCents(tier.amountCents) }} / Nacht</span></div>
-            <small class="mt-2 border-t border-app-border pt-3 text-[11px] leading-relaxed text-app-muted">Preise je Tier und Nacht laut gewähltem Tarif, unabhängig vom konkreten Zeitraum.</small>
+          <div v-if="tariffsWithSortedTiers.length" class="grid gap-4">
+            <div v-for="tariff in tariffsWithSortedTiers" :key="tariff.id" class="grid gap-2">
+              <p class="m-0 text-xs font-bold text-app-text">{{ tariff.name }}</p>
+              <div v-for="tier in tariff.tiers" :key="tier.id" class="flex items-center justify-between gap-2 text-xs text-app-muted"><span>{{ tier.startsAtAnimal === 1 ? '1. Tier' : `Ab dem ${tier.startsAtAnimal}. Tier` }}</span><span class="font-bold text-app-text">{{ formatEuroCents(tier.amountCents) }} / Nacht</span></div>
+            </div>
+            <small class="mt-1 border-t border-app-border pt-3 text-[11px] leading-relaxed text-app-muted">Preise je Tier und Nacht laut gewähltem Tarif, unabhängig vom konkreten Zeitraum.</small>
           </div>
-          <p v-else class="m-0 text-xs leading-relaxed text-app-muted">Wähle einen Tarif, um die Preiskonditionen zu sehen.</p>
+          <p v-else class="m-0 text-xs leading-relaxed text-app-muted">Es sind noch keine Tarife hinterlegt.</p>
         </aside>
       </div>
       <footer class="mt-6 text-center">

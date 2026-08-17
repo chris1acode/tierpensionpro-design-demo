@@ -27,6 +27,7 @@ function submitLogin() {
       <p class="mb-2 text-xs font-bold uppercase tracking-[.12em] text-primary">Willkommen zurück</p>
       <h1 id="login-title" class="m-0 font-['Manrope'] text-[28px] font-bold text-app-text">Anmelden</h1>
       <p class="mb-2 mt-2 text-sm leading-6 text-app-muted">Melde dich an, um deine Pension zu verwalten.</p>
+      <p class="mt-4 rounded-lg border border-[#b6a1e5] bg-[#f3efff] px-3 py-2 text-xs leading-5 text-[#5b4a8c]">Demo-Modus: Gib eine beliebige E-Mail-Adresse und ein beliebiges Passwort ein, um dich anzumelden.</p>
       <form class="mt-7 grid gap-4" @submit.prevent="submitLogin">
         <label class="grid gap-2 text-sm font-bold text-app-text">E-Mail-Adresse<input v-model="email" class="min-h-11 rounded-lg border border-app-border px-3 text-sm font-normal outline-none placeholder:text-[#9d9893] focus:border-primary focus:ring-2 focus:ring-[#f8d9c8]" type="email" autocomplete="email" placeholder="name@tierpension.de" /></label>
         <label class="grid gap-2 text-sm font-bold text-app-text">Passwort<input v-model="password" class="min-h-11 rounded-lg border border-app-border px-3 text-sm font-normal outline-none placeholder:text-[#9d9893] focus:border-primary focus:ring-2 focus:ring-[#f8d9c8]" type="password" autocomplete="current-password" placeholder="Passwort eingeben" /></label>
